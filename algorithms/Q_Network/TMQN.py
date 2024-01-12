@@ -156,6 +156,7 @@ class TMQN:
                 if done or truncated:
                     break
             if nr_of_steps >= self.batch_size:
+                self.train()
                 self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
         plot_test_results(self.save_path, text={'title': 'TMQN'})
