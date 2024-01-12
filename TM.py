@@ -21,8 +21,14 @@ class TsetlinMachine(Clauses):
         literals = [0 for _ in range(2 * len(data[0]))]
         self.clauses = np.array([literals for _ in range(self.nr_of_clauses)])
 
-    def fit(self, data):
-        pass
+    def fit(self, data, ys):
+        y_preds = self.predict(data)
+        for i in range(len(ys)):
+            if y_preds[i] == 1:
+                self.type_I_feedback()
+            if y_preds[i] == 0:
+                self.type_II_feedback()
+
 
     def predict(self, data):
         output = [0 for _ in range(len(data))]

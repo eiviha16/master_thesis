@@ -1,0 +1,6 @@
+[submodule "RTM"]
+	path = RTM
+	url = https://github.com/cair/regression-tsetlin-machine.git
+[submodule "TMU"]
+	path = TMU
+	url = https://github.com/cair/tmu.git
