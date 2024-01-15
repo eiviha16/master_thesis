@@ -10,6 +10,7 @@ import gymnasium as gym
 from algorithms.Q_Network.n_step_TMQN import TMQN
 from algorithms.policy.RTM import Policy
 
+
 #Winner run 76 - 500.0 - 500.0 - config = {'algorithm': 'n_step_TMQN', 'n_steps': 5, 'nr_of_clauses': 1000, 'T': 100, 's': 4.9, 'y_max': 100, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': True, 'bits_per_feature': 5, 'gamma': 0.95, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 2000, 'batch_size': 64, 'epochs': 2, 'test_freq': 1, 'threshold_score': 450, "save": True, "seed": 42, "balance_feedback": False, "min_feedback_p": 1.0, 'dynamic_memory': False, 'dynamic_memory_max_size': 10, 'number_of_state_bits_ta': 10}
 config = {'algorithm': 'n_step_TMQN', 'n_steps': 5, 'nr_of_clauses': 1000, 'T': 100, 's': 4.9, 'y_max': 100, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, 'gamma': 0.95, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 2000, 'batch_size': 64, 'epochs': 2, 'test_freq': 1,  "save": True, 'dynamic_memory': False, 'number_of_state_bits_ta': 10}
 
