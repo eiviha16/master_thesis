@@ -58,13 +58,14 @@ class Policy():
 
     def update(self, tm_1_input, tm_2_input):
         # take a list for each tm that is being updated.
+        if len(tm_1_input['observations']) > 0:
+            tm_1_input['observations'] = self.binarizer.transform(np.array(tm_1_input['observations']))
+            self.tm1.fit(tm_1_input['observations'].astype(dtype=np.int32),
+                         np.array(tm_1_input['target_q_vals']).astype(dtype=np.float32))
 
-        tm_1_input['observations'] = self.binarizer.transform(np.array(tm_1_input['observations']))
-        tm_2_input['observations'] = self.binarizer.transform(np.array(tm_2_input['observations']))
-
-        self.tm1.fit(tm_1_input['observations'].astype(dtype=np.int32),
-                     np.array(tm_1_input['target_q_vals']).astype(dtype=np.float32))
-        self.tm2.fit(np.array(tm_2_input['observations']).astype(dtype=np.int32),
+        if len(tm_2_input['observations']) > 0:
+            tm_2_input['observations'] = self.binarizer.transform(np.array(tm_2_input['observations']))
+            self.tm2.fit(np.array(tm_2_input['observations']).astype(dtype=np.int32),
                      np.array(tm_2_input['target_q_vals']).astype(dtype=np.float32))
 
 
