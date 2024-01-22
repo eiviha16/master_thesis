@@ -23,6 +23,7 @@ agent.learn(nr_of_episodes=10000)
 from test_policy import test_policy
 
 test_policy(agent.policy)
+#test_policy(agent.current_policy)
 agent.policy.tm1.set_state()
 agent.policy.tm2.set_state()
 test_policy(agent.policy)
