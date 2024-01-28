@@ -11,8 +11,11 @@ from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
 
 
-#config = {'algorithm': 'PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range':0.2, 'batch_size': 64, 'epochs': 1,'hidden_size': 32, 'learning_rate': 0.01, 'test_freq': 1, "save": False}
-config = {'algorithm': 'PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.2, 'batch_size': 64, 'epochs': 1, 'hidden_size': 32, 'learning_rate': 0.015, 'test_freq': 1, "save": True}
+#run 33 - 500 - config = {'algorithm': 'PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range':0.2, 'batch_size': 64, 'epochs': 1,'hidden_size': 32, 'learning_rate': 0.01, 'test_freq': 1, "save": False}
+#run 37 - 500 - config = {'algorithm': 'PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'batch_size': 64, 'epochs': 1, 'hidden_size': 32, 'learning_rate': 0.015, 'test_freq': 1, "save": True}
+#run 37 much more stable
+config = {'algorithm': 'PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'batch_size': 64, 'epochs': 1, 'hidden_size': 32, 'learning_rate': 0.015, 'test_freq': 1, "save": True}
+
 print(config)
 
 env = gym.make("CartPole-v1")

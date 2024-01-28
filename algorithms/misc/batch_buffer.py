@@ -23,8 +23,8 @@ class Batch:
 
     def save_experience(self, action, action_log_prob, value, obs, reward, done):
         self.actions.append(action)
-        self.action_log_prob.append(action_log_prob.detach().numpy())
-        self.values.append(value.detach().numpy())
+        self.action_log_prob.append(action_log_prob)
+        self.values.append(value)
         self.obs.append(obs)
         self.rewards.append(reward)
         self.dones.append(int(done))
