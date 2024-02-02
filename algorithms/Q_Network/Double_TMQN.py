@@ -35,7 +35,17 @@ class TMQN:
         self.nr_of_test_episodes = 100
 
         self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
-        self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
+        # self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
+        self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
+                                  71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
+                                  73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852,
+                                  99459, 20927, 91507, 55393, 44598, 36422, 20380, 28222, 44119, 13397, 12157, 49798,
+                                  12677, 47053, 45083, 79132, 34672, 5696, 95648, 60218, 70285, 16362, 49616, 10329,
+                                  72358, 38428, 82398, 81071, 47401, 75675, 25204, 92350, 9117, 6007, 86674, 29872,
+                                  37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567,
+                                  27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
+                                  32088, 21418, 60590, 49736]
+
         self.save = config['save']
         self.best_scores = {'mean': 0, 'std': float('inf')}
         self.cur_mean = 0
@@ -110,15 +120,16 @@ class TMQN:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
-            action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
-            actions = np.argmax(action_q_vals, axis=1)
+            #action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+            # actions = np.argmax(action_q_vals, axis=1)
+            #actions = np.argmax(action_q_vals, axis=1)
 
             next_q_vals = self.evaluation_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
-            next_q_vals = self.get_q_val_for_action(actions, next_q_vals)
+            next_q_vals = self.get_q_val_for_action(self.replay_buffer.sampled_actions, next_q_vals)
 
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
-            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(actions, target_q_vals)
+            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
             self.target_policy.update(tm_1_input, tm_2_input)
         if self.config['soft_update_type'] == 'soft_update_1':

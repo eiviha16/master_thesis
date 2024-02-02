@@ -36,7 +36,7 @@ class Policy(QNet):
         self.optimizer = optim.Adam(self.parameters(), lr=config['learning_rate'])
 
     def predict(self, input):
-        q_vals = self.forward(torch.tensor(np.array(input)))
+        q_vals = self.forward(torch.tensor(np.array(input)))#.to('cuda'))
         return q_vals
 
 

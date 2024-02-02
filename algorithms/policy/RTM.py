@@ -126,8 +126,12 @@ class TMS:
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                tm.fit_2(tm_input[i]['observations'].astype(dtype=np.int32),
-                             np.array(tm_input[i]['target']).astype(dtype=np.float32), np.array(tm_input[i]['advantages']).astype(dtype=np.float32))
+                tm.fit_2(
+                        tm_input[i]['observations'].astype(dtype=np.int32),
+                        np.array(tm_input[i]['target']).astype(dtype=np.float32),
+                        np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
+                        np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
+                )
 
     def predict(self, obs):
         # binarize input
@@ -152,17 +156,19 @@ class ActorCriticPolicy:
         self.critic = TMS(1, config)
 
     def get_action(self, obs):
-        action_probs = self.actor.predict(obs)
+        action_probs = self.actor.predict(obs) + 1e-10
         normalized_action_prob = action_probs / np.sum(action_probs, axis=-1, keepdims=True)
         actions = np.apply_along_axis(lambda x: np.random.choice([0, 1], p=x), axis=-1, arr=normalized_action_prob)
+        entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
         values = self.critic.predict(obs)
-        return actions, values, action_probs #done away with log softmax
+        return actions, values, action_probs, entropy #done away with log softmax
 
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)
         actions = np.argmax(action_probs, axis=-1)
         return actions
-
+#policy gradient
+#a2c a3c
 
 """
 from tmu.preprocessing.standard_binarizer.binarizer import StandardBinarizer
