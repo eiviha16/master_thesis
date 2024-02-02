@@ -33,9 +33,7 @@ class TMQN:
         self.nr_of_test_episodes = 100
 
         self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
-        #self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
-        self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081, 71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479, 73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852, 99459, 20927, 91507, 55393, 44598, 36422, 20380, 28222, 44119, 13397, 12157, 49798, 12677, 47053, 45083, 79132, 34672, 5696, 95648, 60218, 70285, 16362, 49616, 10329, 72358, 38428, 82398, 81071, 47401, 75675, 25204, 92350, 9117, 6007, 86674, 29872, 37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567, 27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569, 32088, 21418, 60590, 49736]
-
+        self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
         self.save = config['save']
         self.best_scores = {'mean': 0, 'std': float('inf')}
         self.cur_mean = 0
@@ -126,20 +124,15 @@ class TMQN:
             actions = [0, 0]
             if self.test_freq:
                 if episode % self.test_freq == 0:
-                    self.test(nr_of_steps)
+                    mean_reward = self.test(nr_of_steps)
                     self.config['nr_of_episodes'] = episode + 1
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
-                    if self.dynamic_memory:
-                        # if self.has_reached_threshold:
-                        intervals = 5
-                        max_score = 500
-
-                        new_memory_size = max(self.dynamic_memory_min_size, int(intervals * np.ceil(
-                            self.dynamic_memory_max_size / intervals * intervals * self.cur_mean / max_score / intervals)))
-
-                        self.policy.tm1.update_memory_size(new_memory_size)
-                        self.policy.tm2.update_memory_size(new_memory_size)
+                    if self.dynamic_memory and mean_reward > 450:
+                        if self.config['number_of_state_bits_ta'] < self.config['max_number_of_state_bits_ta']:
+                            self.config['number_of_state_bits_ta'] += 1
+                        self.policy.tm1.upsize_memory(self.config['number_of_state_bits_ta'])
+                        self.policy.tm2.upsize_memory(self.config['number_of_state_bits_ta'])
 
             cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
             episode_reward = 0
@@ -193,7 +186,7 @@ class TMQN:
             print(f'New best mean after {nr_of_steps} steps: {mean}!')
         self.save_model(False)
         self.save_q_vals(nr_of_steps)
-
+        return mean
     def save_model(self, best_model):
         if best_model:
             self.policy.tm1.save_state()

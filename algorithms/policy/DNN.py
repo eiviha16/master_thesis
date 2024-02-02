@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-
+import torch.nn.functional as F
 torch.manual_seed(42)
 np.random.seed(42)
 
@@ -10,7 +10,6 @@ np.random.seed(42)
 class QNet(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=128, c=1, action_std=0.5):
         super(QNet, self).__init__()
-        self.c = c
         # activation
         self.activation = nn.Tanh()
         self.output_activation = nn.Sigmoid()
@@ -28,8 +27,7 @@ class QNet(nn.Module):
         x = self.activation(x)
 
         x = self.output_layer(x)
-        #action = self.output_activation(x)
-        return x #action * self.c
+        return x
 
 
 class Policy(QNet):
@@ -38,5 +36,72 @@ class Policy(QNet):
         self.optimizer = optim.Adam(self.parameters(), lr=config['learning_rate'])
 
     def predict(self, input):
-        q_vals = self.forward(torch.tensor(np.array(input)))
+        q_vals = self.forward(torch.tensor(np.array(input)))#.to('cuda'))
         return q_vals
+
+
+class Actor(nn.Module):
+    def __init__(self, input_size, output_size, hidden_size=128, action_std=0.5):
+        super(Actor, self).__init__()
+        self.activation = nn.ReLU()
+        self.output_activation = nn.Softmax()
+
+        # layers
+        self.input_layer = nn.Linear(input_size, hidden_size)
+        self.hidden_layer = nn.Linear(hidden_size, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, output_size * 2)
+
+    def forward(self, input):
+        x = self.input_layer(input)
+        x = self.activation(x)
+
+        x = self.hidden_layer(x)
+        x = self.activation(x)
+
+        x = self.output_layer(x)
+        action_prob = self.output_activation(x)
+        return action_prob
+
+
+class Critic(nn.Module):
+    def __init__(self, input_size, output_size, hidden_size=128, action_std=0.5):
+        super(Critic, self).__init__()
+        self.activation = nn.ReLU()
+
+        # layers
+        self.input_layer = nn.Linear(input_size, hidden_size)
+        self.hidden_layer = nn.Linear(hidden_size, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, output_size)
+
+    def forward(self, input):
+        x = self.input_layer(input)
+        x = self.activation(x)
+
+        x = self.hidden_layer(x)
+        x = self.activation(x)
+
+        x = self.output_layer(x)
+        return x
+
+
+class ActorCriticPolicy:
+    def __init__(self, input_size, output_size, hidden_size, lr):
+        self.actor = Actor(input_size, output_size, hidden_size)
+        self.critic = Critic(input_size, output_size, hidden_size)
+
+        self.actor_optim = optim.Adam(self.actor.parameters(), lr=lr)
+        self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
+
+    def get_action(self, obs):
+        obs = torch.tensor(obs)
+        action_probs = self.actor(obs)
+        actions = torch.multinomial(action_probs, 1).squeeze(dim=-1)
+        values = self.critic(obs)
+        return actions, values, F.log_softmax(action_probs)
+
+    def get_best_action(self, obs):
+        obs = torch.tensor(obs)
+        action_probs = self.actor(obs)
+        actions = torch.argmax(action_probs, dim=-1)
+        return actions
+
