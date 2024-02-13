@@ -10,6 +10,7 @@ pyximport.install(setup_args={
 
 # import RTM.RegressionTsetlinMachine as RTM
 import RTM.rtm_custom2 as RTM
+# import RTM.rtm_custom_continious as RTM
 # import RTM.rtm_custom as RTM
 import numpy as np
 import random
@@ -73,7 +74,12 @@ class Policy():
         # binarize input
         if obs.ndim == 1:
             obs = obs.reshape(1, 4)
-        b_obs = self.binarizer.transform(obs)
+        else:
+            a = 2
+        try:
+            b_obs = self.binarizer.transform(obs)
+        except:
+            b_obs = self.binarizer.transform(obs)
         # pass it through each tm
         b_obs = b_obs.astype(dtype=np.int32)
         result = []
@@ -90,11 +96,11 @@ class TMS:
         self.tms = []
         for _ in range(nr_of_tms):
             tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                          number_of_features=config['bits_per_feature'] * 4,
-                                          s=config['s'],
-                                          number_of_states=config['number_of_state_bits_ta'],
-                                          threshold=config['T'],
-                                          max_target=config['y_max'], min_target=config['y_min'])
+                                    number_of_features=config['bits_per_feature'] * 4,
+                                    s=config['s'],
+                                    number_of_states=config['number_of_state_bits_ta'],
+                                    threshold=config['T'],
+                                    max_target=config['y_max'], min_target=config['y_min'])
             self.tms.append(tm)
 
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
@@ -112,7 +118,8 @@ class TMS:
         vals = vals.astype(dtype=np.int32)
         vals = vals[:20]
         for tm in self.tms:
-            tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+            tm.fit(vals,
+                   np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.
@@ -120,17 +127,18 @@ class TMS:
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
                 tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
-                             np.array(tm_input[i]['target']).astype(dtype=np.float32))
+                       np.array(tm_input[i]['target']).astype(dtype=np.float32))
+
     def update_2(self, tm_input):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
                 tm.fit_2(
-                        tm_input[i]['observations'].astype(dtype=np.int32),
-                        np.array(tm_input[i]['target']).astype(dtype=np.float32),
-                        np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
-                        np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
+                    tm_input[i]['observations'].astype(dtype=np.int32),
+                    np.array(tm_input[i]['target']).astype(dtype=np.float32),
+                    np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
+                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
                 )
 
     def predict(self, obs):
@@ -161,14 +169,16 @@ class ActorCriticPolicy:
         actions = np.apply_along_axis(lambda x: np.random.choice([0, 1], p=x), axis=-1, arr=normalized_action_prob)
         entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
         values = self.critic.predict(obs)
-        return actions, values, action_probs, entropy #done away with log softmax
+        return actions, values, action_probs, entropy  # done away with log softmax
 
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)
         actions = np.argmax(action_probs, axis=-1)
         return actions
-#policy gradient
-#a2c a3c
+
+
+# policy gradient
+# a2c a3c
 
 """
 from tmu.preprocessing.standard_binarizer.binarizer import StandardBinarizer

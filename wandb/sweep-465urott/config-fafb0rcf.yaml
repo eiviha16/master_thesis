@@ -1,0 +1,20 @@
+wandb_version: 1
+
+gamma:
+  value: 0.5696448810552837
+nr_of_clauses:
+  value: 1063
+number_of_state_bits_ta:
+  value: 24
+specificity:
+  value: 7.647771897891982
+threshold:
+  value: 0.46729680685583275
+total_bits_per_feature:
+  value: 7
+update_freq:
+  value: 20
+y_max:
+  value: 92
+y_min:
+  value: 33

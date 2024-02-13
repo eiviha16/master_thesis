@@ -105,3 +105,20 @@ class ActorCriticPolicy:
         actions = torch.argmax(action_probs, dim=-1)
         return actions
 
+
+class ActorPolicy:
+    def __init__(self, input_size, output_size, hidden_size, lr):
+        self.actor = Actor(input_size, output_size, hidden_size)
+        self.actor_optim = optim.Adam(self.actor.parameters(), lr=lr)
+
+    def get_action(self, obs):
+        obs = torch.tensor(obs)
+        action_probs = self.actor(obs)
+        actions = torch.multinomial(action_probs, 1).squeeze(dim=-1)
+        return actions, F.log_softmax(action_probs)
+
+    def get_best_action(self, obs):
+        obs = torch.tensor(obs)
+        action_probs = self.actor(obs)
+        actions = torch.argmax(action_probs, dim=-1)
+        return actions

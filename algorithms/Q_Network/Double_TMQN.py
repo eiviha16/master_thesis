@@ -6,7 +6,7 @@ from tqdm import tqdm
 import random
 
 from algorithms.misc.replay_buffer import ReplayBuffer
-from algorithms.misc.plot_test_results import plot_test_results, feedback
+from algorithms.misc.plot_test_results import plot_test_results
 
 
 class TMQN:
@@ -24,7 +24,7 @@ class TMQN:
         self.epochs = config['epochs']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        self.dynamic_memory = config['dynamic_memory']
+        self.dynamic_memory = False#config['dynamic_memory']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
@@ -33,8 +33,10 @@ class TMQN:
         self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
-
-        self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+        if config['save']:
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+        else:
+            self.run_id = "unidentified_run"
         # self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
@@ -45,14 +47,15 @@ class TMQN:
                                   37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567,
                                   27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
                                   32088, 21418, 60590, 49736]
-
+        self.total_score = []
         self.save = config['save']
         self.best_scores = {'mean': 0, 'std': float('inf')}
         self.cur_mean = 0
         self.config = config
         self.save_path = ''
-        self.make_run_dir()
-        self.save_config()
+        if self.save:
+            self.make_run_dir()
+            self.save_config()
         self.announce()
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
@@ -72,8 +75,9 @@ class TMQN:
         self.save_path = os.path.join(base_dir, self.config["algorithm"], self.run_id)
 
     def save_config(self):
-        with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
-            yaml.dump(self.config, yaml_file, default_flow_style=False)
+        if self.save:
+            with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
+                yaml.dump(self.config, yaml_file, default_flow_style=False)
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
@@ -209,7 +213,8 @@ class TMQN:
                 self.train()
                 self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
-        plot_test_results(self.save_path, text={'title': 'Double TMQN'})
+        if self.save:
+            plot_test_results(self.save_path, text={'title': 'Double TMQN'})
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
@@ -229,9 +234,9 @@ class TMQN:
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
+        self.total_score.append(mean)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
         self.exploration_prob = exploration_prob
@@ -250,29 +255,32 @@ class TMQN:
             pass
 
     def save_results(self, mean, std, nr_of_steps):
-        file_name = 'test_results.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, file_name))
+        if self.save:
+            file_name = 'test_results.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
-        with open(os.path.join(self.save_path, file_name), "a") as file:
-            if not file_exists:
-                file.write("mean,std, steps\n")
-            file.write(f"{mean},{std},{nr_of_steps}\n")
+            with open(os.path.join(self.save_path, file_name), "a") as file:
+                if not file_exists:
+                    file.write("mean,std, steps\n")
+                file.write(f"{mean},{std},{nr_of_steps}\n")
 
     def save_actions(self, actions, nr_of_steps):
-        file_name = 'actions.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, file_name))
+        if self.save:
+            file_name = 'actions.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
-        with open(os.path.join(self.save_path, file_name), "a") as file:
-            if not file_exists:
-                file.write("tm1,tm2,steps\n")
-            file.write(f"{actions[0]},{actions[1]},{nr_of_steps}\n")
+            with open(os.path.join(self.save_path, file_name), "a") as file:
+                if not file_exists:
+                    file.write("tm1,tm2,steps\n")
+                file.write(f"{actions[0]},{actions[1]},{nr_of_steps}\n")
 
     def save_q_vals(self, nr_of_steps):
-        folder_name = 'q_values'
-        path = os.path.join(self.save_path, folder_name)
-        formatted_q_vals = [f"{q1},{q1}\n" for q1, q2 in zip(self.q_values['q1'], self.q_values['q2'])]
-        if not os.path.exists(path):
-            os.makedirs(path)
-        with open(os.path.join(path, str(nr_of_steps)), "a") as file:
-            file.write('q1,q2\n')
-            file.writelines(formatted_q_vals)
+        if self.save:
+            folder_name = 'q_values'
+            path = os.path.join(self.save_path, folder_name)
+            formatted_q_vals = [f"{q1},{q1}\n" for q1, q2 in zip(self.q_values['q1'], self.q_values['q2'])]
+            if not os.path.exists(path):
+                os.makedirs(path)
+            with open(os.path.join(path, str(nr_of_steps)), "a") as file:
+                file.write('q1,q2\n')
+                file.writelines(formatted_q_vals)

@@ -1,0 +1,53 @@
+{
+    "os": "Windows-10-10.0.22631-SP0",
+    "python": "3.10.0",
+    "heartbeatAt": "2024-02-06T23:49:09.383742",
+    "startedAt": "2024-02-06T23:49:08.555489",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\hagtv\\Desktop\\IKT590-master_project\\master_thesis\\hyperparameter_search.py",
+    "codePathLocal": "hyperparameter_search.py",
+    "codePath": "hyperparameter_search.py",
+    "git": {
+        "remote": "https://github.com/eiviha16/master_thesis.git",
+        "commit": "eccb009097a1360e1f06f29042314a17717ed698"
+    },
+    "email": "eiviha16@uia.no",
+    "root": "C:/Users/hagtv/Desktop/IKT590-master_project/master_thesis",
+    "host": "LAPTOP-U4CTV7DM",
+    "username": "hagtv",
+    "executable": "C:\\Users\\hagtv\\Desktop\\IKT590-master_project\\master_thesis\\venv\\Scripts\\python.exe",
+    "cpu_count": 24,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 1466.0,
+        "min": 0.0,
+        "max": 2200.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1466.0,
+            "min": 0.0,
+            "max": 2200.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 951.6455039978027,
+            "used": 793.3707237243652
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+            "memory_total": 8585740288
+        }
+    ],
+    "memory": {
+        "total": 15.745964050292969
+    }
+}

@@ -40,9 +40,11 @@ def test_policy(save_file, policy):
     print(f'Actions: {actions}')
 
     with open(save_file, 'w') as file:
-        file.write(episode_rewards)
+        # Iterate through the list and write each value to a new line
+        for reward in episode_rewards:
+            file.write(str(reward) + "\n")
 
 if __name__ == '__main__':
-    file = './results/PPO/run_38/best_model'
+    file = './results/PPO/run_65/best_model'
     model = torch.load(file)
-    test_policy(model.actor)
+    test_policy('./results/PPO/run_65/final_test_results', model.actor)
