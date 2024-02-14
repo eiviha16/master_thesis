@@ -67,7 +67,7 @@ class VPG:
                 break
 
     def evaluate_actions(self):
-        actions, log_probs = self.policy.get_action(self.batch.obs)
+        actions, log_probs = self.policy.get_action(self.batch.cur_obs)
         return actions, log_probs
 
     def calculate_loss(self):

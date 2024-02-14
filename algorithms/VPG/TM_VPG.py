@@ -1,9 +1,10 @@
 import numpy as np
 import os
 import yaml
-from algorithms.misc.batch_buffer import Batch_VPG as Batch
+from algorithms.misc.batch_buffer import Batch_TM_VPG as Batch
 import torch
 from tqdm import tqdm
+import random
 
 
 class VPG:
@@ -12,11 +13,13 @@ class VPG:
         self.action_space_size = env.action_space.n.size
         self.obs_space_size = env.observation_space.shape[0]
         self.gamma = config['gamma']
-        self.policy = Policy(self.obs_space_size, self.action_space_size, config['hidden_size'],
-                             config['learning_rate'])
+        self.policy = Policy(config)
         self.batch = Batch(config['batch_size'])
+        # self.exploration_prob = config['exploration_prob_init']
+        # self.exploration_prob_decay = config['exploration_prob_decay']
 
         self.epochs = config['epochs']
+        self.config = config
 
         # self.test_random_seeds = [random.randint(1, 100000) for _ in range(100)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
@@ -38,6 +41,7 @@ class VPG:
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -58,33 +62,82 @@ class VPG:
             self.batch.discounted_rewards.insert(0, discounted_reward)
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=42)
+        cur_obs, _ = self.env.reset(seed=42)
         while True:
-            action, log_prob = self.policy.get_action(obs)
-            obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
-            self.batch.save_experience(action, log_prob[action], obs, reward, done)
+            cur_action, prob, q_vals = self.policy.get_action(cur_obs)
+            next_obs, reward, done, truncated, _ = self.env.step(cur_action)
+            self.batch.save_experience(cur_action, prob, q_vals, cur_obs, next_obs, reward, done)
             if done or truncated:
                 break
+            cur_obs = next_obs
+    #u
+    def temporal_difference(self, next_q_vals):
+        return np.array(self.batch.sampled_rewards) + (
+                1 - np.array(self.batch.sampled_dones)) * self.gamma * next_q_vals
 
-    def evaluate_actions(self):
-        actions, log_probs = self.policy.get_action(self.batch.obs)
-        return actions, log_probs
+    def get_actor_update(self, actions, target_q_vals):
 
-    def calculate_loss(self):
-        return -(self.batch.action_log_prob * self.batch.discounted_rewards).mean()
+        tm = [{'observations': [], 'feedback': [], 'feedback_probs': []},
+              {'observations': [], 'feedback': [], 'feedback_probs': []}]
+        q_vals = self.policy.target_critic.predict_q_vals(np.array(self.batch.sampled_cur_obs))
+
+        for index, action in enumerate(actions):
+            #predict Q-vals by obs-sample
+            feedback = 1 if q_vals[index][action] > target_q_vals[index] else 2
+            feedback_prob = 1.0 * (abs(q_vals[index][action] - target_q_vals[index]) / (self.config['critic']['y_max'] - self.config['critic']['y_min']))
+            tm[action]['feedback'].append(feedback)
+            tm[action]['feedback_probs'].append(feedback_prob)
+            tm[action]['observations'].append(self.batch.sampled_cur_obs[index])
+        return tm
+
+    def get_q_val_for_action(self, actions, q_values):
+        q_vals = []
+        for index, action in enumerate(actions):
+            q_vals.append(q_values[index][action])
+        return np.array(q_vals)
+
+    def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
+
+        tms = [{'observations': [], 'target': []}, {'observations': [], 'target': []}]
+        # actions = self.replay_buffer.sampled_actions
+        for index, action in enumerate(actions):
+            tms[action]['observations'].append(self.batch.sampled_cur_obs[index])
+            tms[action]['target'].append(target_q_vals[index])
+
+        return tms
 
     def train(self):
-        actor_loss = self.calculate_loss()
-        self.policy.actor_optim.zero_grad()
-        actor_loss.backward()
-        self.policy.actor_optim.step()
+        for epoch in range(self.epochs):
+            self.batch.sample()
+            next_q_vals = self.policy.evaluation_critic.predict_q_vals(
+                np.array(self.batch.sampled_next_obs))  # next_obs?
+            next_q_vals = self.get_q_val_for_action(self.batch.sampled_actions, next_q_vals)
+
+            # calculate target q vals
+            target_q_vals = self.temporal_difference(next_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(self.batch.sampled_actions, target_q_vals)
+
+            #self.policy.target_critic.update_q_vals([{'observations': self.batch.sampled_cur_obs,
+            #                                          'actions': self.batch.sampled_actions, 'target': target_q_vals}])
+
+            actor_tm_feedback = self.get_actor_update(self.batch.sampled_actions, target_q_vals)
+            self.policy.actor.update_3(actor_tm_feedback)
+            self.policy.target_critic.update(critic_update)
+
+        if self.config['soft_update_type'] == 'soft_update_1':
+            self.soft_update_1(self.policy.target_critic.tms[0], self.policy.evaluation_critic.tms[0])
+            self.soft_update_1(self.policy.target_critic.tms[1], self.policy.evaluation_critic.tms[1])
+        else:
+            self.soft_update_2(self.policy.target_critic.tms[0], self.policy.evaluation_critic.tms[0])
+            self.soft_update_2(self.policy.target_critic.tms[1], self.policy.evaluation_critic.tms[1])
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             self.rollout()
-            self.calculate_discounted_rewards()
-            self.normalize_discounted_rewards()
-            self.batch.convert_to_tensor()
+            # self.calculate_discounted_rewards()
+            # self.normalize_discounted_rewards()
+            self.batch.convert_to_numpy()
 
             self.train()
             self.test()
@@ -98,7 +151,7 @@ class VPG:
             obs, _ = self.env.reset(seed=seed)
             while True:
                 action = self.policy.get_best_action(obs)
-                obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
+                obs, reward, done, truncated, _ = self.env.step(action[0])
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
@@ -113,8 +166,12 @@ class VPG:
             print(f'New best mean: {mean}!')
         self.save_model('last_model')
 
-    def save_model(self, file_name):
-        torch.save(self.policy, os.path.join(self.save_path, file_name))
+    def save_model(self, best_model):
+        if best_model:
+            self.policy.actor.tms[0].save_state()
+            self.policy.actor.tms[1].save_state()
+        else:
+            pass
 
     def save_results(self, mean, std):
         file_name = 'test_results.csv'
@@ -124,6 +181,34 @@ class VPG:
             if not file_exists:
                 file.write("mean,std\n")
             file.write(f"{mean},{std}\n")
+
+    def soft_update_2(self, target_tm, evaluation_tm):
+        if self.cur_episode % self.config['update_freq'] == 0:
+            target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
+            eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
+            for i in range(len(target_ta_state)):
+                for j in range(len(target_ta_state[i])):
+                    for k in range(len(target_ta_state[i][j])):
+                        if target_ta_state[i][j][k] > eval_ta_state[i][j][k]:
+                            eval_ta_state[i][j][k] += 1
+                        if target_ta_state[i][j][k] < eval_ta_state[i][j][k]:
+                            eval_ta_state[i][j][k] -= 1
+            evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
+
+    def soft_update_1(self, target_tm, evaluation_tm):
+        target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
+        eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
+        nr_of_clauses = len(list(target_clause_sign))
+        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.update_grad))
+        for clause in clauses_to_update:
+            eval_clause_sign[clause] = target_clause_sign[clause]
+            eval_clause_output[clause] = target_clause_output[clause]
+            eval_feedback_to_clauses[clause] = target_feedback_to_clauses[clause]
+            for i in range(len(target_ta_state[clause])):
+                for j in range(len(target_ta_state[clause][i])):
+                    eval_ta_state[clause][i][j] = target_ta_state[clause][i][j]
+
+        evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
     def make_run_dir(self, algorithm):
         base_dir = './results'

@@ -78,6 +78,16 @@ class PPO:
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
             tm[idx]['advantages'].append(self.batch.advantages[i])
             tm[idx]['entropy'].append(self.batch.entropies[i][idx])
+            """            if idx == 1:
+                tm[0]['observations'].append(self.batch.obs[i])
+                tm[0]['target'].append(self.batch.action_log_prob[i][idx])
+                tm[0]['advantages'].append(-self.batch.advantages[i])
+                tm[0]['entropy'].append(self.batch.entropies[i][idx])
+            else:
+                tm[1]['observations'].append(self.batch.obs[i])
+                tm[1]['target'].append(self.batch.action_log_prob[i][idx])
+                tm[1]['advantages'].append(-self.batch.advantages[i])
+                tm[1]['entropy'].append(self.batch.entropies[i][idx])"""
         return tm
 
     def get_update_data_critic(self):
@@ -85,7 +95,10 @@ class PPO:
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
+            #tm[idx]['target'].append(self.batch.advantages[i] - self.batch.values[i, 0, 0])
             tm[idx]['target'].append(self.batch.rewards[i])
+            # return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages - self.batch.sampled_values).to(dtype=torch.float32), values)
+
         return tm
 
     def train(self):
