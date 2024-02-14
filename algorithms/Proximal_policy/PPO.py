@@ -33,6 +33,7 @@ class PPO:
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -101,6 +102,7 @@ class PPO:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             self.rollout()
             self.calculate_advantage()
             self.normalize_advantages()
@@ -116,12 +118,13 @@ class PPO:
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
             while True:
-                action = self.policy.get_best_action(obs)
+                action, probs = self.policy.get_best_action(obs)
                 obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-
+                if episode == 1:
+                    self.save_probs(probs)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.save_results(mean, std)
@@ -143,7 +146,17 @@ class PPO:
             if not file_exists:
                 file.write("mean,std\n")
             file.write(f"{mean},{std}\n")
+    def save_probs(self, probs):
+        folder_name = 'action_probabilities'
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
 
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{probs[0]}, {probs[1]}\n")
     def make_run_dir(self, algorithm):
         base_dir = './results'
         if not os.path.exists(base_dir):

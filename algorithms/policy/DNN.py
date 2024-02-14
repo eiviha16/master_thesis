@@ -103,7 +103,7 @@ class ActorCriticPolicy:
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
         actions = torch.argmax(action_probs, dim=-1)
-        return actions
+        return actions, action_probs
 
 
 class ActorPolicy:
@@ -121,4 +121,4 @@ class ActorPolicy:
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
         actions = torch.argmax(action_probs, dim=-1)
-        return actions
+        return actions, action_probs

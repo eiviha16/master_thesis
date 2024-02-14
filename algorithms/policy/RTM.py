@@ -52,11 +52,10 @@ class Policy():
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        vals = vals[:20]
         _ = self.tm1.fit(vals,
-                         np.array([random.randint(0, 60) for _ in range(len(vals[:100]))]).astype(dtype=np.float32))
+                         np.array([random.randint(0, 60) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
         _ = self.tm2.fit(vals,
-                         np.array([random.randint(0, 60) for _ in range(len(vals[:100]))]).astype(dtype=np.float32))
+                         np.array([random.randint(0, 60) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_1_input, tm_2_input):
         # take a list for each tm that is being updated.
@@ -116,7 +115,6 @@ class TMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        vals = vals[:20]
         for tm in self.tms:
             tm.fit(vals,
                    np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
@@ -183,7 +181,6 @@ class TMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        vals = vals[:20]
         for tm in self.tms:
             tm.fit(vals,
                    np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
@@ -241,7 +238,7 @@ class ActorCriticPolicy:
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)
         actions = np.argmax(action_probs, axis=-1)
-        return actions
+        return actions, action_probs
 
 
 ##########################################################################################################
@@ -381,7 +378,7 @@ class ActorCriticPolicy2:
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)
         actions = np.argmax(action_probs, axis=-1)
-        return actions
+        return actions, action_probs
 
 
 # policy gradient
