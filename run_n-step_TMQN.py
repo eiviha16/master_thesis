@@ -19,7 +19,7 @@ env = gym.make("CartPole-v1")
 
 agent = TMQN(env, Policy, config)
 # agent.learn(nr_of_episodes=10000)
-agent.learn(nr_of_episodes=10000)
+agent.learn(nr_of_episodes=2)
 
 from test_policy import test_policy
 
@@ -27,6 +27,14 @@ from test_policy import test_policy
 #test_policy(agent.current_policy)
 save_file = f'results/n_step_TMQN/{agent.run_id}/final_test_results'
 
-agent.policy.tm1.set_state()
-agent.policy.tm2.set_state()
+#agent.policy.tm1.set_state()
+#agent.policy.tm2.set_state()
+
+save_file = f'results/n_step_TMQN/{agent.run_id}'
+
+tms = torch.load(f'results/n_step_TMQN/{agent.run_id}/best')
+
+agent.policy.tm1.set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
+agent.policy.tm2.set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
+
 test_policy(save_file, agent.policy)

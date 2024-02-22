@@ -82,7 +82,9 @@ class PPO:
 
     def calculate_critic_loss(self, values):
         #return F.mse_loss(torch.from_numpy(self.batch.sampled_rewards).to(dtype=torch.float32), values.squeeze(-1))
-        return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages - self.batch.sampled_values).to(dtype=torch.float32), values)
+        if self.best_score == 500.0:
+            print(self.batch.sampled_advantages + self.batch.sampled_values)
+        return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages + self.batch.sampled_values).to(dtype=torch.float32), values)
         #return F.mse_loss(torch.from_numpy(np.array(self.batch.sampled_discounted_rewards)).to(dtype=torch.float32), values.squeeze(-1))
 
     def train(self):

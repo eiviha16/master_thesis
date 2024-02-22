@@ -96,8 +96,11 @@ class PPO:
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
-            #tm[idx]['target'].append(self.batch.advantages[i] - self.batch.values[i, 0, 0])
-            tm[idx]['target'].append(self.batch.rewards[i])
+            tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
+            #tm[idx]['target'].append(self.batch.rewards[i])
+
+        #print(self.batch.advantages[0] + self.batch.values[0, 0, 0])
+            #tm[idx]['target'].append(self.batch.rewards[i])
             # return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages - self.batch.sampled_values).to(dtype=torch.float32), values)
 
         return tm
@@ -132,8 +135,9 @@ class PPO:
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-            if episode == 1:
-                self.save_probs(probs)
+                if episode == 1:
+                    self.save_probs(probs)
+
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.save_results(mean, std)
@@ -148,6 +152,24 @@ class PPO:
         if best_model:
             self.policy.actor.tms[0].save_state()
             self.policy.actor.tms[1].save_state()
+            tms = []
+            for tm in range(len(self.policy.actor.tms)):
+                ta_state, clause_sign, clause_output, feedback_to_clauses = self.policy.actor.tms[tm].get_params()
+                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+                clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
+                clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
+                feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+
+                for i in range(len(ta_state)):
+                    for j in range(len(ta_state[i])):
+                        for k in range(len(ta_state[i][j])):
+                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
+                    clause_sign_save[i] = int(clause_sign[i])
+                    clause_output_save[i] = int(clause_output[i])
+                    feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
+                tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+            torch.save(tms, os.path.join(self.save_path, 'best'))
+
         else:
             pass
 

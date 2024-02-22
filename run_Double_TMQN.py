@@ -25,7 +25,13 @@ agent.learn(nr_of_episodes=10_000)
 from test_policy import test_policy
 
 #test_policy(agent.policy)
-agent.target_policy.tm1.set_state()
-agent.target_policy.tm2.set_state()
-save_file = f'results/Double_TMQN/{agent.run_id}/final_test_results'
+#agent.target_policy.tm1.set_state()
+#agent.target_policy.tm2.set_state()
+
+tms = torch.load(f'results/Double_TMQN/{agent.run_id}/best')
+
+agent.target_policy.tm1.set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
+agent.target_policy.tm2.set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
+
+save_file = f'results/Double_TMQN/{agent.run_id}'
 test_policy(save_file, agent.target_policy)

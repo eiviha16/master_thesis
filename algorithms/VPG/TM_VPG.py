@@ -150,11 +150,13 @@ class VPG:
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
             while True:
-                action = self.policy.get_best_action(obs)
+                action, probs = self.policy.get_best_action(obs)
                 obs, reward, done, truncated, _ = self.env.step(action[0])
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
+                if episode == 1:
+                    self.save_probs(probs)
 
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
@@ -163,13 +165,31 @@ class VPG:
         if mean > self.best_score:
             self.save_model('best_model')
             self.best_score = mean
-            print(f'New best mean: {mean}!')
+            #print(f'New best mean: {mean}!')
         self.save_model('last_model')
 
     def save_model(self, best_model):
         if best_model:
             self.policy.actor.tms[0].save_state()
             self.policy.actor.tms[1].save_state()
+            tms = []
+            for tm in range(len(self.policy.actor.tms)):
+                ta_state, clause_sign, clause_output, feedback_to_clauses = self.policy.actor.tms[tm].get_params()
+                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+                clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
+                clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
+                feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+
+                for i in range(len(ta_state)):
+                    for j in range(len(ta_state[i])):
+                        for k in range(len(ta_state[i][j])):
+                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
+                    clause_sign_save[i] = int(clause_sign[i])
+                    clause_output_save[i] = int(clause_output[i])
+                    feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
+                tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+            torch.save(tms, os.path.join(self.save_path, 'best'))
+
         else:
             pass
 
@@ -219,3 +239,14 @@ class VPG:
         if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
             os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
         self.save_path = os.path.join(base_dir, algorithm, self.run_id)
+    def save_probs(self, probs):
+        folder_name = 'action_probabilities'
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{probs[0][0]}, {probs[0][1]}\n")
