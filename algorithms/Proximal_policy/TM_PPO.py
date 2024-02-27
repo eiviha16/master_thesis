@@ -31,6 +31,7 @@ class PPO:
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -78,6 +79,16 @@ class PPO:
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
             tm[idx]['advantages'].append(self.batch.advantages[i])
             tm[idx]['entropy'].append(self.batch.entropies[i][idx])
+            """            if idx == 1:
+                tm[0]['observations'].append(self.batch.obs[i])
+                tm[0]['target'].append(self.batch.action_log_prob[i][idx])
+                tm[0]['advantages'].append(-self.batch.advantages[i])
+                tm[0]['entropy'].append(self.batch.entropies[i][idx])
+            else:
+                tm[1]['observations'].append(self.batch.obs[i])
+                tm[1]['target'].append(self.batch.action_log_prob[i][idx])
+                tm[1]['advantages'].append(-self.batch.advantages[i])
+                tm[1]['entropy'].append(self.batch.entropies[i][idx])"""
         return tm
 
     def get_update_data_critic(self):
@@ -85,23 +96,25 @@ class PPO:
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
-            tm[idx]['target'].append(self.batch.rewards[i])
+            tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
+            #tm[idx]['target'].append(self.batch.rewards[i])
+
+        #print(self.batch.advantages[0] + self.batch.values[0, 0, 0])
+            #tm[idx]['target'].append(self.batch.rewards[i])
+            # return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages - self.batch.sampled_values).to(dtype=torch.float32), values)
+
         return tm
 
     def train(self):
         for _ in range(self.epochs):
             actor_update = self.get_update_data_actor()
             self.policy.actor.update_2(actor_update)
-            # self.policy.actor.tm1.fit_2(actor_update[0]['x'], actor_update[0]['y'], actor_update[0]['advantages'])
-            # self.policy.actor.tm2.fit_2(actor_update[1]['x'], actor_update[1]['y'], actor_update[1]['advantages'])
 
             critic_update = self.get_update_data_critic()
             self.policy.critic.update(critic_update)
-            # self.policy.critic.tm1.fit(critic_update[0]['x'], critic_update[0]['y'])
-            # self.policy.critic.tm2.fit(critic_update[1]['x'], critic_update[1]['y'])
-
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             self.rollout()
             self.calculate_advantage()
             self.normalize_advantages()
@@ -117,11 +130,13 @@ class PPO:
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
             while True:
-                action = self.policy.get_best_action(obs)
+                action, probs = self.policy.get_best_action(obs)
                 obs, reward, done, truncated, _ = self.env.step(action[0])
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
+                if episode == 1:
+                    self.save_probs(probs)
 
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
@@ -137,6 +152,24 @@ class PPO:
         if best_model:
             self.policy.actor.tms[0].save_state()
             self.policy.actor.tms[1].save_state()
+            tms = []
+            for tm in range(len(self.policy.actor.tms)):
+                ta_state, clause_sign, clause_output, feedback_to_clauses = self.policy.actor.tms[tm].get_params()
+                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+                clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
+                clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
+                feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+
+                for i in range(len(ta_state)):
+                    for j in range(len(ta_state[i])):
+                        for k in range(len(ta_state[i][j])):
+                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
+                    clause_sign_save[i] = int(clause_sign[i])
+                    clause_output_save[i] = int(clause_output[i])
+                    feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
+                tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+            torch.save(tms, os.path.join(self.save_path, 'best'))
+
         else:
             pass
 
@@ -158,3 +191,15 @@ class PPO:
         if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
             os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
         self.save_path = os.path.join(base_dir, algorithm, self.run_id)
+
+    def save_probs(self, probs):
+        folder_name = 'action_probabilities'
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{probs[0][0]}, {probs[0][1]}\n")

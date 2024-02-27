@@ -14,7 +14,7 @@ class PPO:
         self.obs_space_size = env.observation_space.shape[0]
 
         self.policy = Policy(self.obs_space_size, self.action_space_size, config['hidden_size'], config['learning_rate'])
-        self.batch = Batch()
+        self.batch = Batch(config['batch_size'])
 
         self.gamma = config['gamma']
         self.lam = config['lam']
@@ -33,6 +33,7 @@ class PPO:
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -44,12 +45,14 @@ class PPO:
     def calculate_advantage(self):
         advantage = 0
         next_value = 0
+        discounted_reward = 0
         for i in reversed(range(len(self.batch.actions))):
             dt = self.batch.rewards[i] + self.gamma * next_value - self.batch.values[i]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
             next_value = self.batch.values[i]
-
             self.batch.advantages.insert(0, advantage)
+            discounted_reward = self.batch.rewards[i] + self.gamma * discounted_reward
+            self.batch.discounted_rewards.insert(0, discounted_reward)
 
     def normalize_advantages(self):
         advantages = np.array(self.batch.advantages)
@@ -67,21 +70,26 @@ class PPO:
         self.batch.convert_to_numpy()
 
     def evaluate_actions(self):
-        actions, values, log_probs = self.policy.get_action(self.batch.obs)
+        actions, values, log_probs = self.policy.get_action(self.batch.sampled_obs)
         return actions, values, log_probs
 
     def calculate_actor_loss(self, log_prob):
-        ratio = torch.exp(log_prob - torch.from_numpy(self.batch.action_log_prob))
-        actor_loss = torch.from_numpy(self.batch.advantages) * ratio
-        clipped_actor_loss = torch.from_numpy(self.batch.advantages) * torch.clamp(ratio, 1 - self.clip_range, 1 + self.clip_range)
+        ratio = torch.exp(log_prob - torch.from_numpy(self.batch.sampled_action_log_prob))
+        actor_loss = torch.from_numpy(self.batch.sampled_advantages) * ratio
+        clipped_actor_loss = torch.from_numpy(self.batch.sampled_advantages) * torch.clamp(ratio, 1 - self.clip_range, 1 + self.clip_range)
         actor_loss = - torch.min(actor_loss, clipped_actor_loss).mean()
         return actor_loss
 
     def calculate_critic_loss(self, values):
-        return F.mse_loss(torch.from_numpy(self.batch.rewards).to(dtype=torch.float32), values.squeeze(-1))
+        #return F.mse_loss(torch.from_numpy(self.batch.sampled_rewards).to(dtype=torch.float32), values.squeeze(-1))
+        if self.best_score == 500.0:
+            print(self.batch.sampled_advantages + self.batch.sampled_values)
+        return F.mse_loss(torch.from_numpy(self.batch.sampled_advantages + self.batch.sampled_values).to(dtype=torch.float32), values)
+        #return F.mse_loss(torch.from_numpy(np.array(self.batch.sampled_discounted_rewards)).to(dtype=torch.float32), values.squeeze(-1))
 
     def train(self):
         for _ in range(self.epochs):
+            self.batch.sample()
             _, values, log_prob = self.evaluate_actions()
             actor_loss = self.calculate_actor_loss(log_prob)
             critic_loss = self.calculate_critic_loss(values)
@@ -96,6 +104,7 @@ class PPO:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             self.rollout()
             self.calculate_advantage()
             self.normalize_advantages()
@@ -111,12 +120,13 @@ class PPO:
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
             while True:
-                action = self.policy.get_best_action(obs)
+                action, probs = self.policy.get_best_action(obs)
                 obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-
+                if episode == 1:
+                    self.save_probs(probs)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.save_results(mean, std)
@@ -138,7 +148,17 @@ class PPO:
             if not file_exists:
                 file.write("mean,std\n")
             file.write(f"{mean},{std}\n")
+    def save_probs(self, probs):
+        folder_name = 'action_probabilities'
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
 
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{probs[0]}, {probs[1]}\n")
     def make_run_dir(self, algorithm):
         base_dir = './results'
         if not os.path.exists(base_dir):

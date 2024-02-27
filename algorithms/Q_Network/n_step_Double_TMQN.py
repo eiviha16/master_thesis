@@ -4,7 +4,7 @@ import os
 import yaml
 from tqdm import tqdm
 import random
-
+from copy import deepcopy
 from algorithms.misc.replay_buffer import ReplayBuffer
 from algorithms.misc.plot_test_results import plot_test_results
 
@@ -14,6 +14,7 @@ class TMQN:
         self.env = env
         self.action_space_size = env.action_space.n.size
         self.obs_space_size = env.observation_space.shape[0]
+
         self.target_policy = Policy(config)
         self.evaluation_policy = Policy(config)
 
@@ -24,20 +25,19 @@ class TMQN:
         self.epochs = config['epochs']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        self.dynamic_memory = False#config['dynamic_memory']
+        self.update_grad = config['update_grad']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
-        self.update_grad = config['update_grad']
 
-        self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
+        self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size, n=config['n_steps'])
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
+        self.cur_episode = 0
         if config['save']:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
-            self.run_id = "unidentified_run"
-        # self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
+            self.run_id = "unidentified_run"  # self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
                                   73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852,
@@ -47,7 +47,7 @@ class TMQN:
                                   37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567,
                                   27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
                                   32088, 21418, 60590, 49736]
-        self.total_score = []
+
         self.save = config['save']
         self.best_scores = {'mean': 0, 'std': float('inf')}
         self.cur_mean = 0
@@ -57,9 +57,9 @@ class TMQN:
             self.make_run_dir()
             self.save_config()
         self.announce()
+        self.prev_feedback = {'tm1': [0, 0], 'tm2': [0, 0]}
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
-        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -92,58 +92,20 @@ class TMQN:
         return np.array(self.replay_buffer.sampled_rewards) + (
                 1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
+    def n_step_temporal_difference(self, next_q_vals):
+        target_q_vals = []
+        for i in range(len(self.replay_buffer.sampled_rewards)):
+            target_q_val = 0
+            for j in range(len(self.replay_buffer.sampled_rewards[i])):
+                target_q_val += (self.gamma ** j) * self.replay_buffer.sampled_rewards[i][j]
+                if self.replay_buffer.sampled_dones[i][j]:
+                    break
+            target_q_val += (1 - self.replay_buffer.sampled_dones[i][j]) * (self.gamma ** j) * next_q_vals[i]
+            target_q_vals.append(target_q_val)
+        return target_q_vals
+
     def update_exploration_prob(self):
         self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
-
-    def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
-
-        tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
-        # actions = self.replay_buffer.sampled_actions
-        for index, action in enumerate(actions):
-            if action == 0:
-                tm_1_input['observations'].append(self.replay_buffer.sampled_cur_obs[index])
-                tm_1_input['target_q_vals'].append(target_q_vals[index])
-
-            elif action == 1:
-                tm_2_input['observations'].append(self.replay_buffer.sampled_cur_obs[index])
-                tm_2_input['target_q_vals'].append(target_q_vals[index])
-
-            else:
-                print('Error with get_q_val_for_action')
-
-        return tm_1_input, tm_2_input
-
-    def get_q_val_for_action(self, actions, q_values):
-        q_vals = []
-        for index, action in enumerate(actions):
-            q_vals.append(q_values[index][action])
-        return np.array(q_vals)
-
-    def train(self):
-        for epoch in range(self.epochs):
-            self.replay_buffer.clear_cache()
-            self.replay_buffer.sample()
-
-            #action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
-            # actions = np.argmax(action_q_vals, axis=1)
-            actions = np.argmax(action_q_vals, axis=1)
-
-            next_q_vals = self.evaluation_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
-            actions = np.argmax(next_q_vals, axis=1) #|
-            next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
-            #next_q_vals = self.get_q_val_for_action(self.replay_buffer.sampled_actions, next_q_vals)
-
-            # calculate target q vals
-            target_q_vals = self.temporal_difference(next_q_vals)
-            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
-
-            self.target_policy.update(tm_1_input, tm_2_input)
-        if self.config['soft_update_type'] == 'soft_update_1':
-            self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
-            self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
-        else:
-            self.soft_update_2(self.target_policy.tm1, self.evaluation_policy.tm1)
-            self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
@@ -173,6 +135,56 @@ class TMQN:
 
         evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
+    def get_q_val_and_obs_for_tm(self, target_q_vals):
+
+        tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
+        actions = self.replay_buffer.sampled_actions
+        for index, action in enumerate(actions):
+            if action[0] == 0:
+                tm_1_input['observations'].append(self.replay_buffer.sampled_cur_obs[index][0])
+                tm_1_input['target_q_vals'].append(target_q_vals[index])
+                #tm_1_input['target_q_vals'].append(target_q_vals[index][0])
+
+            elif action[0] == 1:
+                tm_2_input['observations'].append(self.replay_buffer.sampled_cur_obs[index][0])
+                tm_2_input['target_q_vals'].append(target_q_vals[index])
+                #tm_2_input['target_q_vals'].append(target_q_vals[index][0])
+            else:
+                print('Error with get_q_val_for_action')
+
+        return tm_1_input, tm_2_input
+
+    def get_q_val_for_action(self, actions, q_values):
+        q_vals = []
+        for index, action in enumerate(actions):
+            q_vals.append(q_values[index][action])
+        return np.array(q_vals)
+
+    def train(self):
+        for epoch in range(self.epochs):
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample_n_seq()
+
+            # calculate target_q_vals
+            sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
+            next_q_vals = self.evaluation_policy.predict(sampled_next_obs[:, -1, :])
+            actions = np.argmax(next_q_vals, axis=1) #|
+            next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
+
+            #next_q_vals = self.get_q_val_for_action(self.replay_buffer.sampled_actions, next_q_vals)
+
+            # calculate target q vals
+            target_q_vals = self.n_step_temporal_difference(next_q_vals)
+            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
+            self.target_policy.update(tm_1_input, tm_2_input)
+
+        if self.config['soft_update_type'] == 'soft_update_1':
+            self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
+            self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
+        else:
+            self.soft_update_2(self.target_policy.tm1, self.evaluation_policy.tm1)
+            self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
+
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
@@ -184,22 +196,12 @@ class TMQN:
                     self.config['nr_of_episodes'] = episode + 1
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
-                    if self.dynamic_memory:
-                        # if self.has_reached_threshold:
-                        intervals = 5
-                        max_score = 500
-
-                        new_memory_size = max(self.dynamic_memory_min_size, int(intervals * np.ceil(
-                            self.dynamic_memory_max_size / intervals * intervals * self.cur_mean / max_score / intervals)))
-
-                        self.target_policy.tm1.update_memory_size(new_memory_size)
-                        self.target_policy.tm2.update_memory_size(new_memory_size)
 
             cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
             episode_reward = 0
 
             while True:
-                action, q_vals = self.get_next_action(cur_obs)
+                action, _ = self.get_next_action(cur_obs)
                 actions[action] += 1
                 next_obs, reward, done, truncated, _ = self.env.step(action)
 
@@ -211,12 +213,12 @@ class TMQN:
 
                 if done or truncated:
                     break
-            if nr_of_steps >= self.batch_size:
+            if nr_of_steps - self.config['n_steps'] >= self.batch_size:
                 self.train()
                 self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
         if self.save:
-            plot_test_results(self.save_path, text={'title': 'Double TMQN'})
+            plot_test_results(self.save_path, text={'title': 'n-step Double TMQN'})
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
@@ -228,7 +230,7 @@ class TMQN:
         for episode in range(self.nr_of_test_episodes):
             self.q_values['q1'] = []
             self.q_values['q2'] = []
-            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
+            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 action, q_vals_ = self.get_next_action(obs)
                 self.nr_actions += 1
@@ -240,7 +242,6 @@ class TMQN:
                     self.save_q_vals(q_vals_)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
-        self.total_score.append(mean)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
         self.exploration_prob = exploration_prob
@@ -257,8 +258,8 @@ class TMQN:
             self.target_policy.tm2.save_state()
             tms = [self.target_policy.tm1, self.target_policy.tm2]
             tms_save = []
-            for tm in range(len(tms)):
-                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[0].get_params()
+            for n in range(len(tms)):
+                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[n].get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
                 clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
                 clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
@@ -271,7 +272,9 @@ class TMQN:
                     clause_sign_save[i] = int(clause_sign[i])
                     clause_output_save[i] = int(clause_output[i])
                     feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
-                tms_save.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+                tms_save.append(
+                    {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save,
+                     'feedback_to_clauses': feedback_to_clauses_save})
             torch.save(tms_save, os.path.join(self.save_path, 'best'))
 
         else:

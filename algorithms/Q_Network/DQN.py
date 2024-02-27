@@ -44,6 +44,7 @@ class DQN:
 
         self.observations = []
         self.announce()
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -74,7 +75,7 @@ class DQN:
             q_vals = self.policy.predict(cur_obs)
             self.q_values['q1'].append(q_vals[0])
             self.q_values['q2'].append(q_vals[1])
-        return torch.argmax(q_vals)
+        return torch.argmax(q_vals), q_vals
 
     def update_exploration_prob(self):
         self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
@@ -117,7 +118,7 @@ class DQN:
             episode_reward = 0
 
             while True:
-                action = self.get_next_action(cur_obs).numpy()#cpu().numpy()
+                action, _ = self.get_next_action(cur_obs).numpy()#cpu().numpy()
                 actions_nr[action] += 1
                 next_obs, reward, done, truncated, _ = self.env.step(action)
                 self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), nr_of_steps)
@@ -143,13 +144,13 @@ class DQN:
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 self.observations.append(obs)
-                action = self.get_next_action(obs).numpy()#.cpu().numpy()
-                obs, reward, done, truncated, _ = self.env.step(action)
+                action, q_vals_ = self.get_next_action(obs)#.numpy()#.cpu().numpy()
+                obs, reward, done, truncated, _ = self.env.step(action.numpy())
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-            if episode == 1:
-                self.save_q_vals(nr_of_steps)
+                if episode == 1:
+                    self.save_q_vals(q_vals_)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
 
@@ -176,12 +177,15 @@ class DQN:
                 file.write("mean,std,steps\n")
             file.write(f"{mean},{std},{nr_of_steps}\n")
 
-    def save_q_vals(self, nr_of_steps):
+    def save_q_vals(self, q_vals):
         folder_name = 'q_values'
-        path = os.path.join(self.save_path, folder_name)
-        formatted_q_vals = [f"{q1},{q1}\n" for q1, q2 in zip(self.q_values['q1'], self.q_values['q2'])]
-        if not os.path.exists(path):
-            os.makedirs(path)
-        with open(os.path.join(path, str(nr_of_steps)), "a") as file:
-            file.write('q1,q2\n')
-            file.writelines(formatted_q_vals)
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+

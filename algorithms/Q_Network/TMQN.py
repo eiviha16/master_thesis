@@ -46,6 +46,7 @@ class TMQN:
         self.announce()
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
+        self.cur_episode = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -71,7 +72,7 @@ class TMQN:
             q_vals = self.policy.predict(cur_obs)
             self.q_values['q1'].append(q_vals[0])
             self.q_values['q2'].append(q_vals[0])
-        return np.argmax(q_vals)
+        return np.argmax(q_vals), q_vals
 
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
@@ -123,6 +124,7 @@ class TMQN:
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             actions = [0, 0]
             if self.test_freq:
                 if episode % self.test_freq == 0:
@@ -145,7 +147,7 @@ class TMQN:
             episode_reward = 0
 
             while True:
-                action = self.get_next_action(cur_obs)
+                action, _ = self.get_next_action(cur_obs)
                 actions[action] += 1
                 next_obs, reward, done, truncated, _ = self.env.step(action)
 
@@ -175,13 +177,14 @@ class TMQN:
             self.q_values['q2'] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
             while True:
-                action = self.get_next_action(obs)
+                action, q_vals_ = self.get_next_action(obs)
                 self.nr_actions += 1
                 obs, reward, done, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-
+                if episode == 1:
+                    self.save_q_vals(q_vals_)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.cur_mean = mean
@@ -192,12 +195,31 @@ class TMQN:
             self.best_scores['mean'] = mean
             print(f'New best mean after {nr_of_steps} steps: {mean}!')
         self.save_model(False)
-        self.save_q_vals(nr_of_steps)
+        #self.save_q_vals(nr_of_steps)
 
     def save_model(self, best_model):
         if best_model:
             self.policy.tm1.save_state()
             self.policy.tm2.save_state()
+            tms = [self.policy.tm1, self.policy.tm2]
+            tms_save = []
+            for tm in range(len(tms)):
+                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[0].get_params()
+                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+                clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
+                clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
+                feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+
+                for i in range(len(ta_state)):
+                    for j in range(len(ta_state[i])):
+                        for k in range(len(ta_state[i][j])):
+                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
+                    clause_sign_save[i] = int(clause_sign[i])
+                    clause_output_save[i] = int(clause_output[i])
+                    feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
+                tms_save.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+            torch.save(tms_save, os.path.join(self.save_path, 'best'))
+
         else:
             pass
 
@@ -219,12 +241,14 @@ class TMQN:
                 file.write("tm1,tm2,steps\n")
             file.write(f"{actions[0]},{actions[1]},{nr_of_steps}\n")
 
-    def save_q_vals(self, nr_of_steps):
+    def save_q_vals(self, q_vals):
         folder_name = 'q_values'
-        path = os.path.join(self.save_path, folder_name)
-        formatted_q_vals = [f"{q1},{q1}\n" for q1, q2 in zip(self.q_values['q1'], self.q_values['q2'])]
-        if not os.path.exists(path):
-            os.makedirs(path)
-        with open(os.path.join(path, str(nr_of_steps)), "a") as file:
-            file.write('q1,q2\n')
-            file.writelines(formatted_q_vals)
+        file_name = f'{self.cur_episode}.csv'
+        if not os.path.exists(os.path.join(self.save_path, folder_name)):
+            os.makedirs(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+
+        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
+                file.write("actor_1,actor_2\n")
+            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
