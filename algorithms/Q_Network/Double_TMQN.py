@@ -124,7 +124,7 @@ class TMQN:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
-            #action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+            action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
             # actions = np.argmax(action_q_vals, axis=1)
             actions = np.argmax(action_q_vals, axis=1)
 
