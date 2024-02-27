@@ -60,6 +60,7 @@ class TMQN:
         self.prev_feedback = {'tm1': [0, 0], 'tm2': [0, 0]}
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
+        self.total_score = []
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -250,6 +251,7 @@ class TMQN:
             self.best_scores['mean'] = mean
             print(f'New best mean after {nr_of_steps} steps: {mean}!')
         self.save_model(False)
+        self.total_score.append(mean)
         #self.save_q_vals(nr_of_steps)
 
     def save_model(self, best_model):
