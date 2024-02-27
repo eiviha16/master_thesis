@@ -45,7 +45,7 @@ def test_policy(save_file, policy):
         while True:
             try:
                 action_val = policy.predict(obs)
-                action = np.argmax(action_val)
+                action = np.argmax(action_val[0])
                 obs, reward, done, truncated, _ = env.step(action)
                 save_action_vals(save_file, episode, action_val[0])
 

@@ -16,8 +16,8 @@ def objective(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.TM_PPO import PPO
-    from algorithms.policy.RTM import ActorCriticPolicy as Policy
+    from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     """_config = {
         'soft_update_type': 'soft_update_2', 'algorithm': 'Double_TMQN', 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.threshold),
@@ -26,29 +26,29 @@ def objective(config):
         'batch_size': 64, 'epochs': 1, 'test_freq': 5, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': 0.05, 'update_freq': config.update_freq}
     """
-    """actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
-             's': config.a_specificity, 'y_max': 2, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False,
+    actor = {'nr_of_classes': 2, 'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
+             's': config.a_specificity, 'device': 'CPU', 'weighted_clauses': False,
              'bits_per_feature': config.a_bits_per_feature, "seed": 42, 'number_of_state_bits_ta': config.a_number_of_state_bits_ta}
     critic = {'nr_of_clauses': config.c_nr_of_clauses, 'T': int(config.c_nr_of_clauses * config.c_t), 's': config.c_specificity, 'y_max': config.c_y_max, 'y_min': config.c_y_min, 'device': 'CPU',
               'weighted_clauses': False, 'bits_per_feature': config.c_bits_per_feature, "seed": 42, 'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
-    _config = {'algorithm': 'TM_DDPG', 'soft_update_type': 'soft_update_2', 'update_freq': config.update_freq, 'gamma': config.gamma,
+    _config = {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'update_freq': config.update_freq, 'gamma': config.gamma,
                'actor': actor, 'critic': critic, 'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True}
-"""
-    _config = {'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.t), 's': config.specificity,
+
+    """    _config = {'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.t), 's': config.specificity,
               'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
               'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': config.number_of_state_bits_ta}
-
+    """
     env = gym.make("CartPole-v1")
 
-    agent = PPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=200)
+    agent = DDPG(env, Policy, _config)
+    agent.learn(nr_of_episodes=500)
     scores = np.array(agent.best_score)
     score = np.mean(scores)
     return score
 
 
 def main():
-    wandb.init(project="PPO-TM")
+    wandb.init(project="TM_DDPG_2")
     score = objective(wandb.config)
     wandb.log({"score": score})
 
@@ -61,18 +61,27 @@ sweep_configuration = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
-        "gamma": {"max": 1.00, "min": 0.95},
-        "lam": {"max": 1.00, "min": 0.95},
-        "t": {"max": 1.0, "min": 0.1},
-        "nr_of_clauses": {"max": 1250, "min": 800},
-        "specificity": {"max": 10.0, "min": 1.0},
-        "bits_per_feature": {"max": 15, "min": 5},
-        "number_of_state_bits_ta": {"max": 10, "min": 3},
+        "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
+        "update_freq": {"values": list(range(3, 8, 1))},
 
+        "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "a_nr_of_clauses": {"values": list(range(800, 1200, 20))},
+        "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
+        "a_bits_per_feature": {"values": list(range(5, 15, 1))},
+        "a_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
+
+        "c_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "c_nr_of_clauses": {"values": list(range(800, 2000, 50))},
+        "c_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
+        "c_bits_per_feature": {"values": list(range(5, 15, 1))},
+        "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
+
+        "c_y_max": {"values": list(range(60, 80, 5))},
+        "c_y_min": {"values": list(range(20, 40, 5))}
     }
 }
 
-sweep_id = wandb.sweep(sweep=sweep_configuration, project="PPO-TM")
+sweep_id = wandb.sweep(sweep=sweep_configuration, project="TM_DDPG_2")
 wandb.agent(sweep_id, function=main, count=10_000)
 
 #DDPG

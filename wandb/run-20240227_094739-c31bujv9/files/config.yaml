@@ -1,0 +1,70 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.0
+    cli_version: 0.16.3
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1709023659.913539
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 55
+      3:
+      - 2
+      - 23
+      - 37
+      4: 3.10.0
+      5: 0.16.3
+      8:
+      - 3
+      - 5
+      13: windows-amd64
+a_bits_per_feature:
+  desc: null
+  value: 9
+a_nr_of_clauses:
+  desc: null
+  value: 940
+a_number_of_state_bits_ta:
+  desc: null
+  value: 7
+a_specificity:
+  desc: null
+  value: 4.180000000000003
+a_t:
+  desc: null
+  value: 0.09
+c_bits_per_feature:
+  desc: null
+  value: 10
+c_nr_of_clauses:
+  desc: null
+  value: 1500
+c_number_of_state_bits_ta:
+  desc: null
+  value: 7
+c_specificity:
+  desc: null
+  value: 7.700000000000006
+c_t:
+  desc: null
+  value: 0.27
+c_y_max:
+  desc: null
+  value: 60
+c_y_min:
+  desc: null
+  value: 25
+gamma:
+  desc: null
+  value: 0.94
+update_freq:
+  desc: null
+  value: 6

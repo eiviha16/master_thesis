@@ -1,0 +1,30 @@
+wandb_version: 1
+
+a_bits_per_feature:
+  value: 14
+a_nr_of_clauses:
+  value: 1080
+a_number_of_state_bits_ta:
+  value: 7
+a_specificity:
+  value: 2.200000000000001
+a_t:
+  value: 0.47
+c_bits_per_feature:
+  value: 11
+c_nr_of_clauses:
+  value: 1900
+c_number_of_state_bits_ta:
+  value: 8
+c_specificity:
+  value: 3.730000000000002
+c_t:
+  value: 0.51
+c_y_max:
+  value: 75
+c_y_min:
+  value: 20
+gamma:
+  value: 0.911
+update_freq:
+  value: 5

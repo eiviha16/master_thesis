@@ -223,6 +223,70 @@ class Batch_TM_VPG:
         self.q_vals = np.array(self.q_vals)
         self.rewards = np.array(self.rewards)
         self.dones = np.array(self.dones)
+class Batch_TM_DDPG:
+    def __init__(self, batch_size=64):
+        self.batch_size = batch_size
+        self.actions = []
+        self.cur_obs = []
+        self.next_obs = []
+        self.rewards = []
+        self.dones = []
+
+        self.sampled_actions = []
+        self.sampled_cur_obs = []
+        self.sampled_next_obs = []
+        self.sampled_rewards = []
+        self.sampled_dones = []
+    def sample(self):
+        self.sampled_actions = []
+        self.sampled_cur_obs = []
+        self.sampled_next_obs = []
+        self.sampled_rewards = []
+        self.sampled_dones = []
+
+        if len(self.dones) > self.batch_size:
+            sample = random.sample(range(len(self.rewards)), self.batch_size)
+            for i, s in enumerate(sample):
+                self.sampled_actions.append(self.actions[s])
+                self.sampled_cur_obs.append(self.cur_obs[s])
+                self.sampled_next_obs.append(self.next_obs[s])
+                self.sampled_rewards.append(self.rewards[s])
+                self.sampled_dones.append(self.dones[s])
+
+
+            self.sampled_actions = np.array(self.sampled_actions)
+            self.sampled_cur_obs = np.array(self.sampled_cur_obs)
+            self.sampled_next_obs = np.array(self.sampled_next_obs)
+            self.sampled_rewards = np.array(self.sampled_rewards)
+            self.sampled_dones = np.array(self.sampled_dones)
+
+        else:
+            self.sampled_actions = self.actions
+            self.sampled_cur_obs = self.cur_obs
+            self.sampled_next_obs = self.next_obs
+            self.sampled_rewards = self.rewards
+            self.sampled_dones = self.dones
+
+    def clear(self):
+        self.actions = []
+        self.cur_obs = []
+        self.next_obs = []
+        self.rewards = []
+        self.dones = []
+
+    def save_experience(self, action, cur_obs, next_obs, reward, done):
+        self.actions.append(action)
+        self.cur_obs.append(cur_obs)
+        self.next_obs.append(next_obs)
+        self.rewards.append(reward)
+        self.dones.append(done)
+
+    def convert_to_numpy(self):
+        self.actions = np.array(self.actions)
+        self.cur_obs = np.array(self.cur_obs)
+        self.next_obs = np.array(self.next_obs)
+        self.rewards = np.array(self.rewards)
+        self.dones = np.array(self.dones)
 
 if __name__ == '__main__':
     pass
