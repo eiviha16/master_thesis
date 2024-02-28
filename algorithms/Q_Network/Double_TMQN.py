@@ -124,9 +124,9 @@ class TMQN:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
-            action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+            #action_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
             # actions = np.argmax(action_q_vals, axis=1)
-            actions = np.argmax(action_q_vals, axis=1)
+            # actions = np.argmax(action_q_vals, axis=1)
 
             next_q_vals = self.evaluation_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
             actions = np.argmax(next_q_vals, axis=1) #|
@@ -176,6 +176,9 @@ class TMQN:
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
+            if episode > 350 and self.best_scores['mean'] < 50:
+                break
+
             self.cur_episode = episode
             actions = [0, 0]
             if self.test_freq:

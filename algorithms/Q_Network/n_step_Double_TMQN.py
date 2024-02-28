@@ -189,6 +189,8 @@ class TMQN:
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
+            if episode > 500 and self.best_scores['mean'] < 50:
+                break
             self.cur_episode = episode
             actions = [0, 0]
             if self.test_freq:
