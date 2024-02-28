@@ -1,0 +1,28 @@
+wandb_version: 1
+
+batch_size:
+  value: 80
+bits_per_feature:
+  value: 8
+buffer_size:
+  value: 4500
+epochs:
+  value: 2
+gamma:
+  value: 0.953
+n_steps:
+  value: 19
+nr_of_clauses:
+  value: 1000
+number_of_state_bits_ta:
+  value: 5
+specificity:
+  value: 3.2500000000000018
+t:
+  value: 0.37
+update_freq:
+  value: 5
+y_max:
+  value: 70
+y_min:
+  value: 35
