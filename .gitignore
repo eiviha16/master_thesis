@@ -7,7 +7,10 @@ TM.py
 misc/plot_test_results.py
 # C extensions
 *.so
-
+myenv/
+wandb/
+TMU/
+RTM/
 # Distribution / packaging
 .Python
 build/

@@ -44,7 +44,7 @@ cdef class TsetlinMachine:
 
 		# The state of each Tsetlin Automaton is stored here. The automata are randomly initialized to either 'number_of_states' or 'number_of_states' + 1.
 		self.ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
-		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2))
+		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
 		# Data structure for keeping track of the sign of each clause
 		self.clause_sign = np.zeros(self.number_of_clauses, dtype=np.int32)
 		self.saved_clause_sign = np.zeros(self.number_of_clauses, dtype=np.int32)

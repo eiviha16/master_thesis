@@ -194,7 +194,7 @@ class TMS:
                 tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
 
-    def update_2(self, tm_input):
+    def update_2(self, tm_input, clip):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
@@ -203,7 +203,8 @@ class TMS:
                     tm_input[i]['observations'].astype(dtype=np.int32),
                     np.array(tm_input[i]['target']).astype(dtype=np.float32),
                     np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
-                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
+                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32),
+                    clip
                 )
 
     def predict(self, obs):
@@ -285,7 +286,7 @@ class TMS2:
                 tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
 
-    def update_2(self, tm_input):
+    def update_2(self, tm_input, clip):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
@@ -294,7 +295,8 @@ class TMS2:
                     tm_input[i]['observations'].astype(dtype=np.int32),
                     np.array(tm_input[i]['target']).astype(dtype=np.float32),
                     np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
-                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
+                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32),
+                    clip
                 )
     def update_3(self, tm_input):
         # take a list for each tm that is being updated.

@@ -1,10 +1,10 @@
 import numpy as np
 cimport numpy as np
 import random
-from libc.stdlib cimport rand, RAND_MAX
+from libc.stdlib cimport rand, srand, RAND_MAX
 import pandas as pd
 from pandas import ExcelWriter
-
+#rand_seed = np.random.randint(0, 100)
 ########################################
 ### The Regression Tsetlin Machine #####
 ########################################
@@ -33,7 +33,7 @@ cdef class TsetlinMachine:
 	# Initialization of the Regression Tsetlin Machine
 	def __init__(self, number_of_clauses, number_of_features, number_of_states, s, threshold, max_target, min_target):
 		cdef int j
-
+		srand(42)
 		self.number_of_clauses = number_of_clauses
 		self.number_of_features = number_of_features
 		self.number_of_states = number_of_states
@@ -44,7 +44,7 @@ cdef class TsetlinMachine:
 
 		# The state of each Tsetlin Automaton is stored here. The automata are randomly initialized to either 'number_of_states' or 'number_of_states' + 1.
 		self.ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
-		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2))
+		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
 		# Data structure for keeping track of the sign of each clause
 		self.clause_sign = np.zeros(self.number_of_clauses, dtype=np.int32)
 		self.saved_clause_sign = np.zeros(self.number_of_clauses, dtype=np.int32)
@@ -203,20 +203,20 @@ cdef class TsetlinMachine:
 
         	# Type I feedback if target is higher than the predicted value
 		if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > 0.05:
-			update_p = 0.05
+			update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
 		else:
 			update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
 		if y > output_value:
 			feedback = 0
 			for j in xrange(self.number_of_clauses):
-				if 1.0*rand()/RAND_MAX < update_p:#1.0*(abs(y-output_value))/(self.max_target - self.min_target):
+				if 1.0*rand()/RAND_MAX < 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
 					self.feedback_to_clauses[j] += 1
 
         	# Type II feedback if target is lower than the predicted value
 		elif y < output_value:
 			feedback = 1
 			for j in xrange(self.number_of_clauses):
-				if 1.0*rand()/RAND_MAX < update_p:#1.0*(abs(y-output_value))/(self.max_target - self.min_target):
+				if 1.0*rand()/RAND_MAX < 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
 					self.feedback_to_clauses[j] -= 1
 
 		for j in xrange(self.number_of_clauses):
@@ -343,7 +343,7 @@ cdef class TsetlinMachine:
 	def upsize_memory(self, new_number_of_states):
 		self.number_of_states = new_number_of_states
 
-	cpdef void update_2(self, int[:] X, float y, float advantage, float entropy):
+	cpdef void update_2(self, int[:] X, float y, float advantage, float entropy, float clip):
 			cdef int i, j
 			cdef int action_include, action_include_negated
 			cdef float output_sum
@@ -393,10 +393,15 @@ cdef class TsetlinMachine:
 			#entropy = np.clip(entropy, 0.1, 1.0)
 			#if entropy < 0.1:
 		#		print(entropy)
+			if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > clip:
+				update_p = clip
+			else:
+				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
+			#print(clip)
 			if loss > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):
-					if 1.0*rand()/RAND_MAX < 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
+					if 1.0*rand()/RAND_MAX < update_p:
 					#if 1.0*rand()/RAND_MAX < entropy * 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
 
 					#if 1.0*rand()/RAND_MAX < 1.0*advantage*(output_value/y):#/(self.max_target - self.min_target): //most logical one so far
@@ -414,7 +419,7 @@ cdef class TsetlinMachine:
 			elif loss <= 0:
 				feedback = 1
 				for j in xrange(self.number_of_clauses):
-					if 1.0*rand()/RAND_MAX < 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
+					if 1.0*rand()/RAND_MAX < update_p:
 					#if 1.0*rand()/RAND_MAX < 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
 					#if 1.0*rand()/RAND_MAX < entropy * 1.0*(abs(y-output_value))/(self.max_target - self.min_target):
 
@@ -485,7 +490,7 @@ cdef class TsetlinMachine:
 		### Batch Mode Training of Regression Tsetlin Machine ###
 		#########################################################
 
-	def fit_2(self, int[:,:] X, float[:] y, float[:] advantages, float[:] entropies, int epochs=1):
+	def fit_2(self, int[:,:] X, float[:] y, float[:] advantages, float[:] entropies, float clip=0.1):
 		cdef int j, l, epoch
 		cdef int example_id
 		cdef float target_class
@@ -493,6 +498,7 @@ cdef class TsetlinMachine:
 		cdef float advantage
 		cdef long[:] random_index
 		cdef float entropy
+		cdef int epochs = 1
 
 		number_of_examples = len(y)
 
@@ -509,7 +515,7 @@ cdef class TsetlinMachine:
 				entropy = entropies[example_id]
 				for j in xrange(self.number_of_features):
 					Xi[j] = X[example_id,j]
-				self.update_2(Xi, target_class, advantage, entropy)
+				self.update_2(Xi, target_class, advantage, entropy, clip)
 
 		return
 	cpdef void update_3(self, int[:] X, int feedback_type, float feedback_prob):

@@ -35,11 +35,11 @@ def objective(config):
               'weighted_clauses': False, 'bits_per_feature': config.c_bits_per_feature, "seed": 42, 'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
     _config = {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'update_freq': config.update_freq, 'gamma': config.gamma,
                'actor': actor, 'critic': critic, 'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True}
-    """
-    """    _config = {'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.t), 's': config.specificity,
+"""
+    _config = {'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, "clip": config.clip, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.t), 's': config.specificity,
               'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
               'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': config.number_of_state_bits_ta}
-    """
+
     env = gym.make("CartPole-v1")
 
     agent = TMQN(env, Policy, _config)
@@ -157,5 +157,20 @@ sweep_configuration = {
         "number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))}
+    }
+}
+
+sweep_configuration = {
+    "method": "random",
+    "metric": {"goal": "maximize", "name": "score"},
+    "parameters": {
+        "gamma": {"values": list(np.arange(0.94, 0.98, 0.001))},
+        "lam": {"values": list(np.arange(0.94, 0.98, 0.001))},
+        "t": {"values": list(np.arange(0.3, 0.9, 0.01))},
+        "nr_of_clauses": {"values": list(range(900, 1200, 10))},
+        "specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
+        "bits_per_feature": {"values": list(range(5, 15, 1))},
+        "number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
+        "clip": {"values": list(np.arange(0.001, 0.5001, 0.01))}
     }
 }

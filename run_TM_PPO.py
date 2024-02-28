@@ -14,7 +14,24 @@ from algorithms.policy.RTM import ActorCriticPolicy as Policy
 #shows greater stability config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 2.0, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
 #498.12 - run 46 - config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 2.0, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 8}
 #495.24 - run 48 - config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 8}
-config = {'algorithm': 'TM_PPO', 'gamma': 0.952976785, 'lam': 0.95161777787, 'nr_of_clauses': 1171, 'T': int(1171 * 0.8259), 's': 1.1965364135629324, 'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
+"""wandb: 	bits_per_feature: 12
+wandb: 	clip: 0.3809999999999999
+wandb: 	gamma: 0.944
+wandb: 	lam: 0.948
+wandb: 	nr_of_clauses: 1178
+wandb: 	number_of_state_bits_ta: 4
+wandb: 	specificity: 1.6300000000000006
+wandb: 	t: 0.7"""
+"""andb: Agent Starting Run: cfdh3rcq with config:
+wandb: 	bits_per_feature: 12
+wandb: 	clip: 0.001
+wandb: 	gamma: 0.951
+wandb: 	lam: 0.958
+wandb: 	nr_of_clauses: 1160
+wandb: 	number_of_state_bits_ta: 3
+wandb: 	specificity: 1.5000000000000004
+wandb: 	t: 0.76"""
+config = {'algorithm': 'TM_PPO', 'gamma': 0.94, 'lam': 0.946, "clip": 0.431, 'nr_of_clauses': 1050, 'T': int(1050 * 0.59), 's': 1.6, 'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 14,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
 #change gamma and lambda
 
 print(config)

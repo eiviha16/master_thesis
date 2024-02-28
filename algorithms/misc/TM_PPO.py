@@ -206,20 +206,3 @@ class PPO:
             if not file_exists:
                 file.write("actor_1,actor_2\n")
             file.write(f"{probs[0][0]}, {probs[0][1]}\n")
-"""
-sweep_configuration = {
-    "method": "random",
-    "metric": {"goal": "maximize", "name": "score"},
-    "parameters": {
-        "gamma": {"values": list(np.arange(0.94, 0.98, 0.001))},
-        "lam": {"values": list(np.arange(0.94, 0.98, 0.001))},
-        "t": {"values": list(np.arange(0.3, 0.9, 0.01))},
-        "nr_of_clauses": {"values": list(range(900, 1200, 10))},
-        "specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
-        "bits_per_feature": {"values": list(range(5, 15, 1))},
-        "number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
-        "clip": {"values": list(np.arange(0.001, 0.5001, 0.01))}
-    }
-}
-
-"""
