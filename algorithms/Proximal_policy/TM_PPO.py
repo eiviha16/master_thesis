@@ -33,6 +33,7 @@ class PPO:
         self.save_config(config)
         self.announce()
         self.cur_episode = 0
+        self.abs_errors = {}
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -112,7 +113,13 @@ class PPO:
             self.policy.actor.update_2(actor_update, self.clip)
 
             critic_update = self.get_update_data_critic()
-            self.policy.critic.update(critic_update)
+            abs_errors = self.policy.critic.update(critic_update)
+            for key in abs_errors:
+                if key not in self.abs_errors:
+                    self.abs_errors[key] = []
+                for val in abs_errors[key]:
+                    self.abs_errors[key].append(val)
+        self.abs_errors = {}
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             if self.best_score < 12 and episode > 50:
@@ -206,6 +213,17 @@ class PPO:
             if not file_exists:
                 file.write("actor_1,actor_2\n")
             file.write(f"{probs[0][0]}, {probs[0][1]}\n")
+    def save_abs_errors(self):
+        for key in self.abs_errors:
+            self.abs_errors[key] = np.array(self.abs_errors[key])
+        folder_name = 'absolute_errors_critic.csv'
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+
+        with open(os.path.join(self.save_path, folder_name), "a") as file:
+            if not file_exists:
+                file.write('mean,std\n')
+            file.write(f"{np.mean(self.abs_errors['critic'])},{np.std(self.abs_errors['critic'])}\n")
+
 """
 sweep_configuration = {
     "method": "random",

@@ -4,7 +4,7 @@ import os
 import yaml
 from tqdm import tqdm
 import random
-
+import csv
 from algorithms.misc.replay_buffer import ReplayBuffer
 from algorithms.misc.plot_test_results import plot_test_results
 
@@ -60,6 +60,7 @@ class TMQN:
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
         self.cur_episode = 0
+        self.abs_errors = {}
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -137,13 +138,23 @@ class TMQN:
             target_q_vals = self.temporal_difference(next_q_vals)
             tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
-            self.target_policy.update(tm_1_input, tm_2_input)
+            abs_errors = self.target_policy.update(tm_1_input, tm_2_input)
+            for key in abs_errors:
+                if key not in self.abs_errors:
+                    self.abs_errors[key] = []
+                for val in abs_errors[key]:
+                    self.abs_errors[key].append(val)
+
+
         if self.config['soft_update_type'] == 'soft_update_1':
             self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
             self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
         else:
             self.soft_update_2(self.target_policy.tm1, self.evaluation_policy.tm1)
             self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
+
+        self.save_abs_errors()
+        self.abs_errors = {}
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
@@ -176,7 +187,7 @@ class TMQN:
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
-            if episode > 350 and self.best_scores['mean'] < 50:
+            if episode > 500 and self.best_scores['mean'] < 12:
                 break
 
             self.cur_episode = episode
@@ -261,7 +272,7 @@ class TMQN:
             tms = [self.target_policy.tm1, self.target_policy.tm2]
             tms_save = []
             for tm in range(len(tms)):
-                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[0].get_params()
+                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[tm].get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
                 clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
                 clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
@@ -311,3 +322,13 @@ class TMQN:
             if not file_exists:
                 file.write("actor_1,actor_2\n")
             file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+    def save_abs_errors(self):
+        for key in self.abs_errors:
+            self.abs_errors[key] = np.array(self.abs_errors[key])
+        folder_name = 'absolute_errors.csv'
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+
+        with open(os.path.join(self.save_path, folder_name), "a") as file:
+            if not file_exists:
+                file.write('actor1_mean,actor1_std,actor2_mean,actor2_std\n')
+            file.write(f"{np.mean(self.abs_errors['actor1'])},{np.std(self.abs_errors['actor1'])},{np.mean(self.abs_errors['actor2'])},{np.std(self.abs_errors['actor2'])}\n")

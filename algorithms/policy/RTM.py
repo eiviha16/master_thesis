@@ -60,16 +60,17 @@ class Policy():
 
     def update(self, tm_1_input, tm_2_input):
         # take a list for each tm that is being updated.
+        abs_errors = {'actor1': [], 'actor2': []}
         if len(tm_1_input['observations']) > 0:
             tm_1_input['observations'] = self.binarizer.transform(np.array(tm_1_input['observations']))
-            self.tm1.fit(tm_1_input['observations'].astype(dtype=np.int32),
+            abs_errors['actor1'] = self.tm1.fit(tm_1_input['observations'].astype(dtype=np.int32),
                          np.array(tm_1_input['target_q_vals']).astype(dtype=np.float32))
 
         if len(tm_2_input['observations']) > 0:
             tm_2_input['observations'] = self.binarizer.transform(np.array(tm_2_input['observations']))
-            self.tm2.fit(np.array(tm_2_input['observations']).astype(dtype=np.int32),
+            abs_errors['actor2'] = self.tm2.fit(np.array(tm_2_input['observations']).astype(dtype=np.int32),
                          np.array(tm_2_input['target_q_vals']).astype(dtype=np.float32))
-
+        return abs_errors
     def predict(self, obs):
         # binarize input
         if obs.ndim == 1:
@@ -122,12 +123,15 @@ class TMS:
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.
+        keys = ['actor1', 'actor2']
+        abs_errors = {}
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
+                abs_error = tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
-
+                abs_errors[keys[i]] = abs_error
+        return abs_error
     def update_2(self, tm_input):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
@@ -187,13 +191,16 @@ class TMS:
                    np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
+        keys = ['critic']
+        abs_errors = {}
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
+                abs_error = tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
-
+                abs_errors[keys[i]] = abs_error
+        return abs_errors
     def update_2(self, tm_input, clip):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
@@ -279,13 +286,16 @@ class TMS2:
                    np.array([random.randint(self.config['y_min'], self.config['y_max']) / (0.5 * self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
+        keys = ['actor1', 'actor2']
+        abs_errors = {}
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
                 tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
-
+                abs_errors[keys[i]] = abs_error
+        return abs_error
     def update_2(self, tm_input, clip):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):

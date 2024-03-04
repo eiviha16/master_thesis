@@ -58,7 +58,8 @@ def prune(data, new_size):
 def plot_many_rewards(algorithms, new_size):
     data = {}
     for algorithm in algorithms:
-        data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
+        #data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
+        data[algorithm] = get_csv_performance(f'../../cartpole_results/{algorithm}/{algorithms[algorithm]}')
     title = 'Cartpole'
     data, ratio = prune(data, new_size)
     plot_many(data, title, ratio)
@@ -66,5 +67,6 @@ def plot_many_rewards(algorithms, new_size):
 if __name__ == "__main__":
     #text = {'title': 'TMQN'}
     #plot_test_results('../../results/TMQN/run_82', text)
-    algorithms = {'TMQN': 'run_82', 'Double_TMQN': 'run_63', 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
-    plot_many_rewards(algorithms, new_size=100)
+    #algorithms = {'TMQN': 'run_8', 'Double_TMQN': 'run_180', 'n_step_TMQN': 'run_7', 'n_step_Double_TMQN': 'run_33'}#, 'DDPG_2_TM': 'run_247', 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
+    algorithms = {'DDPG_2_TM': 'run_247'}#, 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
+    plot_many_rewards(algorithms, new_size=5000)

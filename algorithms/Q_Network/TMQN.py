@@ -6,7 +6,7 @@ from tqdm import tqdm
 import random
 
 from algorithms.misc.replay_buffer import ReplayBuffer
-from algorithms.misc.plot_test_results import plot_test_results, feedback
+#from algorithms.misc.plot_test_results import plot_test_results, feedback
 
 
 class TMQN:
@@ -23,7 +23,7 @@ class TMQN:
         self.epochs = config['epochs']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        self.dynamic_memory = config['dynamic_memory']
+        #self.dynamic_memory = config['dynamic_memory']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
@@ -47,6 +47,8 @@ class TMQN:
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
         self.cur_episode = 0
+        self.abs_errors = {}
+        self.total_score = []
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -110,7 +112,16 @@ class TMQN:
             # calculate target q vals
             target_q_vals = self.temporal_difference((next_q_vals))
             tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
-            self.policy.update(tm_1_input, tm_2_input)
+            abs_errors = self.policy.update(tm_1_input, tm_2_input)
+
+            for key in abs_errors:
+                if key not in self.abs_errors:
+                    self.abs_errors[key] = []
+                for val in abs_errors[key]:
+                    self.abs_errors[key].append(val)
+
+        self.save_abs_errors()
+        self.abs_errors = {}
 
     def save_feedback_data(self, feedback_1, feedback_2, nr_of_steps):
         file_name = 'feedback.csv'
@@ -132,17 +143,6 @@ class TMQN:
                     self.config['nr_of_episodes'] = episode + 1
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
-                    if self.dynamic_memory:
-                        # if self.has_reached_threshold:
-                        intervals = 5
-                        max_score = 500
-
-                        new_memory_size = max(self.dynamic_memory_min_size, int(intervals * np.ceil(
-                            self.dynamic_memory_max_size / intervals * intervals * self.cur_mean / max_score / intervals)))
-
-                        self.policy.tm1.update_memory_size(new_memory_size)
-                        self.policy.tm2.update_memory_size(new_memory_size)
-
             cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
             episode_reward = 0
 
@@ -163,7 +163,7 @@ class TMQN:
                 self.train()
                 self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
-        plot_test_results(self.save_path, text={'title': 'TMQN'})
+        #plot_test_results(self.save_path, text={'title': 'TMQN'})
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
@@ -187,6 +187,7 @@ class TMQN:
                     self.save_q_vals(q_vals_)
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
+        self.total_score.append(mean)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
         self.exploration_prob = exploration_prob
@@ -204,7 +205,7 @@ class TMQN:
             tms = [self.policy.tm1, self.policy.tm2]
             tms_save = []
             for tm in range(len(tms)):
-                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[0].get_params()
+                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[tm].get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
                 clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
                 clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
@@ -252,3 +253,13 @@ class TMQN:
             if not file_exists:
                 file.write("actor_1,actor_2\n")
             file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+    def save_abs_errors(self):
+        for key in self.abs_errors:
+            self.abs_errors[key] = np.array(self.abs_errors[key])
+        folder_name = 'absolute_errors.csv'
+        file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+
+        with open(os.path.join(self.save_path, folder_name), "a") as file:
+            if not file_exists:
+                file.write('actor1_mean,actor1_std,actor2_mean,actor2_std\n')
+            file.write(f"{np.mean(self.abs_errors['actor1'])},{np.std(self.abs_errors['actor1'])},{np.mean(self.abs_errors['actor2'])},{np.std(self.abs_errors['actor2'])}\n")
