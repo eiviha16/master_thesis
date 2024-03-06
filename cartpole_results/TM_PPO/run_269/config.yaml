@@ -1,0 +1,19 @@
+T: 450
+algorithm: TM_PPO
+batch_size: 64
+bits_per_feature: 5
+clip: 0.301
+comment: --Does not use normalization--
+device: CPU
+epochs: 1
+gamma: 0.942
+lam: 0.947
+nr_of_clauses: 900
+number_of_state_bits_ta: 4
+s: 2.54
+save: true
+seed: 42
+test_freq: 1
+weighted_clauses: false
+y_max: 2.0
+y_min: 0.0

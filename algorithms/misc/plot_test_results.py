@@ -41,6 +41,8 @@ def get_csv_performance(file_path):
                 data['mean'].append(float(row[0]))
                 data['std'].append(float(row[1]))
                 #data['timesteps'].append(float(row[2]))
+        data['mean'] = data['mean'][:10000]
+        data['std'] = data['std'][:10000]
     return data
 def plot_test_results(file_path, text):
     data = get_csv_performance(file_path)
@@ -68,5 +70,8 @@ if __name__ == "__main__":
     #text = {'title': 'TMQN'}
     #plot_test_results('../../results/TMQN/run_82', text)
     #algorithms = {'TMQN': 'run_8', 'Double_TMQN': 'run_180', 'n_step_TMQN': 'run_7', 'n_step_Double_TMQN': 'run_33'}#, 'DDPG_2_TM': 'run_247', 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
-    algorithms = {'DDPG_2_TM': 'run_247'}#, 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
-    plot_many_rewards(algorithms, new_size=5000)
+    #algorithms = {'DDPG_2_TM': 'run_247'}#, 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
+    algorithms = {'n_step_Double_TMQN': 'run_35'}#, 'TM_PPO': 'run_124'}#, 'TM_PPO': 'run_159', 'PPO': 'run_49', 'DQN': 'run_34'}
+    plot_many_rewards(algorithms, new_size=500)
+#'n_step_Double_TMQN': 'run_34' 498.22 - 11.22
+#'n_step_Double_TMQN': 'run_35' 500.0 - 0.0

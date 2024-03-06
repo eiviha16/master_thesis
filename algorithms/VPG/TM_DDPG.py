@@ -20,6 +20,8 @@ class DDPG:
 
         self.epochs = config['epochs']
         self.config = config
+        self.update_grad = config['update_grad']
+
 
         # self.test_random_seeds = [random.randint(1, 100000) for _ in range(100)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
@@ -42,6 +44,7 @@ class DDPG:
         self.save_config(config)
         self.announce()
         self.cur_episode = 0
+        self.total_score = []
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -158,7 +161,7 @@ class DDPG:
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.save_results(mean, std)
-
+        self.total_score.append(mean)
         if mean > self.best_score:
             self.save_model(True)
             self.best_score = mean

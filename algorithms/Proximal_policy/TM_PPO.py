@@ -35,6 +35,7 @@ class PPO:
         self.cur_episode = 0
         self.abs_errors = {}
 
+
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
@@ -98,7 +99,9 @@ class PPO:
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
+            #print(self.batch.advantages[i] + self.batch.values[i, 0, 0])
             tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
+
             #tm[idx]['target'].append(self.batch.rewards[i])
 
         #print(self.batch.advantages[0] + self.batch.values[0, 0, 0])
@@ -127,7 +130,7 @@ class PPO:
             self.cur_episode = episode
             self.rollout()
             self.calculate_advantage()
-            self.normalize_advantages()
+            #self.normalize_advantages()
 
             self.train()
             self.test()
