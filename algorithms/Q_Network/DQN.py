@@ -12,7 +12,7 @@ import torch.nn.functional as F
 class DQN:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
         #self.policy.to('cuda')
@@ -35,11 +35,11 @@ class DQN:
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081, 71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479, 73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852, 99459, 20927, 91507, 55393, 44598, 36422, 20380, 28222, 44119, 13397, 12157, 49798, 12677, 47053, 45083, 79132, 34672, 5696, 95648, 60218, 70285, 16362, 49616, 10329, 72358, 38428, 82398, 81071, 47401, 75675, 25204, 92350, 9117, 6007, 86674, 29872, 37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567, 27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569, 32088, 21418, 60590, 49736]
         self.save = config['save']
         self.save_path = ''
-        self.best_scores = {'mean': 0, 'std': float('inf')}
+        self.best_scores = {'mean': -float('inf'), 'std': float('inf')}
         self.config = config
         self.make_run_dir()
         self.save_config()
-        self.q_values = {'q1': [], 'q2': []}
+        self.q_values = {f'q{i}': [] for i in range(self.action_space_size)}
         self.nr_actions = 0
 
         #self.observations = []
@@ -70,11 +70,12 @@ class DQN:
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
-            q_vals = torch.tensor([np.random.random() for _ in range(self.action_space_size + 1)])
+            q_vals = torch.tensor([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
-            self.q_values['q1'].append(q_vals[0])
-            self.q_values['q2'].append(q_vals[1])
+            for i, key in enumerate(self.q_values):
+                self.q_values[key].append(q_vals[i])
+            #self.q_values['q2'].append(q_vals[1])
         return torch.argmax(q_vals), q_vals
 
     def update_exploration_prob(self):
@@ -104,7 +105,7 @@ class DQN:
     def learn(self, nr_of_episodes):
 
         nr_of_steps = 0
-        actions_nr = [0, 0]
+        #actions_nr = [0, 0, 0]
 
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
@@ -140,8 +141,8 @@ class DQN:
         self.exploration_prob = 0
         episode_rewards = np.array([0 for i in range(self.nr_of_test_episodes)])
         for episode in range(self.nr_of_test_episodes):
-            self.q_values['q1'] = []
-            self.q_values['q2'] = []
+            for q_val in self.q_values:
+                self.q_values[q_val] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 #self.observations.append(obs)
@@ -184,9 +185,9 @@ class DQN:
         if not os.path.exists(os.path.join(self.save_path, folder_name)):
             os.makedirs(os.path.join(self.save_path, folder_name))
         file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
-
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
-                file.write("actor_1,actor_2\n")
-            file.write(f"{q_vals[0]}, {q_vals[1]}\n")
+                file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
+            #file.write(f"{q_vals[0]},{q_vals[1]}\n")
+            file.write(f"{','.join(map(str, q_vals.detach().tolist()))}\n")
 

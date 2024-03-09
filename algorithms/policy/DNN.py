@@ -17,7 +17,7 @@ class QNet(nn.Module):
         # layers
         self.input_layer = nn.Linear(input_size, hidden_size)
         self.hidden_layer = nn.Linear(hidden_size, hidden_size)
-        self.output_layer = nn.Linear(hidden_size, output_size * 2)
+        self.output_layer = nn.Linear(hidden_size, output_size)
 
     def forward(self, input):
         x = self.input_layer(input)
