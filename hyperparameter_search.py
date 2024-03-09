@@ -44,7 +44,7 @@ def objective(config):
     critic = {'nr_of_clauses': config.c_nr_of_clauses, 'T': int(config.c_nr_of_clauses * config.c_t), 's': config.c_specificity, 'y_max': config.c_y_max, 'y_min': config.c_y_min, 'device': 'CPU',
               'weighted_clauses': False, 'bits_per_feature': config.c_bits_per_feature, "seed": 42, 'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
     _config = {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'update_grad': config.update_grad, 'gamma': config.gamma,
-               'actor': actor, 'critic': critic, 'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 50, "save": True}
+               'actor': actor, 'critic': critic, 'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": True}
 
     """_config = {'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, "clip": config.clip, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.nr_of_clauses * config.t), 's': config.specificity,
               'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
@@ -55,10 +55,10 @@ def objective(config):
     #agent = PPO(env, Policy, _config)
     #agent = TMQN(env, Policy, _config)
     agent = DDPG(env, Policy, _config)
-    agent.learn(nr_of_episodes=5_000)
-    #score = np.array(agent.best_score)
-    scores = np.array(agent.total_score)
-    score = np.mean(scores)
+    agent.learn(nr_of_episodes=1_000)
+    score = np.array(agent.best_score)
+    #scores = np.array(agent.total_score)
+    #score = np.mean(scores)
     return score
 
 

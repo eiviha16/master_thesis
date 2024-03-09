@@ -23,7 +23,6 @@ class TMQN:
         self.epochs = config['epochs']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        self.dynamic_memory = config['dynamic_memory']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
@@ -49,6 +48,7 @@ class TMQN:
         self.nr_actions = 0
         self.cur_episode = 0
         self.abs_errors = {}
+        self.total_score = []
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -140,6 +140,8 @@ class TMQN:
     def learn(self, nr_of_episodes):
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
+            if self.best_scores['mean'] < 20 and episode > 500:
+                break
             self.cur_episode = episode
             actions = [0, 0]
             if self.test_freq:
@@ -194,6 +196,7 @@ class TMQN:
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.cur_mean = mean
+        self.total_score.append(mean)
         self.save_results(mean, std, nr_of_steps)
         self.exploration_prob = exploration_prob
         if mean > self.best_scores['mean']:

@@ -1,0 +1,10 @@
+algorithm: PPO
+batch_size: 64
+clip_range: 0.2
+epochs: 4
+gamma: 0.99
+hidden_size: 32
+lam: 0.95
+learning_rate: 0.003
+save: true
+test_freq: 1

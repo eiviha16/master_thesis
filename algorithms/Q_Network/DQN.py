@@ -42,7 +42,7 @@ class DQN:
         self.q_values = {'q1': [], 'q2': []}
         self.nr_actions = 0
 
-        self.observations = []
+        #self.observations = []
         self.announce()
         self.cur_episode = 0
 
@@ -107,19 +107,20 @@ class DQN:
         actions_nr = [0, 0]
 
         for episode in tqdm(range(nr_of_episodes)):
+            self.cur_episode = episode
             if self.test_freq:
                 if episode % self.test_freq == 0:
                     self.test(nr_of_steps)
-                    self.config['nr_of_episodes'] = episode + 1
-                    self.config['nr_of_steps'] = nr_of_steps
-                    self.save_config()
+                    #self.config['nr_of_episodes'] = episode + 1
+                    #self.config['nr_of_steps'] = nr_of_steps
+                    #self.save_config()
 
             cur_obs, _ = self.env.reset(seed=42)
             episode_reward = 0
 
             while True:
-                action, _ = self.get_next_action(cur_obs).numpy()#cpu().numpy()
-                actions_nr[action] += 1
+                action, _ = self.get_next_action(cur_obs) #cpu().numpy()
+                action = action.numpy()
                 next_obs, reward, done, truncated, _ = self.env.step(action)
                 self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), nr_of_steps)
                 episode_reward += reward
@@ -131,7 +132,7 @@ class DQN:
                 self.train()
             self.update_exploration_prob()
 
-        plot_test_results(self.save_path, text={'title': self.config['algorithm']})
+ #       plot_test_results(self.save_path, text={'title': self.config['algorithm']})
 
 
     def test(self, nr_of_steps):
@@ -143,7 +144,7 @@ class DQN:
             self.q_values['q2'] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                self.observations.append(obs)
+                #self.observations.append(obs)
                 action, q_vals_ = self.get_next_action(obs)#.numpy()#.cpu().numpy()
                 obs, reward, done, truncated, _ = self.env.step(action.numpy())
                 episode_rewards[episode] += reward
@@ -187,5 +188,5 @@ class DQN:
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
                 file.write("actor_1,actor_2\n")
-            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+            file.write(f"{q_vals[0]}, {q_vals[1]}\n")
 

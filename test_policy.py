@@ -71,6 +71,6 @@ def test_policy(save_file, policy):
             file.write(str(reward) + "\n")
 
 if __name__ == '__main__':
-    file = './results/PPO/run_65/best_model'
+    file = './results/DQN/run_10/best_model'
     model = torch.load(file)
-    test_policy('./results/PPO/run_65/final_test_results', model.actor)
+    test_policy('./results/PPO/run_65/final_test_results', model)
