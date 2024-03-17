@@ -12,8 +12,10 @@ from algorithms.misc.plot_test_results import plot_test_results
 class TMQN:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
         self.target_policy = Policy(config)
         self.evaluation_policy = Policy(config)
 
@@ -137,23 +139,33 @@ class TMQN:
 
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
-            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
+            #tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
+            tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
-            abs_errors = self.target_policy.update(tm_1_input, tm_2_input)
+            abs_errors = self.target_policy.update(tm_inputs)
+
             for key in abs_errors:
                 if key not in self.abs_errors:
                     self.abs_errors[key] = []
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
 
-
         if self.config['soft_update_type'] == 'soft_update_1':
+            for i in self.target_policy.tms:
+                self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            #self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
+            #self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
+        else:
+            for i in self.target_policy.tms:
+                self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            #self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
+        """ if self.config['soft_update_type'] == 'soft_update_1':
             self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
             self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
         else:
             self.soft_update_2(self.target_policy.tm1, self.evaluation_policy.tm1)
             self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
-
+        """
         self.save_abs_errors()
         self.abs_errors = {}
 
@@ -321,8 +333,10 @@ class TMQN:
 
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
-                file.write("actor_1,actor_2\n")
-            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+                file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
+            #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+            file.write(f"{','.join(map(str, q_vals))}\n")
+
     def save_abs_errors(self):
         for key in self.abs_errors:
             self.abs_errors[key] = np.array(self.abs_errors[key])

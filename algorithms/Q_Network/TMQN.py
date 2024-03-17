@@ -12,8 +12,11 @@ from algorithms.misc.replay_buffer import ReplayBuffer
 class TMQN:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
+
         self.policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
@@ -44,7 +47,7 @@ class TMQN:
         self.make_run_dir()
         self.save_config()
         self.announce()
-        self.q_values = {'q1': [], 'q2': []}
+        self.q_values = {f'q{i}': [] for i in range(self.action_space_size)}
         self.nr_actions = 0
         self.cur_episode = 0
         self.abs_errors = {}
@@ -69,11 +72,11 @@ class TMQN:
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
-            q_vals = np.array([np.random.random() for _ in range(self.action_space_size + 1)])
+            q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
-            self.q_values['q1'].append(q_vals[0])
-            self.q_values['q2'].append(q_vals[0])
+            #self.q_values['q1'].append(q_vals[0])
+            #self.q_values['q2'].append(q_vals[0])
         return np.argmax(q_vals), q_vals
 
     def temporal_difference(self, next_q_vals):
@@ -85,10 +88,13 @@ class TMQN:
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
 
-        tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
+        tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
+        #tm_1_input, tm_2_input = [{'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
         actions = self.replay_buffer.sampled_actions
         for index, action in enumerate(actions):
-            if action == 0:
+            tm_inputs[action]['observations'].append(self.replay_buffer.sampled_cur_obs[index])
+            tm_inputs[action]['target_q_vals'].append(target_q_vals[index])
+            """if action == 0:
                 tm_1_input['observations'].append(self.replay_buffer.sampled_cur_obs[index])
                 tm_1_input['target_q_vals'].append(target_q_vals[index])
 
@@ -98,8 +104,8 @@ class TMQN:
 
             else:
                 print('Error with get_q_val_for_action')
-
-        return tm_1_input, tm_2_input
+"""
+        return tm_inputs #tm_1_input, tm_2_input
 
     def train(self):
         for epoch in range(self.epochs):
@@ -112,7 +118,8 @@ class TMQN:
             # calculate target q vals
             target_q_vals = self.temporal_difference((next_q_vals))
             tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
-            abs_errors = self.policy.update(tm_1_input, tm_2_input)
+            tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
+            abs_errors = self.policy.update(tm_inputs)
 
             for key in abs_errors:
                 if key not in self.abs_errors:
@@ -136,7 +143,7 @@ class TMQN:
         nr_of_steps = 0
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
-            actions = [0, 0]
+            #actions = [0, 0]
             if self.test_freq:
                 if episode % self.test_freq == 0:
                     self.test(nr_of_steps)
@@ -148,7 +155,7 @@ class TMQN:
 
             while True:
                 action, _ = self.get_next_action(cur_obs)
-                actions[action] += 1
+                #actions[action] += 1
                 next_obs, reward, done, truncated, _ = self.env.step(action)
 
                 # might want to not have truncated in my replay buffer
@@ -166,19 +173,15 @@ class TMQN:
         #plot_test_results(self.save_path, text={'title': 'TMQN'})
 
     def test(self, nr_of_steps):
-        self.q_vals = [0, 0]
-        self.nr_actions = 0
+
         exploration_prob = self.exploration_prob
         self.exploration_prob = 0
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
         for episode in range(self.nr_of_test_episodes):
-            self.q_values['q1'] = []
-            self.q_values['q2'] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
             while True:
                 action, q_vals_ = self.get_next_action(obs)
-                self.nr_actions += 1
                 obs, reward, done, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
                 if done or truncated:
@@ -200,9 +203,10 @@ class TMQN:
 
     def save_model(self, best_model):
         if best_model:
-            self.policy.tm1.save_state()
-            self.policy.tm2.save_state()
-            tms = [self.policy.tm1, self.policy.tm2]
+            #self.policy.tm1.save_state()
+            #self.policy.tm2.save_state()
+            #tms = [self.policy.tm1, self.policy.tm2]
+            tms = self.policy.tms
             tms_save = []
             for tm in range(len(tms)):
                 ta_state, clause_sign, clause_output, feedback_to_clauses = tms[tm].get_params()
@@ -233,15 +237,6 @@ class TMQN:
                 file.write("mean,std, steps\n")
             file.write(f"{mean},{std},{nr_of_steps}\n")
 
-    def save_actions(self, actions, nr_of_steps):
-        file_name = 'actions.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, file_name))
-
-        with open(os.path.join(self.save_path, file_name), "a") as file:
-            if not file_exists:
-                file.write("tm1,tm2,steps\n")
-            file.write(f"{actions[0]},{actions[1]},{nr_of_steps}\n")
-
     def save_q_vals(self, q_vals):
         folder_name = 'q_values'
         file_name = f'{self.cur_episode}.csv'
@@ -251,8 +246,10 @@ class TMQN:
 
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
-                file.write("actor_1,actor_2\n")
-            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+                file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
+            #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+            file.write(f"{','.join(map(str, q_vals))}\n")
+
     def save_abs_errors(self):
         for key in self.abs_errors:
             self.abs_errors[key] = np.array(self.abs_errors[key])

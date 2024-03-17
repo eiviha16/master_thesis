@@ -11,8 +11,10 @@ import random
 class DDPG:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
         self.gamma = config['gamma']
         self.policy = Policy(config)
         #self.batch = Batch(config['batch_size'])
@@ -59,7 +61,9 @@ class DDPG:
 
 
     def rollout(self):
-        cur_obs, _ = self.env.reset(seed=42)
+       #cur_obs, _ = self.env.reset(seed=42) used for cartpole
+        cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
+
         while True:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
@@ -68,7 +72,7 @@ class DDPG:
             if done or truncated:
                 break
             cur_obs = next_obs
-    #u
+
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
@@ -96,8 +100,8 @@ class DDPG:
         return np.array(q_vals)
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
-            actions = np.array([0 for i in range(self.action_space_size + 1)])
-            actions[np.random.randint(0, self.action_space_size + 1)] = 1
+            actions = np.array([0 for i in range(self.action_space_size)])
+            actions[np.random.randint(0, self.action_space_size)] = 1
             action = np.argmax(actions)
         else:
             action, actions = self.policy.get_action(cur_obs)

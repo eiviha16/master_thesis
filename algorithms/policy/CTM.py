@@ -26,27 +26,23 @@ np.random.seed(42)
 class MTMS:
     def __init__(self, config):
         self.tms = []
-        self.tm = MTM.MultiClassTsetlinMachine(number_of_classes=config['nr_of_classes'],
+        self.tm = MTM.MultiClassTsetlinMachine(number_of_classes=config['action_space_size'],
                                     number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * 4,
+                                    number_of_features=config['bits_per_feature'] * config['obs_space_size'],
                                     s=config['s'],
                                     number_of_states=config['number_of_state_bits_ta'],
                                     threshold=config['T'])
 
-        self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        #self.init_TMs()
+
 
     def init_binarizer(self):
         # create a list of lists of values?
         self.binarizer.fit(self.vals)
-
-    def init_TMs(self):
-        vals = self.binarizer.transform(self.vals)
-        vals = vals.astype(dtype=np.int32)
-        self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.
@@ -57,28 +53,29 @@ class MTMS:
     def predict(self, obs):
         # binarize input
         if obs.ndim == 1:
-            obs = obs.reshape(1, 4)
+            obs = obs.reshape(1, self.config['obs_space_size'])
         b_obs = self.binarizer.transform(obs)
         # pass it through each tm
         b_obs = b_obs.astype(dtype=np.int32)
         result = []
         for obs in b_obs:
-            actions = np.array([0 for i in range(2)])
+            actions = np.array([0 for i in range(self.config['action_space_size'])])
             tm_vals = self.tm.predict(obs)
             actions[tm_vals] = 1
             result.append(actions)
         return np.array(result)
 
 class RTMS:
-    def __init__(self,config):
+    def __init__(self, config):
         self.tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * 4,
+                                    number_of_features=config['bits_per_feature'] * config['obs_space_size'],
                                     s=config['s'],
                                     number_of_states=config['number_of_state_bits_ta'],
                                     threshold=config['T'],
                                     max_target=config['y_max'], min_target=config['y_min'])
 
-        self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        #self.vals = np.loadtxt('./algorithms/misc/{observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'./algorithms/misc/{config["file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
@@ -92,8 +89,7 @@ class RTMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        #self.tm.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) / (0.5 * self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
-        self.tm.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        self.tm.fit(vals, np.array([random.randint(self.config['y_min'], self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
         #self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
@@ -106,7 +102,7 @@ class RTMS:
     def predict(self, obs, actions):
         # binarize input
         if obs.ndim == 1:
-            obs = obs.reshape(1, 4)
+            obs = obs.reshape(1, self.config['obs_space_size'])
         b_obs = self.binarizer.transform(obs)
         # pass it through each tm
         b_obs = np.concatenate((b_obs, actions), axis=1)

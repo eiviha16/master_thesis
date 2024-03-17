@@ -14,6 +14,8 @@ class DQN:
         self.env = env
         self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
         #self.policy.to('cuda')
         self.gamma = config['gamma']  # discount factor

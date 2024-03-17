@@ -12,9 +12,10 @@ from algorithms.misc.plot_test_results import plot_test_results
 class TMQN:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
-
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
         self.target_policy = Policy(config)
         self.evaluation_policy = Policy(config)
 
@@ -83,11 +84,11 @@ class TMQN:
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
-            q_vals = np.array([np.random.random() for _ in range(self.action_space_size + 1)])
+            q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.target_policy.predict(cur_obs)
-            self.q_values['q1'].append(q_vals[0])
-            self.q_values['q2'].append(q_vals[0])
+            #self.q_values['q1'].append(q_vals[0])
+            #self.q_values['q2'].append(q_vals[0])
         return np.argmax(q_vals), q_vals
 
     def temporal_difference(self, next_q_vals):
@@ -139,22 +140,13 @@ class TMQN:
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
 
-        tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
+        tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
         actions = self.replay_buffer.sampled_actions
         for index, action in enumerate(actions):
-            if action[0] == 0:
-                tm_1_input['observations'].append(self.replay_buffer.sampled_cur_obs[index][0])
-                tm_1_input['target_q_vals'].append(target_q_vals[index])
-                #tm_1_input['target_q_vals'].append(target_q_vals[index][0])
+            tm_inputs[action[0]]['observations'].append(self.replay_buffer.sampled_cur_obs[index][0])
+            tm_inputs[action[0]]['target_q_vals'].append(target_q_vals[index])
 
-            elif action[0] == 1:
-                tm_2_input['observations'].append(self.replay_buffer.sampled_cur_obs[index][0])
-                tm_2_input['target_q_vals'].append(target_q_vals[index])
-                #tm_2_input['target_q_vals'].append(target_q_vals[index][0])
-            else:
-                print('Error with get_q_val_for_action')
-
-        return tm_1_input, tm_2_input
+        return tm_inputs
 
     def get_q_val_for_action(self, actions, q_values):
         q_vals = []
@@ -179,19 +171,22 @@ class TMQN:
 
             # calculate target q vals
             target_q_vals = self.n_step_temporal_difference(next_q_vals)
-            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
-            abs_errors = self.target_policy.update(tm_1_input, tm_2_input)
+            tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
+            abs_errors = self.target_policy.update(tm_inputs)
             for key in abs_errors:
                 if key not in self.abs_errors:
                     self.abs_errors[key] = []
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
         if self.config['soft_update_type'] == 'soft_update_1':
-            self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
-            self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
+            for i in self.target_policy.tms:
+                self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            #self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
+            #self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
         else:
-            self.soft_update_2(self.target_policy.tm1, self.evaluation_policy.tm1)
-            self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
+            for i in self.target_policy.tms:
+                self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            #self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
         self.save_abs_errors()
         self.abs_errors = {}
 
@@ -267,9 +262,9 @@ class TMQN:
 
     def save_model(self, best_model):
         if best_model:
-            self.target_policy.tm1.save_state()
-            self.target_policy.tm2.save_state()
-            tms = [self.target_policy.tm1, self.target_policy.tm2]
+            #self.target_policy.tm1.save_state()
+            #self.target_policy.tm2.save_state()
+            tms = self.target_policy.tms#[self.target_policy.tm1, self.target_policy.tm2]
             tms_save = []
             for n in range(len(tms)):
                 ta_state, clause_sign, clause_output, feedback_to_clauses = tms[n].get_params()
@@ -322,8 +317,9 @@ class TMQN:
 
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
-                file.write("actor_1,actor_2\n")
-            file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+                file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
+            #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+            file.write(f"{','.join(map(str, q_vals))}\n")
     def save_abs_errors(self):
         for key in self.abs_errors:
             self.abs_errors[key] = np.array(self.abs_errors[key])

@@ -11,9 +11,10 @@ from tqdm import tqdm
 class PPO:
     def __init__(self, env, Policy, config):
         self.env = env
-        self.action_space_size = env.action_space.n.size
+        self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
-
+        config['action_space_size'] = self.action_space_size
+        config['obs_space_size'] = self.obs_space_size
         self.policy = Policy(config)
         self.batch = Batch()
 
@@ -60,7 +61,8 @@ class PPO:
         self.batch.advantages = norm_advantages
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=42)
+        #obs, _ = self.env.reset(seed=42) used for cartpole
+        obs, _ = self.env.reset(seed=random.randint(1, 10000))
         while True:
             action, value, log_prob, entropy = self.policy.get_action(obs)
             obs, reward, done, truncated, _ = self.env.step(action[0])
@@ -76,8 +78,8 @@ class PPO:
 
 
     def get_update_data_actor(self):
-        tm = [{'observations': [], 'target': [], 'advantages': [], 'entropy': []},
-              {'observations': [], 'target': [], 'advantages': [], 'entropy': []}]
+        tm = [{'observations': [], 'target': [], 'advantages': [], 'entropy': []} for i in range(self.action_space_size)]
+              #{'observations': [], 'target': [], 'advantages': [], 'entropy': []}]
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
@@ -170,8 +172,8 @@ class PPO:
 
     def save_model(self, best_model):
         if best_model:
-            self.policy.actor.tms[0].save_state()
-            self.policy.actor.tms[1].save_state()
+            #self.policy.actor.tms[0].save_state()
+            #self.policy.actor.tms[1].save_state()
             tms = []
             for tm in range(len(self.policy.actor.tms)):
                 ta_state, clause_sign, clause_output, feedback_to_clauses = self.policy.actor.tms[tm].get_params()
@@ -218,11 +220,18 @@ class PPO:
         if not os.path.exists(os.path.join(self.save_path, folder_name)):
             os.makedirs(os.path.join(self.save_path, folder_name))
         file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
-
         with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
             if not file_exists:
+                file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
+            # file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+            file.write(f"{','.join(map(str, probs))}\n")
+
+        """        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+            if not file_exists:
                 file.write("actor_1,actor_2\n")
-            file.write(f"{probs[0][0]}, {probs[0][1]}\n")
+            file.write(f"{probs[0][0]}, {probs[0][1]}\n")"""
+
+
     def save_abs_errors(self):
         for key in self.abs_errors:
             self.abs_errors[key] = np.array(self.abs_errors[key])
