@@ -1061,7 +1061,7 @@ cdef class TsetlinMachine:
 
 				# Type II feedback if target is lower than the predicted value
 
-			elif loss <= 0:
+			elif loss < 0:
 				feedback = 1
 				for j in xrange(self.number_of_clauses):
 					if 1.0*rand()/RAND_MAX < update_p:

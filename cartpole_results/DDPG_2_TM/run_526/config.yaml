@@ -1,0 +1,31 @@
+actor:
+  T: 343
+  bits_per_feature: 11
+  device: CPU
+  nr_of_classes: 2
+  nr_of_clauses: 980
+  number_of_state_bits_ta: 9
+  s: 3.56
+  seed: 42
+  weighted_clauses: false
+algorithm: TM_DDPG_2
+batch_size: 16
+critic:
+  T: 965
+  bits_per_feature: 7
+  device: CPU
+  nr_of_clauses: 1400
+  number_of_state_bits_ta: 4
+  s: 7.23
+  seed: 42
+  weighted_clauses: false
+  y_max: 60
+  y_min: 20
+epochs: 5
+exploration_prob_decay: 0.001
+exploration_prob_init: 1.0
+gamma: 0.938
+save: true
+soft_update_type: soft_update_1
+test_freq: 1
+update_grad: 0.121

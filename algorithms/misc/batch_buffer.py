@@ -36,7 +36,38 @@ class Batch:
         self.advantages = []
         self.entropies = []
         self.discounted_rewards = []
+    def shuffle(self):
+        self.sampled_actions = []
+        self.sampled_action_log_prob = []
+        self.sampled_values = []
+        self.sampled_obs = []
+        self.sampled_rewards = []
+        self.sampled_dones = []
+        self.sampled_advantages = []
+        self.sampled_entropies = []
+        self.sampled_discounted_rewards = []
 
+        sample = random.sample(range(len(self.rewards)), len(self.rewards))
+        for i, s in enumerate(sample):
+            self.sampled_actions.append(self.actions[s])
+            self.sampled_action_log_prob.append(self.action_log_prob[s])
+            self.sampled_values.append(self.values[s])
+            self.sampled_obs.append(self.obs[s])
+            self.sampled_rewards.append(self.rewards[s])
+            self.sampled_dones.append(self.dones[s])
+            self.sampled_advantages.append(self.advantages[s])
+            self.sampled_entropies.append(self.entropies[s])
+            #self.sampled_discounted_rewards.append(self.discounted_rewards[s])
+
+        self.sampled_actions = np.array(self.sampled_actions)
+        self.sampled_action_log_prob = np.array(self.sampled_action_log_prob)
+        self.sampled_values = np.array(self.sampled_values)
+        self.sampled_obs = np.array(self.sampled_obs)
+        self.sampled_rewards = np.array(self.sampled_rewards)
+        self.sampled_dones = np.array(self.sampled_dones)
+        self.sampled_advantages = np.array(self.sampled_advantages)
+        self.sampled_entropies = np.array(self.sampled_entropies)
+        #self.sampled_discounted_rewards = np.array(self.sampled_discounted_rewards)
     def sample(self):
         self.sampled_actions = []
         self.sampled_action_log_prob = []
@@ -84,10 +115,10 @@ class Batch:
 
     def save_experience(self, action, action_log_prob, value, obs, reward, done, entropy=0):
         self.actions.append(action)
-        #self.action_log_prob.append(action_log_prob)
-        #self.values.append(value)
-        self.action_log_prob.append(action_log_prob.detach().numpy())
-        self.values.append(value.detach().numpy())
+        self.action_log_prob.append(action_log_prob)
+        self.values.append(value)
+        #self.action_log_prob.append(action_log_prob.detach().numpy())
+        #self.values.append(value.detach().numpy())
         self.obs.append(obs)
         self.rewards.append(reward)
         self.dones.append(done)

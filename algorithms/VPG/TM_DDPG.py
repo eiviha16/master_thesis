@@ -1,7 +1,8 @@
 import numpy as np
 import os
 import yaml
-from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
+#from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
+from algorithms.misc.replay_buffer import ReplayBuffer
 import torch
 from tqdm import tqdm
 import random
@@ -14,7 +15,8 @@ class DDPG:
         self.obs_space_size = env.observation_space.shape[0]
         self.gamma = config['gamma']
         self.policy = Policy(config)
-        self.batch = Batch(config['batch_size'])
+        #self.batch = Batch(config['batch_size'])
+        self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
         self.exploration_prob = config['exploration_prob_init']
         self.exploration_prob_decay = config['exploration_prob_decay']
 
@@ -45,6 +47,7 @@ class DDPG:
         self.announce()
         self.cur_episode = 0
         self.total_score = []
+        self.batch_size = config['batch_size']
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -53,40 +56,37 @@ class DDPG:
         with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
             yaml.dump(config, yaml_file, default_flow_style=False)
 
-    def normalize_discounted_rewards(self):
-        dr = np.array(self.batch.discounted_rewards)
-        norm_dr = (dr - dr.mean()) / (dr.std() + 1e-10)
-        self.batch.discounted_rewards = norm_dr
 
-    def calculate_discounted_rewards(self):
-        discounted_reward = 0
-        for i in reversed(range(len(self.batch.actions))):
-            discounted_reward = self.batch.rewards[i] + self.gamma * discounted_reward
-            self.batch.discounted_rewards.insert(0, discounted_reward)
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=42)
         while True:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.batch.save_experience(actions, cur_obs, next_obs, reward, done)
+            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, done)
+
             if done or truncated:
                 break
             cur_obs = next_obs
     #u
     def temporal_difference(self, next_q_vals):
-        return np.array(self.batch.sampled_rewards) + (1 - np.array(self.batch.sampled_dones)) * self.gamma * next_q_vals
+        return np.array(self.replay_buffer.sampled_rewards) + (1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def get_actor_update(self, actions, target_q_vals):
 
         tm = {'observations': [],  'actions': [], 'feedback': []}
-        q_vals = self.policy.target_critic.predict(np.array(self.batch.sampled_cur_obs), actions)
+        q_vals = self.policy.target_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
 
         for index, action in enumerate(np.argmax(actions, axis=1)):
-            feedback = 1 if q_vals[index] > target_q_vals[index] else 2
+            #feedback = 1 if q_vals[index] > target_q_vals[index] else 2
+            if q_vals[index] >= target_q_vals[index]:
+                feedback = 1
+            else:
+                feedback = 2
+
             tm['feedback'].append(feedback)
             tm['actions'].append(action)
-            tm['observations'].append(self.batch.sampled_cur_obs[index])
+            tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
         return tm
 
     def get_q_val_for_action(self, actions, q_values):
@@ -106,7 +106,7 @@ class DDPG:
 
         tms = {'observations': [], 'actions': [], 'target': []}
         # actions = self.replay_buffer.sampled_actions
-        tms['observations'] = self.batch.sampled_cur_obs
+        tms['observations'] = self.replay_buffer.sampled_cur_obs
         tms['actions'] = actions
         tms['target'] = target_q_vals
 
@@ -114,16 +114,17 @@ class DDPG:
 
     def train(self):
         for epoch in range(self.epochs):
-            self.batch.sample()
-            b_actions = self.policy.actor.predict(np.array(self.batch.sampled_next_obs))
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample()
+            b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
             next_q_vals = self.policy.evaluation_critic.predict(
-                np.array(self.batch.sampled_next_obs), b_actions)  # next_obs?
+                np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
 
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
-            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.batch.sampled_actions, axis=1), target_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1), target_q_vals)
 
-            actor_tm_feedback = self.get_actor_update(self.batch.sampled_actions, target_q_vals)
+            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.target_critic.update(critic_update)
 
@@ -138,13 +139,13 @@ class DDPG:
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
             self.rollout()
-            self.batch.convert_to_numpy()
-
-            self.train()
+            #self.replay_buffer.convert_to_numpy()
+            if len(self.replay_buffer.cur_obs) >= self.batch_size:
+                self.train()
             self.test()
             self.update_exploration_prob()
 
-            self.batch.clear()
+            #self.batch.clear()
 
     def test(self):
         # remember to remove exploration when doing this

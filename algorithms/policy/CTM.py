@@ -79,6 +79,7 @@ class RTMS:
                                     max_target=config['y_max'], min_target=config['y_min'])
 
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
@@ -91,7 +92,9 @@ class RTMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        #self.tm.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) / (0.5 * self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        self.tm.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        #self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.

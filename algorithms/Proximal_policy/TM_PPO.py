@@ -20,6 +20,7 @@ class PPO:
         self.gamma = config['gamma']
         self.lam = config['lam']
         self.clip = config["clip"]
+        #self.n_timesteps = config['n_timesteps']
         self.epochs = config['epochs']
 
         #self.test_random_seeds = [random.randint(1, 100000) for _ in range(100)]
@@ -66,7 +67,8 @@ class PPO:
             self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, entropy)
             if done or truncated:
                 break
-        self.batch.convert_to_numpy()
+
+
 
     def evaluate_actions(self):
         actions, values, log_probs = self.policy.get_action(self.batch.obs)
@@ -96,8 +98,10 @@ class PPO:
 
     def get_update_data_critic(self):
         tm = [{'observations': [], 'target': []}, {'observations': [], 'target': []}]
+        #for i in range(len(self.batch.actions)):
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
+            #idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
             #print(self.batch.advantages[i] + self.batch.values[i, 0, 0])
             tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
@@ -112,6 +116,7 @@ class PPO:
 
     def train(self):
         for _ in range(self.epochs):
+            #self.batch.shuffle()
             actor_update = self.get_update_data_actor()
             self.policy.actor.update_2(actor_update, self.clip)
 
@@ -125,15 +130,17 @@ class PPO:
         self.abs_errors = {}
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            if self.best_score < 12 and episode > 50:
+            self.test()
+            if self.best_score < 10 and episode > 100:
                 break
             self.cur_episode = episode
             self.rollout()
+            self.batch.convert_to_numpy()
             self.calculate_advantage()
             #self.normalize_advantages()
 
             self.train()
-            self.test()
+            #self.test()
 
             self.batch.clear()
 

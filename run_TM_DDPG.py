@@ -6,6 +6,45 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
+from algorithms.VPG.TM_DDPG import DDPG
+from algorithms.policy.CTM import ActorCriticPolicy as Policy
+
+#actor = {'nr_of_classes': 2, 'nr_of_clauses': 1160, 'T': int(1160 * 0.52), 's': 4.5, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 9}
+actor = {'nr_of_classes': 2, 'nr_of_clauses': 1160, 'T': int(1160 * 0.8), 's': 1.43, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, "seed": 42, 'number_of_state_bits_ta': 3}
+#actor = {'nr_of_classes': 2, 'nr_of_clauses': 1060, 'T': int(1060 * 0.2), 's': 2.54, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, "seed": 42, 'number_of_state_bits_ta': 9}
+#critic = {'nr_of_clauses': 1150, 'T': int(1150 * 0.54), 's': 6.34, 'y_max': 65, 'y_min': 30, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 8}
+critic = {'nr_of_clauses': 1000, 'T': int(1000 * 0.27), 's': 5.42, 'y_max': 60, 'y_min': 35, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, "seed": 42, 'number_of_state_bits_ta': 3}
+#critic = {'nr_of_clauses': 1900, 'T': int(1900 * 0.19), 's': 5.91, 'y_max': 65, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, "seed": 42, 'number_of_state_bits_ta': 8}
+#config = {'algorithm': 'TM_DDPG_2', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'update_freq': 6, 'gamma': 0.906, 'actor': actor, 'critic': critic, 'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True}
+config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 9352, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.998, 'update_grad': -1, 'update_freq': 4, 'actor': actor, 'critic': critic, 'batch_size': 112, 'epochs': 7, 'test_freq': 1, "save": True}
+#config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7092, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.913, 'update_grad': -1, 'update_freq': 7, 'actor': actor, 'critic': critic, 'batch_size': 16, 'epochs': 2, 'test_freq': 1, "save": True}
+#run 5 without initialization
+#run 6 with initialization
+print(config)
+
+env = gym.make("CartPole-v1")
+
+
+agent = DDPG(env, Policy, config)
+agent.learn(nr_of_episodes=10_000)
+
+from test_policy import test_policy
+
+tm = torch.load(f'results/TM_DDPG_2/{agent.run_id}/best')
+agent.policy.actor.tm.set_params(tm[0]['ta_state'], tm[0]['clause_sign'], tm[0]['clause_count'])
+
+save_file = f'results/TM_DDPG_2/{agent.run_id}/final_test_results'
+
+test_policy(save_file, agent.policy.actor)
+
+"""import torch
+import numpy as np
+import random
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+
+import gymnasium as gym
 from algorithms.VPG.TM_VPG import VPG
 from algorithms.policy.RTM import ActorCriticPolicy2 as Policy
 
@@ -32,7 +71,7 @@ for i in range(len(tms)):
 
 save_file = f'results/TM_DDPG/{agent.run_id}/final_test_results'
 
-test_policy(save_file, agent.policy.actor)
+test_policy(save_file, agent.policy.actor)"""
 
 """
 a_bits_per_feature

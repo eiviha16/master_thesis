@@ -170,7 +170,9 @@ class TMQN:
             # calculate target_q_vals
             sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
             next_q_vals = self.evaluation_policy.predict(sampled_next_obs[:, -1, :])
-            actions = np.argmax(next_q_vals, axis=1) #|
+            #actions = np.argmax(next_q_vals, axis=1) #|
+            actions = np.argmax(self.target_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
+
             next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
             #next_q_vals = self.get_q_val_for_action(self.replay_buffer.sampled_actions, next_q_vals)

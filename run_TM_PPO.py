@@ -14,26 +14,14 @@ from algorithms.policy.RTM import ActorCriticPolicy as Policy
 #shows greater stability config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 2.0, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
 #498.12 - run 46 - config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'clip_range': 0.5, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 2.0, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 8}
 #495.24 - run 48 - config = {'algorithm': 'TM_PPO', 'gamma': 0.99, 'lam': 0.95, 'nr_of_clauses': 1000, 'T': 250, 's': 3.7, 'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 8}
-"""wandb: 	bits_per_feature: 12
-wandb: 	clip: 0.3809999999999999
-wandb: 	gamma: 0.944
-wandb: 	lam: 0.948
-wandb: 	nr_of_clauses: 1178
-wandb: 	number_of_state_bits_ta: 4
-wandb: 	specificity: 1.6300000000000006
-wandb: 	t: 0.7"""
-"""andb: Agent Starting Run: cfdh3rcq with config:
-wandb: 	bits_per_feature: 12
-wandb: 	clip: 0.001
-wandb: 	gamma: 0.951
-wandb: 	lam: 0.958
-wandb: 	nr_of_clauses: 1160
-wandb: 	number_of_state_bits_ta: 3
-wandb: 	specificity: 1.5000000000000004
-wandb: 	t: 0.76"""
+
 #config = {'algorithm': 'TM_PPO', 'gamma': 0.94, 'lam': 0.946, "clip": 0.431, 'nr_of_clauses': 1050, 'T': int(1050 * 0.59), 's': 1.6, 'y_max': 7.5, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 14,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
 #config = {'algorithm': 'TM_PPO', 'gamma': 0.952, 'lam': 0.964, "clip": 0.121, 'nr_of_clauses': 1020, 'T': int(1020 * 0.38), 's': 2.22, 'y_max': 100, 'y_min': 0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7,  'batch_size': 64, 'epochs': 3, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 4}
-config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.942, 'lam': 0.947, "clip": 0.301, 'nr_of_clauses': 900, 'T': int(900 * 0.5), 's': 2.54, 'y_max': 23.5, 'y_min': 0.9, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 4}
+#config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.942, 'lam': 0.947, "clip": 0.301, 'nr_of_clauses': 900, 'T': int(900 * 0.5), 's': 2.54, 'y_max': 23.5, 'y_min': 0.9, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 4}
+#config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.961, 'lam': 0.95, "clip": 0.041, 'nr_of_clauses': 1100, 'T': 743, 's': 1.66, 'y_max': 20.0, 'y_min': 0.2, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11,  'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 4}
+#config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.954, 'lam': 0.941, "clip": 0.451, 'nr_of_clauses': 1160, 'T': int(1160 * 0.66), 's': 1.97, 'y_max': 28.5, 'y_min': 0.2, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7,  'batch_size': 208, 'epochs': 3, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 4}
+#config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.952, 'lam': 0.943, "clip": 0.421, 'nr_of_clauses': 1060, 'T': int(1060 * 0.47), 's': 1.81, 'y_max': 24, 'y_min': 0.6, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 10,  'batch_size': 432, 'epochs': 4, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 5}
+config = {'comment': '--Does not use normalization--', 'algorithm': 'TM_PPO', 'gamma': 0.979, 'lam': 0.976, "clip": 0.011, 'nr_of_clauses': 1150, 'T': int(1150 * 0.75), 's': 1.56, 'y_max': 27.5, 'y_min': 0.1, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6,  'batch_size': 480, 'epochs': 1, 'test_freq': 1, "save": True, "seed": 42, 'number_of_state_bits_ta': 6}
 #change gamma and lambda
 
 print(config)

@@ -7,8 +7,8 @@ import numpy as np
 
 #config = {'algorithm': 'DQN', 'gamma': 0.98, 'c': 30, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 20000, 'batch_size': 256, 'epochs': 4, 'hidden_size': 64, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
 #config = {'algorithm': 'DQN', 'gamma': 0.99, 'c': 30, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 20000, 'batch_size': 256, 'epochs': 4, 'hidden_size': 64, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
-config = {'algorithm': 'DQN', 'gamma': 0.99, 'c':  1000, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 20000, 'batch_size': 32, 'epochs': 2, 'hidden_size': 128, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
-
+config = {'algorithm': 'DQN', 'gamma': 0.99, 'c':  1, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 50_000, 'batch_size': 256, 'epochs': 8, 'hidden_size': 64, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
+print(config)
 random.seed(42)
 np.random.seed(42)
 torch.manual_seed(42)
@@ -23,4 +23,4 @@ from test_policy import test_policy
 
 file = f'./results/DQN/{agent.run_id}/best_model'
 model = torch.load(file)
-test_policy(f'./results/DQN/{agent.run_id}/final_test_results', model.actor)
+test_policy(f'./results/DQN/{agent.run_id}/final_test_results', model)

@@ -129,6 +129,7 @@ class DQN:
                 nr_of_steps += 1
                 if done or truncated:
                     break
+            print(f'Training_reward: {episode_reward}')
             if nr_of_steps >= self.batch_size:
                 self.train()
             self.update_exploration_prob()

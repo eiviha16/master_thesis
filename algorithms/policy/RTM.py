@@ -41,6 +41,7 @@ class Policy():
                                       max_target=config['y_max'], min_target=config[
                 'y_min'])
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
@@ -53,10 +54,10 @@ class Policy():
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        _ = self.tm1.fit(vals,
-                         np.array([random.randint(0, 60) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
-        _ = self.tm2.fit(vals,
-                         np.array([random.randint(0, 60) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
+        #_ = self.tm1.fit(vals, np.array([random.randint(0, 60) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
+        _ = self.tm1.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
+        #_ = self.tm2.fit(vals, np.array([random.randint(0, 60) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
+        _ = self.tm2.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
 
     def update(self, tm_1_input, tm_2_input):
         # take a list for each tm that is being updated.
@@ -105,10 +106,12 @@ class TMS:
             self.tms.append(tm)
 
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
         self.init_TMs()
+
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -118,8 +121,8 @@ class TMS:
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
         for tm in self.tms:
-            tm.fit(vals,
-                   np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+            #tm.fit(vals,np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+            tm.fit(vals,np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.
@@ -174,10 +177,12 @@ class TMS:
             self.tms.append(tm)
 
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
         self.init_TMs()
+
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -187,8 +192,7 @@ class TMS:
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
         for tm in self.tms:
-            tm.fit(vals,
-                   np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+            tm.fit(vals, np.array([random.randint(int(self.config['y_min']), int(self.config['y_max']))  for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         keys = ['critic']
@@ -234,7 +238,7 @@ class TMS:
 class ActorCriticPolicy:
     def __init__(self, config):
         self.critic = TMS(1, config)
-        config['y_max'] = 2.0
+        config['y_max'] = 100.0
         config['y_min'] = 0.0
         self.actor = TMS(2, config)
 
@@ -269,6 +273,7 @@ class TMS2:
             self.tms.append(tm)
 
         self.vals = np.loadtxt('./algorithms/misc/observation_data.txt', delimiter=',').astype(dtype=np.float32)
+        self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
@@ -283,7 +288,7 @@ class TMS2:
         vals = vals.astype(dtype=np.int32)
         for tm in self.tms:
             tm.fit(vals,
-                   np.array([random.randint(self.config['y_min'], self.config['y_max']) / (0.5 * self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+                   np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         keys = ['actor1', 'actor2']
