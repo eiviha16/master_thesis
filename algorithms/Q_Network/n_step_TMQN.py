@@ -149,7 +149,8 @@ class TMQN:
                     self.config['nr_of_episodes'] = episode + 1
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
-
+            if self.cur_episode > 50 and self.best_scores['mean'] < -499:
+                break
             cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
             episode_reward = 0
 

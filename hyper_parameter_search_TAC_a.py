@@ -96,8 +96,8 @@ sweep_configuration = {
         "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
         "c_max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
-        "c_y_max": {"values": list(range(-100, -20, 5))},
-        "c_y_min": {"values": list(range(-500, -100, 5))},
+        "c_y_max": {"values": list(range(-30, -10, 5))},
+        "c_y_min": {"values": list(range(-200, -100, 5))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
         "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},

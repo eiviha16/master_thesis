@@ -29,23 +29,24 @@ def objective(config):
 
     _config = {
         'algorithm': 'n_step_Double_TMQN', 'soft_update_type': 'soft_update_1', 'n_steps': config.n_steps, 'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
-        's': config.specificity, 'y_max': config.y_max, 'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 50, "save": False, "seed": 42,
-        'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': 10000}
+        "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max, 'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay, 'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
+        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
+        'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': 10000,  "dataset_file_name": "acrobot_obs_data"}
 
 
 
-    env = gym.make("CartPole-v1")
-    #env = gym.make("Acrobot-v1")
+    #env = gym.make("CartPole-v1")
+    env = gym.make("Acrobot-v1")
 
     #agent = PPO(env, Policy, _config)
     agent = TMQN(env, Policy, _config)
     #agent = PPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=5000)
+    agent.learn(nr_of_episodes=500)
     #score = np.array(agent.best_score)
-    scores = np.array(agent.total_score)
-    score = np.mean(scores)
+    score = np.array(agent.best_scores['mean'])
+    #scores = np.array(agent.total_score)
+    #score = np.mean(scores)
     return score
 
 
@@ -64,18 +65,21 @@ sweep_configuration = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "n_steps": {"values": list(range(1, 20, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
-        "buffer_size": {"values": list(range(500, 10_000, 500))},
+        "buffer_size": {"values": list(range(500, 20_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
         "t": {"values": list(np.arange(0.01, 1.00, 0.01))},
-        "nr_of_clauses": {"values": list(range(800, 1200, 20))},
+        "nr_of_clauses": {"values": list(range(800, 2000, 20))},
         "specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "bits_per_feature": {"values": list(range(5, 15, 1))},
         "number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
-        "y_max": {"values": list(range(60, 80, 5))},
-        "y_min": {"values": list(range(20, 40, 5))}
+        "y_max": {"values": list(range(-30, -10, 5))},
+        "y_min": {"values": list(range(-200, -100, 5))},
+        "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
+        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
     }
 }
 

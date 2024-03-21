@@ -88,6 +88,7 @@ sweep_configuration = {
         "c_max_update_p": {"values": list(np.arange(0.001, 0.200, 0.001))},
         "c_y_max": {"values": list(np.arange(-100, -1.0, 0.5))},
         "c_y_min": {"values": list(np.arange(-300.0, -100.0, 0.1))},
+
     }
 }
 

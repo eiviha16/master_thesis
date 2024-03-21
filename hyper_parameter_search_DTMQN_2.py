@@ -32,7 +32,7 @@ def objective(config):
         's': config.specificity, 'y_max': config.y_max, 'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 50, "save": False, "seed": 42,
-        'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': 0, 'update_freq': config.update_freq}
+        'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': 0, 'update_freq': config.update_freq, "max_update_p": config.max_update_p,}
 
 
 
@@ -74,7 +74,8 @@ sweep_configuration = {
         "bits_per_feature": {"values": list(range(5, 15, 1))},
         "number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
         "y_max": {"values": list(range(60, 80, 5))},
-        "y_min": {"values": list(range(20, 40, 5))}
+        "y_min": {"values": list(range(20, 40, 5))},
+        "max_update_p": config.c_max_update_p,
     }
 }
 
