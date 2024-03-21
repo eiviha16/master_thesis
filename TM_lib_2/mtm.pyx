@@ -24,6 +24,7 @@
 
 import numpy as np
 cimport numpy as np
+#import numpy.random
 
 ########################################
 ### The Multiclass Tsetlin Machine #####
@@ -62,6 +63,8 @@ cdef class MultiClassTsetlinMachine:
 	def __init__(self, number_of_classes, number_of_clauses, number_of_features, number_of_states, s, threshold, boost_true_positive_feedback = 0):
 		cdef int[:] target_indexes
 		cdef int c,i,j,m
+		np.random.seed(42)
+
 		self.number_of_classes = number_of_classes
 		self.number_of_clauses = number_of_clauses
 		self.number_of_features = number_of_features

@@ -13,8 +13,8 @@ random.seed(42)
 np.random.seed(42)
 torch.manual_seed(42)
 
-#env = gym.make("CartPole-v1")
-env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
 
 
 agent = DQN(env, Policy, config)

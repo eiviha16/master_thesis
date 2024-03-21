@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import yaml
-#from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
+# from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
 from algorithms.misc.replay_buffer import ReplayBuffer
 import torch
 from tqdm import tqdm
@@ -17,7 +17,6 @@ class DDPG:
         config['obs_space_size'] = self.obs_space_size
         self.gamma = config['gamma']
         self.policy = Policy(config)
-        #self.batch = Batch(config['batch_size'])
         self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
         self.exploration_prob = config['exploration_prob_init']
         self.exploration_prob_decay = config['exploration_prob_decay']
@@ -26,8 +25,6 @@ class DDPG:
         self.config = config
         self.update_grad = config['update_grad']
 
-
-        # self.test_random_seeds = [random.randint(1, 100000) for _ in range(100)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
                                   73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852,
@@ -41,11 +38,16 @@ class DDPG:
         self.test_seeds = np.random
         self.save = config['save']
         self.save_path = ''
-        self.run_id = 'run_' + str(len([i for i in os.listdir(f"./results/{config['algorithm']}")]) + 1)
-        self.make_run_dir(config['algorithm'])
 
+        if self.save:
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+        else:
+            print('Warning SAVING is OFF!')
+            self.run_id = "unidentified_run"
+        if self.save:
+            self.make_run_dir(config['algorithm'])
+            self.save_config(config)
         self.best_score = float('-inf')
-        self.save_config(config)
         self.announce()
         self.cur_episode = 0
         self.total_score = []
@@ -55,13 +57,11 @@ class DDPG:
         print(f'{self.run_id} has been initialized!')
 
     def save_config(self, config):
-        with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
-            yaml.dump(config, yaml_file, default_flow_style=False)
-
-
+        if self.save:
+            with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
+                yaml.dump(config, yaml_file, default_flow_style=False)
 
     def rollout(self):
-       #cur_obs, _ = self.env.reset(seed=42) used for cartpole
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
 
         while True:
@@ -74,15 +74,16 @@ class DDPG:
             cur_obs = next_obs
 
     def temporal_difference(self, next_q_vals):
-        return np.array(self.replay_buffer.sampled_rewards) + (1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+        return np.array(self.replay_buffer.sampled_rewards) + (
+                    1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def get_actor_update(self, actions, target_q_vals):
 
-        tm = {'observations': [],  'actions': [], 'feedback': []}
+        tm = {'observations': [], 'actions': [], 'feedback': []}
         q_vals = self.policy.target_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
 
         for index, action in enumerate(np.argmax(actions, axis=1)):
-            #feedback = 1 if q_vals[index] > target_q_vals[index] else 2
+            # feedback = 1 if q_vals[index] > target_q_vals[index] else 2
             if q_vals[index] >= target_q_vals[index]:
                 feedback = 1
             else:
@@ -98,6 +99,7 @@ class DDPG:
         for index, action in enumerate(actions):
             q_vals.append(q_values[index][action])
         return np.array(q_vals)
+
     def get_next_action(self, cur_obs):
         if np.random.random() < self.exploration_prob:
             actions = np.array([0 for i in range(self.action_space_size)])
@@ -106,10 +108,10 @@ class DDPG:
         else:
             action, actions = self.policy.get_action(cur_obs)
         return action, actions
+
     def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
 
         tms = {'observations': [], 'actions': [], 'target': []}
-        # actions = self.replay_buffer.sampled_actions
         tms['observations'] = self.replay_buffer.sampled_cur_obs
         tms['actions'] = actions
         tms['target'] = target_q_vals
@@ -126,7 +128,8 @@ class DDPG:
 
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
-            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1), target_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
+                                                          target_q_vals)
 
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
@@ -136,6 +139,7 @@ class DDPG:
             self.soft_update_1(self.policy.target_critic.tm, self.policy.evaluation_critic.tm)
         else:
             self.soft_update_2(self.policy.target_critic.tm, self.policy.evaluation_critic.tm)
+
     def update_exploration_prob(self):
         self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
 
@@ -144,12 +148,9 @@ class DDPG:
             self.test()
             self.cur_episode = episode
             self.rollout()
-            #self.replay_buffer.convert_to_numpy()
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
             self.update_exploration_prob()
-
-            #self.batch.clear()
 
     def test(self):
         # remember to remove exploration when doing this
@@ -173,13 +174,15 @@ class DDPG:
             print(f'New best mean: {mean}!')
 
     def save_model(self, best_model):
+
         if self.save:
             if best_model:
-                #self.policy.actor.tm.save_state()
+                # self.policy.actor.tm.save_state()
                 tms = []
                 ta_state, clause_sign, clause_count = self.policy.actor.tm.get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
-                clause_sign_save = np.zeros((len(clause_sign), len(clause_sign[0]), len(clause_sign[0][0])), dtype=np.int32)
+                clause_sign_save = np.zeros((len(clause_sign), len(clause_sign[0]), len(clause_sign[0][0])),
+                                            dtype=np.int32)
                 clause_count_save = np.zeros((len(clause_count)), dtype=np.int32)
 
                 for i in range(len(ta_state)):
@@ -192,20 +195,22 @@ class DDPG:
                             clause_sign_save[i][j][k] = int(clause_sign[i][j][k])
                 for i in range(len(clause_count)):
                     clause_count_save[i] = int(clause_count[i])
-                tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
+                tms.append(
+                    {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
 
             else:
                 pass
 
     def save_results(self, mean, std):
-        file_name = 'test_results.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, file_name))
+        if self.save:
+            file_name = 'test_results.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
-        with open(os.path.join(self.save_path, file_name), "a") as file:
-            if not file_exists:
-                file.write("mean,std\n")
-            file.write(f"{mean},{std}\n")
+            with open(os.path.join(self.save_path, file_name), "a") as file:
+                if not file_exists:
+                    file.write("mean,std\n")
+                file.write(f"{mean},{std}\n")
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:

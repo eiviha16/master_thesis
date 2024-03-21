@@ -38,6 +38,7 @@ class TMQN:
         if config['save']:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
+            print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"  # self.test_random_seeds = [random.randint(1, 100000) for i in range(self.nr_of_test_episodes)]
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
@@ -63,6 +64,7 @@ class TMQN:
         self.nr_actions = 0
         self.total_score = []
         self.abs_errors = {}
+        self.nr_of_steps = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -181,51 +183,33 @@ class TMQN:
         if self.config['soft_update_type'] == 'soft_update_1':
             for i in range(len(self.target_policy.tms)):
                 self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
-            #self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
-            #self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
         else:
             for i in range(len(self.target_policy.tms)):
                 self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
-            #self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
-        #self.save_abs_errors()
+
         self.abs_errors = {}
+    def rollout(self):
+        cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
+        while True:
+            action, _ = self.get_next_action(cur_obs)
+            # actions[action] += 1
+            next_obs, reward, done, truncated, _ = self.env.step(action)
 
-    def learn(self, nr_of_episodes):
-        nr_of_steps = 0
-        for episode in tqdm(range(nr_of_episodes)):
-            if episode > 50 and self.best_scores['mean'] < -499:
+            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)
+            cur_obs = next_obs
+            self.nr_of_steps += 1
+
+            if done or truncated:
                 break
+    def learn(self, nr_of_episodes):
+        for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
-            #actions = [0, 0]
-            if self.test_freq:
-                if episode % self.test_freq == 0:
-                    self.test(nr_of_steps)
-                    self.config['nr_of_episodes'] = episode + 1
-                    self.config['nr_of_steps'] = nr_of_steps
-                    self.save_config()
-
-            cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
-            episode_reward = 0
-
-            while True:
-                action, _ = self.get_next_action(cur_obs)
-                #actions[action] += 1
-                next_obs, reward, done, truncated, _ = self.env.step(action)
-
-                # might want to not have truncated in my replay buffer
-                self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), nr_of_steps)
-                episode_reward += reward
-                cur_obs = next_obs
-                nr_of_steps += 1
-
-                if done or truncated:
-                    break
-            if nr_of_steps - self.config['n_steps'] >= self.batch_size:
+            if episode % self.test_freq == 0:
+                self.test(self.nr_of_steps)
+            self.rollout()
+            if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
                 self.train()
-                #self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
-        if self.save:
-            plot_test_results(self.save_path, text={'title': 'n-step Double TMQN'})
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
@@ -261,32 +245,33 @@ class TMQN:
         #self.save_q_vals(nr_of_steps)
 
     def save_model(self, best_model):
-        if best_model:
-            #self.target_policy.tm1.save_state()
-            #self.target_policy.tm2.save_state()
-            tms = self.target_policy.tms#[self.target_policy.tm1, self.target_policy.tm2]
-            tms_save = []
-            for n in range(len(tms)):
-                ta_state, clause_sign, clause_output, feedback_to_clauses = tms[n].get_params()
-                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
-                clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
-                clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
-                feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+        if self.save:
 
-                for i in range(len(ta_state)):
-                    for j in range(len(ta_state[i])):
-                        for k in range(len(ta_state[i][j])):
-                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
-                    clause_sign_save[i] = int(clause_sign[i])
-                    clause_output_save[i] = int(clause_output[i])
-                    feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
-                tms_save.append(
-                    {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save,
-                     'feedback_to_clauses': feedback_to_clauses_save})
-            torch.save(tms_save, os.path.join(self.save_path, 'best'))
+            if best_model:
 
-        else:
-            pass
+                tms = self.target_policy.tms
+                tms_save = []
+                for n in range(len(tms)):
+                    ta_state, clause_sign, clause_output, feedback_to_clauses = tms[n].get_params()
+                    ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+                    clause_sign_save = np.zeros((len(clause_sign)), dtype=np.int32)
+                    clause_output_save = np.zeros((len(clause_output)), dtype=np.int32)
+                    feedback_to_clauses_save = np.zeros((len(feedback_to_clauses)), dtype=np.int32)
+
+                    for i in range(len(ta_state)):
+                        for j in range(len(ta_state[i])):
+                            for k in range(len(ta_state[i][j])):
+                                ta_state_save[i][j][k] = int(ta_state[i][j][k])
+                        clause_sign_save[i] = int(clause_sign[i])
+                        clause_output_save[i] = int(clause_output[i])
+                        feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
+                    tms_save.append(
+                        {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save,
+                         'feedback_to_clauses': feedback_to_clauses_save})
+                torch.save(tms_save, os.path.join(self.save_path, 'best'))
+
+            else:
+                pass
 
     def save_results(self, mean, std, nr_of_steps):
         if self.save:
@@ -309,24 +294,28 @@ class TMQN:
                 file.write(f"{actions[0]},{actions[1]},{nr_of_steps}\n")
 
     def save_q_vals(self, q_vals):
-        folder_name = 'q_values'
-        file_name = f'{self.cur_episode}.csv'
-        if not os.path.exists(os.path.join(self.save_path, folder_name)):
-            os.makedirs(os.path.join(self.save_path, folder_name))
-        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+        if self.save:
 
-        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
-            if not file_exists:
-                file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
-            #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
-            file.write(f"{','.join(map(str, q_vals))}\n")
+            folder_name = 'q_values'
+            file_name = f'{self.cur_episode}.csv'
+            if not os.path.exists(os.path.join(self.save_path, folder_name)):
+                os.makedirs(os.path.join(self.save_path, folder_name))
+            file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+
+            with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+                if not file_exists:
+                    file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
+                #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
+                file.write(f"{','.join(map(str, q_vals))}\n")
     def save_abs_errors(self):
-        for key in self.abs_errors:
-            self.abs_errors[key] = np.array(self.abs_errors[key])
-        folder_name = 'absolute_errors.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+        if self.save:
 
-        with open(os.path.join(self.save_path, folder_name), "a") as file:
-            if not file_exists:
-                file.write('actor1_mean,actor1_std,actor2_mean,actor2_std\n')
-            file.write(f"{np.mean(self.abs_errors['actor1'])},{np.std(self.abs_errors['actor1'])},{np.mean(self.abs_errors['actor2'])},{np.std(self.abs_errors['actor2'])}\n")
+            for key in self.abs_errors:
+                self.abs_errors[key] = np.array(self.abs_errors[key])
+            folder_name = 'absolute_errors.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+
+            with open(os.path.join(self.save_path, folder_name), "a") as file:
+                if not file_exists:
+                    file.write('actor1_mean,actor1_std,actor2_mean,actor2_std\n')
+                file.write(f"{np.mean(self.abs_errors['actor1'])},{np.std(self.abs_errors['actor1'])},{np.mean(self.abs_errors['actor2'])},{np.std(self.abs_errors['actor2'])}\n")
