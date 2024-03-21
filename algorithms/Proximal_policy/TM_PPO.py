@@ -20,8 +20,8 @@ class PPO:
 
         self.gamma = config['gamma']
         self.lam = config['lam']
-        self.clip = config["clip"]
-        #self.n_timesteps = config['n_timesteps']
+        #self.clip = config["clip"]
+        self.n_timesteps = config['n_timesteps']
         self.epochs = config['epochs']
 
         #self.test_random_seeds = [random.randint(1, 100000) for _ in range(100)]
@@ -30,7 +30,6 @@ class PPO:
         self.save_path = ''
         self.run_id = 'run_' + str(len([i for i in os.listdir(f"./results/{config['algorithm']}")]) + 1)
         self.make_run_dir(config['algorithm'])
-
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
@@ -62,14 +61,20 @@ class PPO:
 
     def rollout(self):
         #obs, _ = self.env.reset(seed=42) used for cartpole
-        obs, _ = self.env.reset(seed=random.randint(1, 10000))
+        obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
             action, value, log_prob, entropy = self.policy.get_action(obs)
             obs, reward, done, truncated, _ = self.env.step(action[0])
             self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, entropy)
             if done or truncated:
                 break
-
+            """if len(self.batch.actions) > self.n_timesteps:
+                self.batch.convert_to_numpy()
+                self.calculate_advantage()
+                # self.normalize_advantages()
+                self.train()
+                self.batch.clear()
+            """
 
 
     def evaluate_actions(self):
@@ -84,6 +89,10 @@ class PPO:
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
+
+            #if self.cur_episode < 10 and self.action_space_size == 3:
+            #    tm[idx]['advantages'].append(np.random.randint(1, 50))
+            #else:
             tm[idx]['advantages'].append(self.batch.advantages[i])
             tm[idx]['entropy'].append(self.batch.entropies[i][idx])
             """            if idx == 1:
@@ -99,7 +108,7 @@ class PPO:
         return tm
 
     def get_update_data_critic(self):
-        tm = [{'observations': [], 'target': []}, {'observations': [], 'target': []}]
+        tm = [{'observations': [], 'target': []} for _ in range(self.action_space_size)]#, {'observations': [], 'target': []}]
         #for i in range(len(self.batch.actions)):
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
@@ -120,7 +129,7 @@ class PPO:
         for _ in range(self.epochs):
             #self.batch.shuffle()
             actor_update = self.get_update_data_actor()
-            self.policy.actor.update_2(actor_update, self.clip)
+            self.policy.actor.update_2(actor_update)#, self.clip)
 
             critic_update = self.get_update_data_critic()
             abs_errors = self.policy.critic.update(critic_update)
@@ -133,18 +142,16 @@ class PPO:
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.test()
-            if self.best_score < 10 and episode > 100:
+            if self.best_score < -499 and episode > 50:
                 break
             self.cur_episode = episode
             self.rollout()
+
             self.batch.convert_to_numpy()
             self.calculate_advantage()
-            #self.normalize_advantages()
-
             self.train()
-            #self.test()
-
             self.batch.clear()
+
 
     def test(self):
         # remember to remove exploration when doing this
@@ -215,6 +222,7 @@ class PPO:
         self.save_path = os.path.join(base_dir, algorithm, self.run_id)
 
     def save_probs(self, probs):
+        base_dir = './results'
         folder_name = 'action_probabilities'
         file_name = f'{self.cur_episode}.csv'
         if not os.path.exists(os.path.join(self.save_path, folder_name)):
@@ -233,10 +241,11 @@ class PPO:
 
 
     def save_abs_errors(self):
+        base_dir = './results'
         for key in self.abs_errors:
             self.abs_errors[key] = np.array(self.abs_errors[key])
         folder_name = 'absolute_errors_critic.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, folder_name))
+        file_exists = os.path.exists(os.path.join(base_dir, self.save_path, folder_name))
 
         with open(os.path.join(self.save_path, folder_name), "a") as file:
             if not file_exists:

@@ -150,7 +150,7 @@ class TMQN:
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
 
-            cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
+            cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
             episode_reward = 0
 
             while True:

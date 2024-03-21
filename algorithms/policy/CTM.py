@@ -27,16 +27,16 @@ class MTMS:
     def __init__(self, config):
         self.tms = []
         self.tm = MTM.MultiClassTsetlinMachine(number_of_classes=config['action_space_size'],
-                                    number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * config['obs_space_size'],
-                                    s=config['s'],
-                                    number_of_states=config['number_of_state_bits_ta'],
-                                    threshold=config['T'])
+                                    number_of_clauses=config['actor']['nr_of_clauses'],
+                                    number_of_features=config['actor']['bits_per_feature'] * config['obs_space_size'],
+                                    s=config['actor']['s'],
+                                    number_of_states=config['actor']['number_of_state_bits_ta'],
+                                    threshold=config['actor']['T'])
 
         self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
-        self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
+        self.binarizer = StandardBinarizer(max_bits_per_feature=config['actor']['bits_per_feature'])
         self.init_binarizer()
 
 
@@ -67,20 +67,23 @@ class MTMS:
 
 class RTMS:
     def __init__(self, config):
-        self.tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * config['obs_space_size'],
-                                    s=config['s'],
-                                    number_of_states=config['number_of_state_bits_ta'],
-                                    threshold=config['T'],
-                                    max_target=config['y_max'], min_target=config['y_min'])
+        self.tm = RTM.TsetlinMachine(number_of_clauses=config['critic']['nr_of_clauses'],
+                                    number_of_features=config['critic']['bits_per_feature'] * config['obs_space_size'],
+                                    s=config['critic']['s'],
+                                    number_of_states=config['critic']['number_of_state_bits_ta'],
+                                    threshold=config['critic']['T'],
+                                    max_target=config['critic']['y_max'], min_target=config['critic']['y_min'],
+                                    max_update_p=config['critic']['max_update_p'])
+                                    #min_update_p=config['min_update_p'])
+
 
         #self.vals = np.loadtxt('./algorithms/misc/{observation_data.txt', delimiter=',').astype(dtype=np.float32)
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
-        self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
+        self.binarizer = StandardBinarizer(max_bits_per_feature=config['critic']['bits_per_feature'])
         self.init_binarizer()
-        self.init_TMs()
+        #self.init_TMs()
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -89,7 +92,7 @@ class RTMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        self.tm.fit(vals, np.array([random.randint(self.config['y_min'], self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        self.tm.fit(vals, np.array([random.randint(int(self.config['critic']['y_min']), int(self.config['critic']['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
         #self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
@@ -117,9 +120,9 @@ class RTMS:
 
 class ActorCriticPolicy:
     def __init__(self, config):
-        self.target_critic = RTMS(config['critic'])
-        self.evaluation_critic = RTMS(config['critic'])
-        self.actor = MTMS(config['actor'])
+        self.target_critic = RTMS(config)
+        self.evaluation_critic = RTMS(config)
+        self.actor = MTMS(config)
 
 
     def get_action(self, obs):

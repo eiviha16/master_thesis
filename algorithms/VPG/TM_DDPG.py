@@ -62,7 +62,7 @@ class DDPG:
 
     def rollout(self):
        #cur_obs, _ = self.env.reset(seed=42) used for cartpole
-        cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
+        cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
 
         while True:
             action, actions = self.get_next_action(cur_obs)
@@ -141,12 +141,12 @@ class DDPG:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
+            self.test()
             self.cur_episode = episode
             self.rollout()
             #self.replay_buffer.convert_to_numpy()
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
-            self.test()
             self.update_exploration_prob()
 
             #self.batch.clear()

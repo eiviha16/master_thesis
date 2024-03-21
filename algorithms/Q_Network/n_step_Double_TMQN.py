@@ -50,7 +50,7 @@ class TMQN:
                                   32088, 21418, 60590, 49736]
 
         self.save = config['save']
-        self.best_scores = {'mean': 0, 'std': float('inf')}
+        self.best_scores = {'mean': -float('inf'), 'std': float('inf')}
         self.cur_mean = 0
         self.config = config
         self.save_path = ''
@@ -179,15 +179,15 @@ class TMQN:
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
         if self.config['soft_update_type'] == 'soft_update_1':
-            for i in self.target_policy.tms:
+            for i in range(len(self.target_policy.tms)):
                 self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
             #self.soft_update_1(self.target_policy.tm1, self.evaluation_policy.tm1)
             #self.soft_update_1(self.target_policy.tm2, self.evaluation_policy.tm2)
         else:
-            for i in self.target_policy.tms:
+            for i in range(len(self.target_policy.tms)):
                 self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
             #self.soft_update_2(self.target_policy.tm2, self.evaluation_policy.tm2)
-        self.save_abs_errors()
+        #self.save_abs_errors()
         self.abs_errors = {}
 
     def learn(self, nr_of_episodes):
@@ -196,7 +196,7 @@ class TMQN:
             if episode > 500 and self.best_scores['mean'] < 50:
                 break
             self.cur_episode = episode
-            actions = [0, 0]
+            #actions = [0, 0]
             if self.test_freq:
                 if episode % self.test_freq == 0:
                     self.test(nr_of_steps)
@@ -204,12 +204,12 @@ class TMQN:
                     self.config['nr_of_steps'] = nr_of_steps
                     self.save_config()
 
-            cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
+            cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
             episode_reward = 0
 
             while True:
                 action, _ = self.get_next_action(cur_obs)
-                actions[action] += 1
+                #actions[action] += 1
                 next_obs, reward, done, truncated, _ = self.env.step(action)
 
                 # might want to not have truncated in my replay buffer
@@ -222,7 +222,7 @@ class TMQN:
                     break
             if nr_of_steps - self.config['n_steps'] >= self.batch_size:
                 self.train()
-                self.save_actions(actions, nr_of_steps)
+                #self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
         if self.save:
             plot_test_results(self.save_path, text={'title': 'n-step Double TMQN'})

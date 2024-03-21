@@ -30,7 +30,11 @@ class Policy():
                                       s=config['s'],
                                       number_of_states=config['number_of_state_bits_ta'],
                                       threshold=config['T'],
-                                      max_target=config['y_max'], min_target=config['y_min']) for _ in range(config['action_space_size'])]
+                                      max_target=config['y_max'], min_target=config['y_min'],
+                                      max_update_p=config['max_update_p'],
+                                      min_update_p=config['min_update_p'])
+
+                                      for _ in range(config['action_space_size'])]
 
 
         self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
@@ -38,7 +42,7 @@ class Policy():
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        self.init_TMs()
+        #self.init_TMs()
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -57,7 +61,7 @@ class Policy():
     def update(self, tms_input):
         # take a list for each tm that is being updated.
         abs_errors = {f'actor{i}': [] for i in range(len(self.tms))}
-        for idx, input in tms_input:
+        for idx, input in enumerate(tms_input):
             if len(tms_input[idx]['observations']) > 0:
                 tms_input[idx]['observations'] = self.binarizer.transform(np.array(tms_input[idx]['observations']))
                 abs_errors['actor1'] = self.tms[idx].fit(tms_input[idx]['observations'].astype(dtype=np.int32),
@@ -67,7 +71,7 @@ class Policy():
     def predict(self, obs):
         # binarize input
         if obs.ndim == 1:
-            obs = obs.reshape(1, config['obs_space_size'])
+            obs = obs.reshape(1, self.config['obs_space_size'])
         b_obs = self.binarizer.transform(obs)
 
         # pass it through each tm
@@ -83,24 +87,28 @@ class Policy():
 
 
 
-class TMS:
-    def __init__(self, nr_of_tms, config):
+"""class TMS:
+    def __init__(self, nr_of_tms, config, obs_space_size, file_name):
         self.tms = []
         for _ in range(nr_of_tms):
             tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * config['obs_space_size'],
+                                    number_of_features=config['bits_per_feature'] * obs_space_size,
                                     s=config['s'],
                                     number_of_states=config['number_of_state_bits_ta'],
                                     threshold=config['T'],
-                                    max_target=config['y_max'], min_target=config['y_min'])
+                                    max_target=config['y_max'], min_target=config['y_min'],
+                                    max_update_p = config['max_update_p'],
+                                    min_update_p = config['min_update_p'])
+
+
             self.tms.append(tm)
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'./algorithms/misc/{file_name}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
-
+        self.obs_space_size = obs_space_size
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        self.init_TMs()
+        #self.init_TMs()
 
 
     def init_binarizer(self):
@@ -140,7 +148,7 @@ class TMS:
     def predict(self, obs):
         # binarize input
         if obs.ndim == 1:
-            obs = obs.reshape(1, self.config['obs_space_size'])
+            obs = obs.reshape(1, self.obs_space_size)
         b_obs = self.binarizer.transform(obs)
         # pass it through each tm
         b_obs = b_obs.astype(dtype=np.int32)
@@ -151,27 +159,30 @@ class TMS:
                 tm_vals[i] = tm.predict(obs)
             result.append(tm_vals)
 
-        return np.array(result)
+        return np.array(result)"""
 
 
 class TMS:
-    def __init__(self, nr_of_tms, config):
+    def __init__(self, nr_of_tms, config, obs_space_size, file_name):
         self.tms = []
         for _ in range(nr_of_tms):
             tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * 4,
+                                    number_of_features=config['bits_per_feature'] * obs_space_size,
                                     s=config['s'],
                                     number_of_states=config['number_of_state_bits_ta'],
                                     threshold=config['T'],
-                                    max_target=config['y_max'], min_target=config['y_min'])
+                                    max_target=config['y_max'], min_target=config['y_min'],
+                                    max_update_p = config['max_update_p'],
+                                    min_update_p = config['min_update_p'])
+
             self.tms.append(tm)
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'./algorithms/misc/{file_name}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
-
+        self.obs_space_size = obs_space_size
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        self.init_TMs()
+        #self.init_TMs()
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -182,7 +193,7 @@ class TMS:
         vals = vals.astype(dtype=np.int32)
         for tm in self.tms:
             tm.fit(vals,
-                   np.array([random.randint(self.config['y_min'], self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+                   np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         keys = ['critic']
@@ -195,7 +206,7 @@ class TMS:
                        np.array(tm_input[i]['target']).astype(dtype=np.float32))
                 abs_errors[keys[i]] = abs_error
         return abs_errors
-    def update_2(self, tm_input, clip):
+    def update_2(self, tm_input):#, clip):
         # take a list for each tm that is being updated.
         for i, tm in enumerate(self.tms):
             if len(tm_input[i]['observations']) > 0:
@@ -204,14 +215,14 @@ class TMS:
                     tm_input[i]['observations'].astype(dtype=np.int32),
                     np.array(tm_input[i]['target']).astype(dtype=np.float32),
                     np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
-                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32),
-                    clip
+                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
+                    #clip
                 )
 
     def predict(self, obs):
         # binarize input
         if obs.ndim == 1:
-            obs = obs.reshape(1, config['obs_space_size'])
+            obs = obs.reshape(1, self.obs_space_size)
         b_obs = self.binarizer.transform(obs)
         # pass it through each tm
         b_obs = b_obs.astype(dtype=np.int32)
@@ -227,15 +238,16 @@ class TMS:
 
 class ActorCriticPolicy:
     def __init__(self, config):
-        self.critic = TMS(1, config)
-        config['y_max'] = 100.0
-        config['y_min'] = 0.0
-        self.actor = TMS(config['action_space_size'], config)
+        self.critic = TMS(1, config['critic'], config['obs_space_size'], config["dataset_file_name"])
+        #config['y_max'] = 100.0
+        #config['y_min'] = 0.0
+        self.actor = TMS(config['action_space_size'], config['actor'], config['obs_space_size'], config["dataset_file_name"])
+        self.config = config
 
     def get_action(self, obs):
         action_probs = self.actor.predict(obs) + 1e-10
         normalized_action_prob = action_probs / np.sum(action_probs, axis=-1, keepdims=True)
-        actions = np.apply_along_axis(lambda x: np.random.choice([0, 1], p=x), axis=-1, arr=normalized_action_prob)
+        actions = np.apply_along_axis(lambda x: np.random.choice(range(self.config['action_space_size']), p=x), axis=-1, arr=normalized_action_prob)
         entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
         values = self.critic.predict(obs)
         return actions, values, action_probs, entropy  # done away with log softmax

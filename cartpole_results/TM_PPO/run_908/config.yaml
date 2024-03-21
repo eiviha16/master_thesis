@@ -1,0 +1,50 @@
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AgAAAAAAAAA=
+actor:
+  T: 828
+  bits_per_feature: 10
+  max_update_p: 0.005
+  min_update_p: 0.0004
+  nr_of_clauses: 1120
+  number_of_state_bits_ta: 3
+  s: 2.35
+  y_max: 100
+  y_min: 0
+algorithm: TM_PPO
+batch_size: 64
+critic:
+  T: 334
+  bits_per_feature: 8
+  max_update_p: 0.059
+  min_update_p: 0.0
+  nr_of_clauses: 930
+  number_of_state_bits_ta: 6
+  s: 3.89
+  y_max: 31.5
+  y_min: 0.3
+dataset_file_name: observation_data
+device: CPU
+epochs: 4
+gamma: 0.959
+lam: 0.979
+n_timesteps: 430
+obs_space_size: 4
+save: true
+seed: 42
+test_freq: 1
+weighted_clauses: false

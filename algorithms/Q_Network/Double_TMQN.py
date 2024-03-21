@@ -222,7 +222,7 @@ class TMQN:
                         self.target_policy.tm1.update_memory_size(new_memory_size)
                         self.target_policy.tm2.update_memory_size(new_memory_size)
 
-            cur_obs, _ = self.env.reset(seed=random.randint(1, 10000))
+            cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
             episode_reward = 0
 
             while True:
@@ -240,7 +240,7 @@ class TMQN:
                     break
             if nr_of_steps >= self.batch_size:
                 self.train()
-                self.save_actions(actions, nr_of_steps)
+                #self.save_actions(actions, nr_of_steps)
             self.update_exploration_prob()
         if self.save:
             plot_test_results(self.save_path, text={'title': 'Double TMQN'})
