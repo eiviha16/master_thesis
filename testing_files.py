@@ -5,6 +5,11 @@ random.seed(42)
 np.random.seed(42)
 torch.manual_seed(42)
 
+print(random.randint(0, 100000))
+print(np.random.randint(0, 100000))
+print(torch.randint(0, 100000,(1, 1)))
+
+exit()
 import gymnasium as gym
 from algorithms.Proximal_policy.TM_PPO import PPO
 from algorithms.policy.RTM import ActorCriticPolicy as Policy

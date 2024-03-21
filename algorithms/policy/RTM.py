@@ -10,7 +10,9 @@ pyximport.install(setup_args={
 
 # import RTM.RegressionTsetlinMachine as RTM
 # import RTM.rtm_custom2 as RTM
-import TM_lib.rtm as RTM
+#import TM_lib.rtm as RTM
+import TM_lib_2.rtm as RTM
+print('hey')
 # import RTM.rtm_custom_continious as RTM
 # import RTM.rtm_custom as RTM
 import numpy as np
