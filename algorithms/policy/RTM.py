@@ -44,7 +44,7 @@ class Policy():
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        #self.init_TMs()
+        self.init_TMs()
 
     def init_binarizer(self):
         # create a list of lists of values?
@@ -109,7 +109,7 @@ class TMS:
         self.obs_space_size = obs_space_size
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
         self.init_binarizer()
-        #self.init_TMs()
+        self.init_TMs()
 
     def init_binarizer(self):
         # create a list of lists of values?

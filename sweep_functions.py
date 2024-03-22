@@ -8,7 +8,7 @@ import random
 
 n_episodes_1 = 1000
 n_episodes_2 = 5000
-test_freq_2 = 1
+test_freq_2 = 50
 
 def cartpole_TAC_a(config):
     random.seed(42)
