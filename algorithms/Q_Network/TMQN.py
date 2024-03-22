@@ -57,6 +57,8 @@ class TMQN:
         self.abs_errors = {}
         self.total_score = []
         self.nr_of_steps = 0
+        self.threshold = config['threshold']
+
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -166,6 +168,8 @@ class TMQN:
             self.cur_episode = episode
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
+            if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
+                break
             self.rollout()
             if self.nr_of_steps >= self.batch_size:
                 self.train()

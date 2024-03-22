@@ -52,6 +52,8 @@ class DDPG:
         self.cur_episode = 0
         self.total_score = []
         self.batch_size = config['batch_size']
+        self.threshold = config['threshold']
+
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -130,7 +132,7 @@ class DDPG:
             target_q_vals = self.temporal_difference(next_q_vals)
             critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
                                                           target_q_vals)
-            print(target_q_vals)
+
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.target_critic.update(critic_update)
@@ -148,6 +150,8 @@ class DDPG:
             self.test()
             self.cur_episode = episode
             self.rollout()
+            if self.best_score < self.threshold and self.cur_episode == 100:
+                break
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
             self.update_exploration_prob()

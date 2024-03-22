@@ -40,6 +40,7 @@ class PPO:
         self.announce()
         self.cur_episode = 0
         self.abs_errors = {}
+        self.threshold = config['threshold']
 
 
     def announce(self):
@@ -118,7 +119,7 @@ class PPO:
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.test()
-            if self.best_score < -499 and episode > 50:
+            if self.best_score < self.threshold and self.cur_episode == 100:
                 break
             self.cur_episode = episode
             self.rollout()
