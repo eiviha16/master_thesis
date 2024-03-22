@@ -22,6 +22,7 @@ cpdef void pcg32_seed(uint64_t seed):
 import pandas as pd
 from pandas import ExcelWriter
 
+#np.random.seed(42)
 
 ########################################
 ### The Regression Tsetlin Machine #####
@@ -55,7 +56,6 @@ cdef class TsetlinMachine:
 	# Initialization of the Regression Tsetlin Machine
 	def __init__(self, number_of_clauses, number_of_features, number_of_states, s, threshold, max_target, min_target, min_update_p=1.0, max_update_p=0.0):
 		cdef int j
-		np.random.seed(42)
 		pcg32_seed(42)
 
 		self.number_of_clauses = number_of_clauses

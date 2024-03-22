@@ -85,7 +85,7 @@ class RTMS:
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['critic']['bits_per_feature'])
         self.init_binarizer()
-        #self.init_TMs()
+        self.init_TMs()
 
     def init_binarizer(self):
         self.binarizer.fit(self.vals)
@@ -93,7 +93,7 @@ class RTMS:
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
-        self.tm.fit(vals, np.array([random.randint(int(self.config['critic']['y_min']), int(self.config['critic']['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+        self.tm.fit(vals, np.array([random.randint(int(self.config['critic']['y_min']), int(self.config['critic']['y_max'])) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.

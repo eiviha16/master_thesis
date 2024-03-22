@@ -39,7 +39,7 @@ class Policy():
                                       for _ in range(config['action_space_size'])]
 
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'../algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
@@ -104,7 +104,7 @@ class TMS:
 
             self.tms.append(tm)
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{file_name}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'../algorithms/misc/{file_name}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
         self.obs_space_size = obs_space_size
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
@@ -120,7 +120,7 @@ class TMS:
         vals = vals.astype(dtype=np.int32)
         for tm in self.tms:
             tm.fit(vals,
-                   np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
+                   np.array([random.randint(int(self.config['y_min']), int(self.config['y_max'])) for _ in range(len(vals[:20]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         keys = ['critic']

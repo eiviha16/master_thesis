@@ -8,8 +8,7 @@ import random
 
 n_episodes_1 = 1000
 n_episodes_2 = 5000
-test_freq_2 = 50
-
+test_freq_2 = 1
 
 def cartpole_TAC_a(config):
     random.seed(42)
@@ -235,7 +234,7 @@ def cartpole_n_step_DQTM_a(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init':config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
@@ -352,7 +351,7 @@ def cartpole_DQTM_a(config):
     from algorithms.policy.RTM import Policy
 
     _config = {
-        'algorithm': 'Double_TMQN', 'soft_update_type': 'soft_update_1', 'n_steps': config.n_steps,
+        'algorithm': 'Double_TMQN', 'soft_update_type': 'soft_update_1',
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
@@ -475,7 +474,7 @@ def cartpole_n_step_QTM(config):
     _config = {
         'algorithm': 'n_step_TMQN', 'n_steps': config.n_steps,
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
-        "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
+        "max_update_p": config.max_update_p, "min_update_p": 0.0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
@@ -535,7 +534,7 @@ def cartpole_QTM(config):
     _config = {
         'algorithm': 'TMQN',
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
-        "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
+        "max_update_p": 0.5, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,

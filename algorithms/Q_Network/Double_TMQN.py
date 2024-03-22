@@ -30,7 +30,7 @@ class TMQN:
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
-        self.update_grad = config['update_grad']
+        #self.update_grad = config['update_grad']
 
         self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
         self.test_freq = config['test_freq']
@@ -133,6 +133,7 @@ class TMQN:
 
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
+
             tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
             abs_errors = self.target_policy.update(tm_inputs)
@@ -168,7 +169,7 @@ class TMQN:
         target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
         eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
         nr_of_clauses = len(list(target_clause_sign))
-        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.update_grad))
+        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.config['update_grad']))
         for clause in clauses_to_update:
             eval_clause_sign[clause] = target_clause_sign[clause]
             eval_clause_output[clause] = target_clause_output[clause]

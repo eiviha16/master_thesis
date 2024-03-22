@@ -99,7 +99,7 @@ def start_a_n_step_DQTM_a():
 
 def main_c_n_step_DQTM_b():
     wandb.init(project="cartpole-n_step_DQTM_b")
-    score = acrobot_n_step_DQTM_a(wandb.config)
+    score = cartpole_n_step_DQTM_b(wandb.config)
     wandb.log({"score": score})
 def main_a_n_step_DQTM_b():
     wandb.init(project="acrobot-n_step_DQTM_b")

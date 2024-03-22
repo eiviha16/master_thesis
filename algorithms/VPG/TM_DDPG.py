@@ -23,7 +23,7 @@ class DDPG:
 
         self.epochs = config['epochs']
         self.config = config
-        self.update_grad = config['update_grad']
+        #self.update_grad = config['update_grad']
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
@@ -130,7 +130,7 @@ class DDPG:
             target_q_vals = self.temporal_difference(next_q_vals)
             critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
                                                           target_q_vals)
-
+            print(target_q_vals)
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.target_critic.update(critic_update)
@@ -229,7 +229,7 @@ class DDPG:
         target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
         eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
         nr_of_clauses = len(list(target_clause_sign))
-        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.update_grad))
+        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.config['update_grad']))
         for clause in clauses_to_update:
             eval_clause_sign[clause] = target_clause_sign[clause]
             eval_clause_output[clause] = target_clause_output[clause]
