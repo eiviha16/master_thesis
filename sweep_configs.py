@@ -3,7 +3,7 @@ import numpy as np
 ################################################
 ################### TAC a #######################
 ################################################
-cartpole_TAC_a = {
+config_cartpole_TAC_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -11,7 +11,6 @@ cartpole_TAC_a = {
         "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "epochs": {"values": list(range(1, 8, 1))},
-
         "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
         "a_nr_of_clauses": {"values": list(range(800, 1200, 20))},
         "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
@@ -33,7 +32,7 @@ cartpole_TAC_a = {
     }
 }
 
-acrobot_TAC_a = {
+config_acrobot_TAC_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -66,7 +65,7 @@ acrobot_TAC_a = {
 ################################################
 ################### TAC b #######################
 ################################################
-cartpole_TAC_b = {
+config_cartpole_TAC_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -98,7 +97,7 @@ cartpole_TAC_b = {
 
 
 
-acrobot_TAC_b = {
+config_acrobot_TAC_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -134,7 +133,7 @@ acrobot_TAC_b = {
 ################################################
 
 
-cartpole_TPPO = {
+config_cartpole_TPPO = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -162,7 +161,7 @@ cartpole_TPPO = {
         "c_y_min": {"values": list(np.arange(0.0, 1.0, 0.1))},
     }
 }
-acrobot_TPPO = {
+config_acrobot_TPPO = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -195,13 +194,13 @@ acrobot_TPPO = {
 ######### n-step Double QTM type a ############
 ################################################
 
-cartpole_n_step_DQTM_a = {
+config_cartpole_n_step_DQTM_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values":list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
@@ -219,13 +218,13 @@ cartpole_n_step_DQTM_a = {
     }
 }
 
-acrobot_n_step_DQTM_a = {
+config_acrobot_n_step_DQTM_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
@@ -247,13 +246,13 @@ acrobot_n_step_DQTM_a = {
 ################################################
 ######### n-step Double TMQN type b ############
 ################################################
-cartpole_n_step_DQTM_b = {
+config_cartpole_n_step_DQTM_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "update_freq": {"values": list(range(1, 10, 1))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
@@ -271,13 +270,13 @@ cartpole_n_step_DQTM_b = {
     }
 }
 
-acrobot_n_step_DQTM_b = {
+config_acrobot_n_step_DQTM_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "update_freq": {"values": list(range(1, 10, 1))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
@@ -298,7 +297,7 @@ acrobot_n_step_DQTM_b = {
 ################################################
 ############ Double TMQN type a ################
 ################################################
-cartpole_DQTM_a = {
+config_cartpole_DQTM_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -321,7 +320,7 @@ cartpole_DQTM_a = {
     }
 }
 
-acrobot_DQTM_a = {
+config_acrobot_DQTM_a = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -346,7 +345,7 @@ acrobot_DQTM_a = {
 ################################################
 ############ Double TMQN type b ################
 ################################################
-cartpole_DQTM_b = {
+config_cartpole_DQTM_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -369,7 +368,7 @@ cartpole_DQTM_b = {
     }
 }
 
-acrobot_DQTM_b = {
+config_acrobot_DQTM_b = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -395,13 +394,13 @@ acrobot_DQTM_b = {
 ################################################
 ################# n-step TMQN  #################
 ################################################
-cartpole_n_step_QTM = {
+config_cartpole_n_step_QTM = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
         "t": {"values": list(np.arange(0.01, 1.00, 0.01))},
@@ -418,13 +417,13 @@ cartpole_n_step_QTM = {
     }
 }
 
-acrobot_n_step_QTM = {
+config_acrobot_n_step_QTM = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
-        "n_steps": {list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "epochs": {"values": list(range(1, 8, 1))},
         "t": {"values": list(np.arange(0.01, 1.00, 0.01))},
@@ -445,7 +444,7 @@ acrobot_n_step_QTM = {
 ################### TMQN  ######################
 ################################################
 
-cartpole_QTM = {
+config_cartpole_QTM = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
@@ -467,7 +466,7 @@ cartpole_QTM = {
     }
 }
 
-acrobot_QTM = {
+config_acrobot_QTM = {
     "method": "random",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {

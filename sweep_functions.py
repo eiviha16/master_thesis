@@ -149,7 +149,7 @@ def acrobot_TAC_b(config):
 ################### TPPO #######################
 ################################################
 
-def acrobot_TPPO(config):
+def cartpole_TPPO(config):
     random.seed(42)
     np.random.seed(42)
     torch.manual_seed(42)
@@ -523,7 +523,7 @@ def acrobot_n_step_QTM(config):
 ################################################
 ################### TMQN  ######################
 ################################################
-def cartpole_n_step_QTM(config):
+def cartpole_QTM(config):
     random.seed(42)
     np.random.seed(42)
     torch.manual_seed(42)

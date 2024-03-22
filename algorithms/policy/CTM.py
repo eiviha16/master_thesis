@@ -37,7 +37,7 @@ class MTMS:
                                     number_of_states=config['actor']['number_of_state_bits_ta'],
                                     threshold=config['actor']['T'])
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'../algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['actor']['bits_per_feature'])
@@ -80,7 +80,7 @@ class RTMS:
                                     max_update_p=config['critic']['max_update_p'])
 
 
-        self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
+        self.vals = np.loadtxt(f'../algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
         self.binarizer = StandardBinarizer(max_bits_per_feature=config['critic']['bits_per_feature'])
