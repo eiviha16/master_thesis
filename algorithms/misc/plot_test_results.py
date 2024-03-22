@@ -10,7 +10,6 @@ def plot(data, text, file_path):
     # plt.plot(data['timesteps'], data['mean'])
     plt.fill_between(x, np.array(data['mean']) - np.array(data['std']), np.array(data['mean']) + np.array(data['std']),
                      alpha=0.25)
-    # plt.fill_between(data['timesteps'], np.array(data['mean']) - np.array(data['std']), np.array(data['mean']) + np.array(data['std']), alpha=0.25)
     plt.gca().yaxis.grid(True, linestyle='dashed')
     plt.ylabel(f'Rewards')
     plt.xlabel(f'Episodes')

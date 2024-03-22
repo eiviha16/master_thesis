@@ -77,7 +77,6 @@ def test_policy(save_file, policy):
     print(f'Mean std: {std}')
     print(f'Actions: {actions}')
     with open(os.path.join(save_file, 'final_test_results'), 'w') as file:
-        # Iterate through the list and write each value to a new line
         for reward in episode_rewards:
             file.write(str(reward) + "\n")
 

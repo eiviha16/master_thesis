@@ -11,7 +11,8 @@ pyximport.install(setup_args={
 # import RTM.RegressionTsetlinMachine as RTM
 # import RTM.rtm_custom2 as RTM
 #import TM_lib.rtm as RTM
-import TM_lib_2.rtm as RTM
+#import TM_lib_2.rtm as RTM
+import TM_lib_3.rtm as RTM
 print('hey')
 # import RTM.rtm_custom_continious as RTM
 # import RTM.rtm_custom as RTM
@@ -89,81 +90,6 @@ class Policy():
 
 
 
-"""class TMS:
-    def __init__(self, nr_of_tms, config, obs_space_size, file_name):
-        self.tms = []
-        for _ in range(nr_of_tms):
-            tm = RTM.TsetlinMachine(number_of_clauses=config['nr_of_clauses'],
-                                    number_of_features=config['bits_per_feature'] * obs_space_size,
-                                    s=config['s'],
-                                    number_of_states=config['number_of_state_bits_ta'],
-                                    threshold=config['T'],
-                                    max_target=config['y_max'], min_target=config['y_min'],
-                                    max_update_p = config['max_update_p'],
-                                    min_update_p = config['min_update_p'])
-
-
-            self.tms.append(tm)
-
-        self.vals = np.loadtxt(f'./algorithms/misc/{file_name}.txt', delimiter=',').astype(dtype=np.float32)
-        self.config = config
-        self.obs_space_size = obs_space_size
-        self.binarizer = StandardBinarizer(max_bits_per_feature=config['bits_per_feature'])
-        self.init_binarizer()
-        #self.init_TMs()
-
-
-    def init_binarizer(self):
-        # create a list of lists of values?
-        self.binarizer.fit(self.vals)
-
-    def init_TMs(self):
-        vals = self.binarizer.transform(self.vals)
-        vals = vals.astype(dtype=np.int32)
-        for tm in self.tms:
-            tm.fit(vals,
-                   np.array([random.randint(self.config['y_min'], self.config['y_max']) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
-
-    def update(self, tm_input):
-        # take a list for each tm that is being updated.
-        keys = ['actor1', 'actor2']
-        abs_errors = {}
-        for i, tm in enumerate(self.tms):
-            if len(tm_input[i]['observations']) > 0:
-                tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                abs_error = tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
-                       np.array(tm_input[i]['target']).astype(dtype=np.float32))
-                abs_errors[keys[i]] = abs_error
-        return abs_error
-    def update_2(self, tm_input):
-        # take a list for each tm that is being updated.
-        for i, tm in enumerate(self.tms):
-            if len(tm_input[i]['observations']) > 0:
-                tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                tm.fit_2(
-                    tm_input[i]['observations'].astype(dtype=np.int32),
-                    np.array(tm_input[i]['target']).astype(dtype=np.float32),
-                    np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
-                    np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
-                )
-
-    def predict(self, obs):
-        # binarize input
-        if obs.ndim == 1:
-            obs = obs.reshape(1, self.obs_space_size)
-        b_obs = self.binarizer.transform(obs)
-        # pass it through each tm
-        b_obs = b_obs.astype(dtype=np.int32)
-        result = []
-        for obs in b_obs:
-            tm_vals = [0 for _ in range(len(self.tms))]
-            for i, tm in enumerate(self.tms):
-                tm_vals[i] = tm.predict(obs)
-            result.append(tm_vals)
-
-        return np.array(result)"""
-
-
 class TMS:
     def __init__(self, nr_of_tms, config, obs_space_size, file_name):
         self.tms = []
@@ -226,7 +152,6 @@ class TMS:
         if obs.ndim == 1:
             obs = obs.reshape(1, self.obs_space_size)
         b_obs = self.binarizer.transform(obs)
-        # pass it through each tm
         b_obs = b_obs.astype(dtype=np.int32)
         result = []
         for obs in b_obs:
@@ -241,8 +166,6 @@ class TMS:
 class ActorCriticPolicy:
     def __init__(self, config):
         self.critic = TMS(1, config['critic'], config['obs_space_size'], config["dataset_file_name"])
-        #config['y_max'] = 100.0
-        #config['y_min'] = 0.0
         self.actor = TMS(config['action_space_size'], config['actor'], config['obs_space_size'], config["dataset_file_name"])
         self.config = config
 

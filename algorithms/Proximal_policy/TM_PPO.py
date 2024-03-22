@@ -74,13 +74,6 @@ class PPO:
             self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, entropy)
             if done or truncated:
                 break
-            """if len(self.batch.actions) > self.n_timesteps:
-                self.batch.convert_to_numpy()
-                self.calculate_advantage()
-                # self.normalize_advantages()
-                self.train()
-                self.batch.clear()
-            """
 
 
     def evaluate_actions(self):
@@ -90,7 +83,6 @@ class PPO:
 
     def get_update_data_actor(self):
         tm = [{'observations': [], 'target': [], 'advantages': [], 'entropy': []} for i in range(self.action_space_size)]
-              #{'observations': [], 'target': [], 'advantages': [], 'entropy': []}]
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
@@ -221,10 +213,6 @@ class PPO:
                     file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
                 file.write(f"{','.join(map(str, probs))}\n")
 
-            """        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
-                if not file_exists:
-                    file.write("actor_1,actor_2\n")
-                file.write(f"{probs[0][0]}, {probs[0][1]}\n")"""
 
 
     def save_abs_errors(self):

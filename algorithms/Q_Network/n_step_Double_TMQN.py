@@ -164,12 +164,9 @@ class TMQN:
             # calculate target_q_vals
             sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
             next_q_vals = self.evaluation_policy.predict(sampled_next_obs[:, -1, :])
-            #actions = np.argmax(next_q_vals, axis=1) #|
             actions = np.argmax(self.target_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
-
             next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
-            #next_q_vals = self.get_q_val_for_action(self.replay_buffer.sampled_actions, next_q_vals)
 
             # calculate target q vals
             target_q_vals = self.n_step_temporal_difference(next_q_vals)
@@ -305,7 +302,6 @@ class TMQN:
             with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
                 if not file_exists:
                     file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
-                #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
                 file.write(f"{','.join(map(str, q_vals))}\n")
     def save_abs_errors(self):
         if self.save:

@@ -123,7 +123,7 @@ class TMQN:
 
             # calculate target q vals
             target_q_vals = self.temporal_difference((next_q_vals))
-            tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
+            #tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
             tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
             abs_errors = self.policy.update(tm_inputs)
 

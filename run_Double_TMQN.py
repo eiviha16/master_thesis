@@ -26,9 +26,6 @@ agent.learn(nr_of_episodes=10_000)
 
 from test_policy import test_policy
 
-#test_policy(agent.policy)
-#agent.target_policy.tm1.set_state()
-#agent.target_policy.tm2.set_state()
 
 tms = torch.load(f'results/Double_TMQN/{agent.run_id}/best')
 

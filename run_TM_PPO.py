@@ -28,14 +28,11 @@ agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 
-#agent.policy.actor.tms[0].set_state()
-#agent.policy.actor.tms[1].set_state()
 save_file = f'results/TM_PPO/{agent.run_id}'
 
 tms = torch.load(f'results/TM_PPO/{agent.run_id}/best')
 
 for i in range(len(tms)):
-    #eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses
     agent.policy.actor.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])
 
 test_policy(save_file, agent.policy.actor)

@@ -2,7 +2,6 @@ import gymnasium as gym
 from stable_baselines3 import PPO
 import os
 def save(obs, file_path):
-    #if not os.path.exists(file_path):
     obs_str = [str(elem) for elem in obs.tolist()]
     obs = ','.join(obs_str)
     with open(file_path, "a") as file:
@@ -20,7 +19,6 @@ for i in range(10):
     while True:
 
         action, _ = model.predict(obs)
-        #action = env.action_space.sample()
         save(obs, file_name)
         obs, reward, done, trunc, info = env.step(action)
         rewards += reward

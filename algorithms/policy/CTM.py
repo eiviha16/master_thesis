@@ -10,9 +10,11 @@ pyximport.install(setup_args={
 
 # import RTM.RegressionTsetlinMachine as RTM
 #import TM_lib.rtm as RTM
-import TM_lib_2.rtm as RTM
-import TM_lib.mtm as MTM
-import TM_lib_2.mtm as MTM
+#import TM_lib_2.rtm as RTM
+import TM_lib_3.rtm as RTM
+#import TM_lib.mtm as MTM
+#import TM_lib_2.mtm as MTM
+import TM_lib_3.mtm as MTM
 # import RTM.rtm_custom_continious as RTM
 # import RTM.rtm_custom as RTM
 import numpy as np
@@ -76,10 +78,8 @@ class RTMS:
                                     threshold=config['critic']['T'],
                                     max_target=config['critic']['y_max'], min_target=config['critic']['y_min'],
                                     max_update_p=config['critic']['max_update_p'])
-                                    #min_update_p=config['min_update_p'])
 
 
-        #self.vals = np.loadtxt('./algorithms/misc/{observation_data.txt', delimiter=',').astype(dtype=np.float32)
         self.vals = np.loadtxt(f'./algorithms/misc/{config["dataset_file_name"]}.txt', delimiter=',').astype(dtype=np.float32)
         self.config = config
 
@@ -88,14 +88,12 @@ class RTMS:
         #self.init_TMs()
 
     def init_binarizer(self):
-        # create a list of lists of values?
         self.binarizer.fit(self.vals)
 
     def init_TMs(self):
         vals = self.binarizer.transform(self.vals)
         vals = vals.astype(dtype=np.int32)
         self.tm.fit(vals, np.array([random.randint(int(self.config['critic']['y_min']), int(self.config['critic']['y_max'])) for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
-        #self.tm.fit(vals, np.array([random.randint(0, 2000) / 1000 for _ in range(len(vals[:10]))]).astype(dtype=np.float32))
 
     def update(self, tm_input):
         # take a list for each tm that is being updated.
@@ -130,9 +128,8 @@ class ActorCriticPolicy:
     def get_action(self, obs):
         actions = self.actor.predict(obs)
         action = np.argmax(actions, axis=1)
-        #critic_input = np.concatenate((obs, actions))
-        #values = self.critic.predict(critic_input)
-        return action[0], actions[0]#, values
+
+        return action[0], actions[0]
 
     def get_best_action(self, obs):
         actions = self.actor.predict(obs)

@@ -24,8 +24,6 @@ print(config)
 
 env = gym.make("CartPole-v1")
 #env = gym.make("Acrobot-v1")
-#env = gym.make("Pendulum-v1")
-#env = gym.make("MountainCar-v0")
 
 
 agent = PPO(env, Policy, config)

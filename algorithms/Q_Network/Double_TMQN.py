@@ -210,7 +210,7 @@ class TMQN:
         for episode in range(self.nr_of_test_episodes):
             self.q_values['q1'] = []
             self.q_values['q2'] = []
-            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
+            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 action, q_vals_ = self.get_next_action(obs)
                 self.nr_actions += 1

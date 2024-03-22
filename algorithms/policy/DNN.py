@@ -10,7 +10,7 @@ from torch.distributions import Categorical
 
 
 class QNet(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=128, c=1, action_std=0.5):
+    def __init__(self, input_size, output_size, hidden_size=128):
         super(QNet, self).__init__()
         # activation
         self.activation = nn.Tanh()
@@ -19,7 +19,6 @@ class QNet(nn.Module):
         # layers
         self.input_layer = nn.Linear(input_size, hidden_size)
         self.hidden_layer_1 = nn.Linear(hidden_size, hidden_size)
-        #self.hidden_layer_2 = nn.Linear(hidden_size, hidden_size)
         self.output_layer = nn.Linear(hidden_size, output_size)
 
     def forward(self, input):
@@ -29,8 +28,6 @@ class QNet(nn.Module):
         x = self.hidden_layer_1(x)
         x = self.activation(x)
 
-        #x = self.hidden_layer_2(x)
-        #x = self.activation(x)
 
         x = self.output_layer(x)
         return x
@@ -42,12 +39,12 @@ class Policy(QNet):
         self.optimizer = optim.Adam(self.parameters(), lr=config['learning_rate'])
 
     def predict(self, input):
-        q_vals = self.forward(torch.tensor(np.array(input)))#.to('cuda'))
+        q_vals = self.forward(torch.tensor(np.array(input)))
         return q_vals
 
 
 class Actor(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=128, action_std=0.5):
+    def __init__(self, input_size, output_size, hidden_size=128):
         super(Actor, self).__init__()
         self.activation = nn.Tanh()
         self.output_activation = nn.Softmax()
@@ -70,20 +67,18 @@ class Actor(nn.Module):
         x = self.activation(x)
 
         x = self.output_layer(x)
-        #action_logits = self.output_layer(x)
         action_prob = self.output_activation(x)
         return action_prob
 
 
 class Critic(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=128, action_std=0.5):
+    def __init__(self, input_size, hidden_size=128):
         super(Critic, self).__init__()
         self.activation = nn.Tanh()
 
         # layers
         self.input_layer = nn.Linear(input_size, hidden_size)
         self.hidden_layer = nn.Linear(hidden_size, hidden_size)
-        #self.hidden_layer2 = nn.Linear(hidden_size, hidden_size)
         self.output_layer = nn.Linear(hidden_size, 1)
 
     def forward(self, input):
@@ -93,15 +88,12 @@ class Critic(nn.Module):
         x = self.hidden_layer(x)
         x = self.activation(x)
 
-        #x = self.hidden_layer2(x)
-        #x = self.activation(x)
-
         x = self.output_layer(x)
         return x
 
 
 class ActorCriticPolicy:
-    def __init__(self, input_size, output_size, hidden_size, lr):
+    def __init__(self, input_size, output_size, hidden_size):
         self.actor = Actor(input_size, output_size, hidden_size)
         self.critic = Critic(input_size, output_size, hidden_size)
 
@@ -109,32 +101,25 @@ class ActorCriticPolicy:
         self.critic_optim = optim.Adam(self.critic.parameters(), lr=3e-4)
 
     def get_action(self, obs):
-        #obs = (obs - obs.mean()) / obs.std()
         obs = torch.tensor(obs)
-        #action_probs = self.actor(obs)
         action_probs = self.actor(obs)
-        #action_probs = F.softmax(action_logits)
         dist = Categorical(action_probs)
         actions = dist.sample()
-        #actions = torch.multinomial(action_probs, 1).squeeze(dim=-1)
         values = self.critic(obs)
-        return actions, values, dist.log_prob(actions)#F.log_softmax(action_logits, dim=-1)
+        return actions, values, dist.log_prob(actions)
 
     def get_best_action(self, obs):
-        #obs = (obs - obs.mean()) / obs.std()
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
         actions = torch.argmax(action_probs, dim=-1)
         return actions, action_probs
 
     def evaluate_action(self, obs, actions):
-        #obs = (obs - obs.mean()) / obs.std()
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
         dist = Categorical(action_probs)
-        #actions = dist.sample()
         values = self.critic(obs)
-        return actions, values, dist.log_prob(torch.tensor(actions))#F.log_softmax(action_logits, dim=-1)
+        return actions, values, dist.log_prob(torch.tensor(actions))
 class ActorPolicy:
     def __init__(self, input_size, output_size, hidden_size, lr):
         self.actor = Actor(input_size, output_size, hidden_size)
@@ -143,7 +128,6 @@ class ActorPolicy:
     def get_action(self, obs):
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
-        #actions = torch.multinomial(action_probs, 1).squeeze(dim=-1)
         action = torch.multinomial(action_probs, 1).squeeze(dim=-1)
         return actions, F.log_softmax(action_probs, dim=-1)
 
