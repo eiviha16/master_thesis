@@ -40,7 +40,7 @@ class DDPG:
         self.save_path = ''
 
         if self.save:
-            self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -245,11 +245,13 @@ class DDPG:
         evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
     def make_run_dir(self, algorithm):
-        base_dir = './results'
+        base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, algorithm)):
-            os.makedirs(os.path.join(base_dir, algorithm))
-        if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)

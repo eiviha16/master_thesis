@@ -17,7 +17,7 @@ class PPO:
         config['obs_space_size'] = self.obs_space_size
         self.policy = Policy(config)
         self.batch = Batch()
-
+        self.config = config
         self.gamma = config['gamma']
         self.lam = config['lam']
         #self.clip = config["clip"]
@@ -28,7 +28,8 @@ class PPO:
         self.save = config['save']
         self.save_path = ''
         if self.save:
-            self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            #self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -54,12 +55,11 @@ class PPO:
 
     def calculate_advantage(self):
         advantage = 0
-        next_value = 0
+        next_value = self.batch.next_value[0][0]
         for i in reversed(range(len(self.batch.actions))):
-            dt = self.batch.rewards[i] + self.gamma * next_value - self.batch.values[i][0][0]
+            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - self.batch.values[i][0][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
             next_value = self.batch.values[i][0][0]
-
             self.batch.advantages.insert(0, advantage)
 
     def normalize_advantages(self):
@@ -72,7 +72,15 @@ class PPO:
         while True:
             action, value, log_prob, entropy = self.policy.get_action(obs)
             obs, reward, done, truncated, _ = self.env.step(action[0])
+
             self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, entropy)
+            self.batch.next_value = self.policy.critic.predict(np.array(obs))
+            if len(self.batch.actions) - 1 > self.n_timesteps:
+                self.batch.convert_to_numpy()
+                self.calculate_advantage()
+                self.train()
+                self.batch.clear()
+
             if done or truncated:
                 break
 
@@ -88,6 +96,7 @@ class PPO:
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
+            #print(i, self.batch.action_log_prob[i][idx], ' - ', self.batch.action_log_prob[i])
 
             tm[idx]['advantages'].append(self.batch.advantages[i])
             tm[idx]['entropy'].append(self.batch.entropies[i][idx])
@@ -124,10 +133,10 @@ class PPO:
             self.cur_episode = episode
             self.rollout()
 
-            self.batch.convert_to_numpy()
+            """self.batch.convert_to_numpy()
             self.calculate_advantage()
             self.train()
-            self.batch.clear()
+            self.batch.clear()"""
 
 
     def test(self):
@@ -189,8 +198,19 @@ class PPO:
                 if not file_exists:
                     file.write("mean,std\n")
                 file.write(f"{mean},{std}\n")
-
     def make_run_dir(self, algorithm):
+        base_dir = '../results'
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+
+    """def make_run_dir(self, algorithm):
         base_dir = './results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
@@ -198,7 +218,7 @@ class PPO:
             os.makedirs(os.path.join(base_dir, algorithm))
         if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
             os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, algorithm, self.run_id)
+        self.save_path = os.path.join(base_dir, algorithm, self.run_id)"""
 
     def save_probs(self, probs):
         if self.save:

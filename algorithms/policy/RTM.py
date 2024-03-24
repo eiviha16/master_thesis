@@ -174,6 +174,9 @@ class ActorCriticPolicy:
         actions = np.apply_along_axis(lambda x: np.random.choice(range(self.config['action_space_size']), p=x), axis=-1, arr=normalized_action_prob)
         entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
         values = self.critic.predict(obs)
+        #for i in range(len(actions)):
+        #    print(action_probs[i][actions[i]], ' - ', action_probs[i])
+
         return actions, values, action_probs, entropy  # done away with log softmax
 
     def get_best_action(self, obs):

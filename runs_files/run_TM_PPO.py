@@ -9,28 +9,37 @@ import gymnasium as gym
 from algorithms.Proximal_policy.TM_PPO import PPO
 from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
-actor = {"max_update_p": 0.016, "min_update_p": 0.0003, 'nr_of_clauses': 960, 'T': int(960 * 0.3), 's': 2.58, 'y_max': 100, 'y_min': 0,  'bits_per_feature': 14, 'number_of_state_bits_ta': 4}
+actor = {"max_update_p": 0.047, "min_update_p": 0.0004, 'nr_of_clauses': 1430, 'T': int(1430 * 0.36), 's': 2.72, 'y_max': 100, 'y_min': 0,  'bits_per_feature': 8, 'number_of_state_bits_ta': 4}
+critic = {"max_update_p": 0.012, "min_update_p": 0.0, 'nr_of_clauses': 1680, 'T': int(1680 * 0.77), 's': 3.49, 'y_max': -0.6, 'y_min': -24.5,  'bits_per_feature': 8, 'number_of_state_bits_ta': 6}
+config = {"env_name": "acrobot", 'algorithm': 'TPPO', "n_timesteps": 20, 'gamma': 0.956, 'lam': 0.976, "actor": actor, "critic": critic, "threshold": -500, 'device': 'CPU', 'weighted_clauses': False,  'batch_size': 144, 'epochs': 3, 'test_freq': 1, "save": True, "seed": 42, "dataset_file_name": "acrobot_obs_data"}
+
+"""actor = {"max_update_p": 0.013, "min_update_p": 0.0004, 'nr_of_clauses': 1490, 'T': int(1490 * 0.72), 's': 1.67, 'y_max': 100, 'y_min': 0,  'bits_per_feature': 6, 'number_of_state_bits_ta': 3}
+critic = {"max_update_p": 0.029, "min_update_p": 0.0, 'nr_of_clauses': 1240, 'T': int(1240 * 0.64), 's': 2.24, 'y_max': -1, 'y_min': -30.5,  'bits_per_feature': 7, 'number_of_state_bits_ta': 6}
+config = {'algorithm': 'TM_PPO', "n_timesteps": 24, 'gamma': 0.969, 'lam': 0.946, "actor": actor, "critic": critic, "threshold": -500, 'device': 'CPU', 'weighted_clauses': False,  'batch_size': 144, 'epochs': 3, 'test_freq': 1, "save": False, "seed": 42, "dataset_file_name": "acrobot_obs_data"}
+"""
+"""actor = {"max_update_p": 0.016, "min_update_p": 0.0003, 'nr_of_clauses': 960, 'T': int(960 * 0.3), 's': 2.58, 'y_max': 100, 'y_min': 0,  'bits_per_feature': 14, 'number_of_state_bits_ta': 4}
 critic = {"max_update_p": 0.026, "min_update_p": 0.0, 'nr_of_clauses': 980, 'T': int(980 * 0.44), 's': 3.74, 'y_max': 34, 'y_min': 0.4,  'bits_per_feature': 11, 'number_of_state_bits_ta': 5}
 config = {'algorithm': 'TM_PPO', "n_timesteps": 430, 'gamma': 0.967, 'lam': 0.947, "actor": actor, "critic": critic, 'device': 'CPU', 'weighted_clauses': False,  'batch_size': 224, 'epochs': 4, 'test_freq': 1, "save": True, "seed": 42, "dataset_file_name": "observation_data"} #"dataset_file_name": "acrobot_obs_data"}
-#change gamma and lambda
+"""#change gamma and lambda
 """actor = {"max_update_p": 0.024, "min_update_p": 0.0009, 'nr_of_clauses': 1110, 'T': int(1110 * 0.36), 's': 2.42, 'y_max': 100, 'y_min': 0,  'bits_per_feature': 5, 'number_of_state_bits_ta': 5}
 critic = {"max_update_p": 0.043, "min_update_p": 0.0, 'nr_of_clauses': 1030, 'T': int(1030 * 0.56), 's': 2.03, 'y_max': 14, 'y_min': 0.5,  'bits_per_feature': 5, 'number_of_state_bits_ta': 4}
 config = {'algorithm': 'TM_PPO', "n_timesteps": 430, 'gamma': 0.944, 'lam': 0.966, "actor": actor, "critic": critic, 'device': 'CPU', 'weighted_clauses': False,  'batch_size': 384, 'epochs': 3, 'test_freq': 1, "save": True, "seed": 42, "dataset_file_name": "observation_data"} #"dataset_file_name": "acrobot_obs_data"}
 """
 print(config)
 #run_895 - 500.0
-#env = gym.make("Acrobot-v1")
-env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
+#env = gym.make("CartPole-v1")
 
 
 agent = PPO(env, Policy, config)
-agent.learn(nr_of_episodes=5000)
+agent.learn(nr_of_episodes=500)
 
 from test_policy import test_policy
+save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
+tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/best')
+#save_file = f'results/TM_PPO/{agent.run_id}'
 
-save_file = f'results/TM_PPO/{agent.run_id}'
-
-tms = torch.load(f'results/TM_PPO/{agent.run_id}/best')
+#tms = torch.load(f'results/TPPO/{agent.run_id}/best')
 
 for i in range(len(tms)):
     agent.policy.actor.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])

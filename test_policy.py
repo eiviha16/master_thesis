@@ -44,8 +44,10 @@ def test_policy(save_file, policy):
                               27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
                               32088, 21418, 60590, 49736]
     """
-    env = gym.make("CartPole-v1")
-    #env = gym.make("Acrobot-v1")
+    if len(policy.tms) == 2:
+        env = gym.make("CartPole-v1")
+    else:
+        env = gym.make("Acrobot-v1")
 
     episode_rewards = np.array([0 for _ in range(100)])
     actions = 0
@@ -58,13 +60,13 @@ def test_policy(save_file, policy):
                 action_val = policy.predict(obs)
                 action = np.argmax(action_val[0])
                 obs, reward, done, truncated, _ = env.step(action)
-                save_vals(save_file, episode, action_val[0])
+                #save_vals(save_file, episode, action_val[0])
 
             except:
                 action_val = policy(torch.tensor(obs))
                 action = torch.argmax(action_val)
                 obs, reward, done, truncated, _ = env.step(action.detach().numpy())
-                save_action_vals(save_file, episode, action_val)
+                #save_action_vals(save_file, episode, action_val)
             episode_rewards[episode] += reward
             actions += 1
             if done or truncated:
@@ -76,6 +78,9 @@ def test_policy(save_file, policy):
     print(f'Mean reward: {mean}')
     print(f'Mean std: {std}')
     print(f'Actions: {actions}')
+    if not os.path.exists(save_file):
+        os.makedirs(save_file)
+
     with open(os.path.join(save_file, 'final_test_results'), 'w') as file:
         for reward in episode_rewards:
             file.write(str(reward) + "\n")

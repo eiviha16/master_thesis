@@ -51,7 +51,7 @@ class TMQN:
                                   32088, 21418, 60590, 49736]
         self.total_score = []
         self.save = config['save']
-        self.best_scores = {'mean': 0, 'std': float('inf')}
+        self.best_scores = {'mean': -float('inf'), 'std': float('inf')}
         self.cur_mean = 0
         self.config = config
         self.save_path = ''
@@ -101,8 +101,13 @@ class TMQN:
         self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
 
     def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
+        tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
+        for index, action in enumerate(actions):
+            tm_inputs[action]['observations'].append(self.replay_buffer.sampled_cur_obs[index])
+            tm_inputs[action]['target_q_vals'].append(target_q_vals[index])
 
-        tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
+        return tm_inputs
+        """tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
         # actions = self.replay_buffer.sampled_actions
         for index, action in enumerate(actions):
             if action == 0:
@@ -116,7 +121,7 @@ class TMQN:
             else:
                 print('Error with get_q_val_for_action')
 
-        return tm_1_input, tm_2_input
+        return tm_1_input, tm_2_input"""
 
     def get_q_val_for_action(self, actions, q_values):
         q_vals = []

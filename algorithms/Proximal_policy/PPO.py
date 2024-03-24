@@ -42,10 +42,10 @@ class PPO:
 
     def calculate_advantage(self):
         advantage = 0
-        next_value = 0
         discounted_reward = 0
+        next_value = self.batch.next_value
         for i in reversed(range(len(self.batch.actions))):
-            dt = self.batch.rewards[i] + self.gamma * next_value - self.batch.values[i]
+            dt = self.batch.rewards[i] + self.gamma * next_value  * int(not self.batch.dones[i]) - self.batch.values[i]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
             next_value = self.batch.values[i]
             self.batch.advantages.insert(0, advantage)
@@ -64,6 +64,7 @@ class PPO:
             action, value, log_prob = self.policy.get_action(obs)
             obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
             self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), obs, reward, done)
+            self.batch.next_value = self.policy.critic(torch.tensor(obs))
             if done or truncated:
                 break
 

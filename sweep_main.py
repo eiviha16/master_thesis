@@ -54,22 +54,22 @@ def start_a_TAC_b():
 ################### TPPO #######################
 ################################################
 def main_c_TPPO():
-    wandb.init(project="cartpole-TPPO")
+    wandb.init(project="cartpole-TPPO-2")
     score = cartpole_TPPO(wandb.config)
     wandb.log({"score": score})
 def main_a_TPPO():
-    wandb.init(project="acrobot-TPPO")
+    wandb.init(project="acrobot-TPPO-2")
     score = acrobot_TPPO(wandb.config)
     wandb.log({"score": score})
 
 def start_c_TPPO():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TPPO, project="cartpole-TPPO")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TPPO, project="cartpole-TPPO-2")
     wandb.agent(sweep_id, function=main_c_TPPO, count=10_000)
 
 def start_a_TPPO():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_TPPO, project="acrobot-TPPO")
+    sweep_id = wandb.sweep(sweep=config_acrobot_TPPO, project="acrobot-TPPO-2")
     wandb.agent(sweep_id, function=main_a_TPPO, count=10_000)
 
 ################################################
@@ -179,19 +179,19 @@ def start_a_n_step_QTM():
 ################### TMQN  ######################
 ################################################
 def main_c_QTM():
-    wandb.init(project="cartpole-QTM")
+    wandb.init(project="cartpole-QTM-2")
     score = cartpole_QTM(wandb.config)
     wandb.log({"score": score})
 def main_a_QTM():
-    wandb.init(project="acrobot-QTM")
+    wandb.init(project="acrobot-QTM-2")
     score = acrobot_QTM(wandb.config)
     wandb.log({"score": score})
 def start_c_QTM():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_QTM, project="cartpole-QTM")
+    sweep_id = wandb.sweep(sweep=config_cartpole_QTM, project="cartpole-QTM-2")
     wandb.agent(sweep_id, function=main_c_QTM, count=10_000)
 
 def start_a_QTM():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_QTM, project="acrobot-QTM")
+    sweep_id = wandb.sweep(sweep=config_acrobot_QTM, project="acrobot-QTM-2")
     wandb.agent(sweep_id, function=main_a_QTM, count=10_000)

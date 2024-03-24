@@ -8,7 +8,7 @@ import random
 
 n_episodes_1 = 1000
 n_episodes_2 = 5000
-test_freq_2 = 50
+test_freq_2 = 25
 cartpole_threshold = 15
 acrobot_threshold = -495
 def cartpole_TAC_a(config):
@@ -264,7 +264,7 @@ def acrobot_n_step_DQTM_a(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
@@ -295,12 +295,12 @@ def cartpole_n_step_DQTM_b(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "observation_data"}
-
+    print(_config)
     env = gym.make("CartPole-v1")
 
     agent = TMQN(env, Policy, _config)
@@ -324,7 +324,7 @@ def acrobot_n_step_DQTM_b(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
@@ -356,7 +356,7 @@ def cartpole_DQTM_a(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
@@ -385,7 +385,7 @@ def acrobot_DQTM_a(config):
         'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
@@ -416,7 +416,7 @@ def cartpole_DQTM_b(config):
         'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
@@ -445,7 +445,7 @@ def acrobot_DQTM_b(config):
         'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
@@ -477,7 +477,7 @@ def cartpole_n_step_QTM(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0.0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,  "threshold": cartpole_threshold,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
@@ -506,7 +506,7 @@ def acrobot_n_step_QTM(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size, "threshold": acrobot_threshold,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
@@ -537,13 +537,14 @@ def cartpole_QTM(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": 0.5, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,  "threshold": cartpole_threshold,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "observation_data"}
 
     env = gym.make("CartPole-v1")
+    print(_config)
 
     agent = TMQN(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
@@ -566,14 +567,13 @@ def acrobot_QTM(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_decay,
+        'gamma': config.gamma, 'exploration_prob_init': config.exploration_p_init,
         'exploration_prob_decay': config.exploration_p_decay, 'buffer_size': config.buffer_size,  "threshold": acrobot_threshold,
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "acrobot_obs_data"}
 
     env = gym.make("Acrobot-v1")
-
     agent = TMQN(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     score = np.array(agent.best_scores['mean'])

@@ -4,7 +4,7 @@ import numpy as np
 ################### TAC a #######################
 ################################################
 config_cartpole_TAC_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -22,18 +22,18 @@ config_cartpole_TAC_a = {
         "c_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
 
         "c_y_max": {"values": list(range(60, 80, 5))},
         "c_y_min": {"values": list(range(20, 40, 5))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
     }
 }
 
 config_acrobot_TAC_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -52,13 +52,13 @@ config_acrobot_TAC_a = {
         "c_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
 
         "c_y_max": {"values": list(range(-40, -10, 5))},
         "c_y_min": {"values": list(range(-80, -60, 5))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
     }
 }
 
@@ -66,7 +66,7 @@ config_acrobot_TAC_a = {
 ################### TAC b #######################
 ################################################
 config_cartpole_TAC_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -85,20 +85,20 @@ config_cartpole_TAC_b = {
         "c_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
 
         "c_y_max": {"values": list(range(60, 80, 5))},
         "c_y_min": {"values": list(range(20, 40, 5))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
     }
 }
 
 
 
 config_acrobot_TAC_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -117,13 +117,13 @@ config_acrobot_TAC_b = {
         "c_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 10, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
 
         "c_y_max": {"values": list(range(-40, -10, 5))},
         "c_y_min": {"values": list(range(-80, -60, 5))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
     }
 }
 
@@ -134,12 +134,12 @@ config_acrobot_TAC_b = {
 
 
 config_cartpole_TPPO = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.94, 0.98, 0.001))},
         "lam": {"values": list(np.arange(0.94, 0.98, 0.001))},
-        "n_timesteps": {"values": list(range(8, 32, 4))},
+        "n_timesteps": {"values": list(range(4, 512, 4))},
         "batch_size": {"values": list(range(16, 512, 16))},
         "epochs": {"values": list(range(1, 5, 1))},
 
@@ -148,7 +148,7 @@ config_cartpole_TPPO = {
         "a_specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
         "a_number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
-        "a_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "a_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
         "a_min_update_p": {"values": list(np.arange(0.0001, 0.001, 0.0001))},
 
         "c_t": {"values": list(np.arange(0.3, 0.9, 0.01))},
@@ -156,18 +156,18 @@ config_cartpole_TPPO = {
         "c_specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
         "c_y_max": {"values": list(np.arange(5.5, 35, 0.5))},
         "c_y_min": {"values": list(np.arange(0.0, 1.0, 0.1))},
     }
 }
 config_acrobot_TPPO = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.94, 0.98, 0.001))},
         "lam": {"values": list(np.arange(0.94, 0.98, 0.001))},
-        "n_timesteps": {"values": list(range(8, 32, 4))},
+        "n_timesteps": {"values": list(range(4, 512, 4))},
         "batch_size": {"values": list(range(16, 512, 16))},
         "epochs": {"values": list(range(1, 5, 1))},
 
@@ -176,7 +176,7 @@ config_acrobot_TPPO = {
         "a_specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
         "a_number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
-        "a_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "a_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
         "a_min_update_p": {"values": list(np.arange(0.0001, 0.001, 0.0001))},
 
         "c_t": {"values": list(np.arange(0.3, 0.9, 0.01))},
@@ -184,7 +184,7 @@ config_acrobot_TPPO = {
         "c_specificity": {"values": list(np.arange(1.0, 4.0, 0.01))},
         "c_bits_per_feature": {"values": list(range(5, 15, 1))},
         "c_number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
-        "c_max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 0.1, 0.001))},
         "c_y_max": {"values": list(np.arange(-1.0, 0.0, 0.1))},
         "c_y_min": {"values": list(np.arange(-35.0, -5.5, 0.1))},
     }
@@ -195,7 +195,7 @@ config_acrobot_TPPO = {
 ################################################
 
 config_cartpole_n_step_DQTM_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -212,14 +212,14 @@ config_cartpole_n_step_DQTM_a = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_n_step_DQTM_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -236,8 +236,8 @@ config_acrobot_n_step_DQTM_a = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
@@ -247,7 +247,7 @@ config_acrobot_n_step_DQTM_a = {
 ######### n-step Double TMQN type b ############
 ################################################
 config_cartpole_n_step_DQTM_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -264,14 +264,14 @@ config_cartpole_n_step_DQTM_b = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_n_step_DQTM_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -288,8 +288,8 @@ config_acrobot_n_step_DQTM_b = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
@@ -298,7 +298,7 @@ config_acrobot_n_step_DQTM_b = {
 ############ Double TMQN type a ################
 ################################################
 config_cartpole_DQTM_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -314,14 +314,14 @@ config_cartpole_DQTM_a = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_DQTM_a = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -337,8 +337,8 @@ config_acrobot_DQTM_a = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
@@ -346,7 +346,7 @@ config_acrobot_DQTM_a = {
 ############ Double TMQN type b ################
 ################################################
 config_cartpole_DQTM_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -362,14 +362,14 @@ config_cartpole_DQTM_b = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_DQTM_b = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -385,8 +385,8 @@ config_acrobot_DQTM_b = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
@@ -395,7 +395,7 @@ config_acrobot_DQTM_b = {
 ################# n-step TMQN  #################
 ################################################
 config_cartpole_n_step_QTM = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -411,14 +411,14 @@ config_cartpole_n_step_QTM = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_n_step_QTM = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -434,8 +434,8 @@ config_acrobot_n_step_QTM = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
@@ -445,7 +445,7 @@ config_acrobot_n_step_QTM = {
 ################################################
 
 config_cartpole_QTM = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -460,14 +460,14 @@ config_cartpole_QTM = {
         "y_max": {"values": list(range(60, 80, 5))},
         "y_min": {"values": list(range(20, 40, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.8, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }
 
 config_acrobot_QTM = {
-    "method": "random",
+    "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
@@ -482,8 +482,8 @@ config_acrobot_QTM = {
         "y_max": {"values": list(range(-40, -10, 5))},
         "y_min": {"values": list(range(-80, -60, 5))},
         "exploration_p_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
-        "exploration_p_init": {"values": list(np.arange(0.2, 1.00, 0.1))},
-        "max_update_p": {"values": list(np.arange(0.01, 0.5, 0.01))},
+        "exploration_p_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "max_update_p": {"values": list(np.arange(0.001, 0.2, 0.001))},
 
     }
 }

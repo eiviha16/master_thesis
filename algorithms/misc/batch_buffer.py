@@ -25,6 +25,7 @@ class Batch:
         self.sampled_advantages = []
         self.sampled_entropies = []
         self.sampled_discounted_rewards = []
+        self.next_value = 0
 
     def clear(self):
         self.actions = []
