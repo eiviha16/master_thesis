@@ -36,6 +36,8 @@ class TMQN:
         self.nr_of_test_episodes = 100
         if config['save']:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+
+            #self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
             #self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
@@ -50,7 +52,7 @@ class TMQN:
         self.config = config
         self.save_path = ''
         if self.save:
-            self.make_run_dir()
+            self.make_run_dir(self.config['algorithm'])
             self.save_config()
         self.announce()
         self.prev_feedback = {'tm1': [0, 0], 'tm2': [0, 0]}

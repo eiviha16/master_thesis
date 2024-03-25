@@ -25,7 +25,7 @@ env = gym.make("CartPole-v1")
 #env = gym.make("Acrobot-v1")
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=700)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
@@ -36,6 +36,6 @@ tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.
 
 
 agent.target_policy.tms[0].set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
-agent.target_policy.tms[0].set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
+agent.target_policy.tms[1].set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
 
 test_policy(save_file, agent.target_policy)

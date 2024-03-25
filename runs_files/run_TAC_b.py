@@ -11,25 +11,29 @@ from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
 #actor = {'nr_of_classes': 2, 'nr_of_clauses': 1160, 'T': int(1160 * 0.52), 's': 4.5, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 9}
 #actor = {'nr_of_clauses': 840, 'T': int(840 * 0.03), 's': 2.58, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 9, "seed": 42, 'number_of_state_bits_ta': 5}
-actor = {'nr_of_clauses': 800, 'T': int(800 * 0.93), 's': 7.72, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, "seed": 42, 'number_of_state_bits_ta': 3}
+#actor = {'nr_of_clauses': 1660, 'T': int(1660 * 0.25), 's': 7.13, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, "seed": 42, 'number_of_state_bits_ta': 3}
+actor = {'nr_of_clauses': 1780, 'T': int(1780 * 0.99), 's': 9.89, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, "seed": 42, 'number_of_state_bits_ta': 4}
 #actor = {'nr_of_classes': 2, 'nr_of_clauses': 1060, 'T': int(1060 * 0.2), 's': 2.54, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, "seed": 42, 'number_of_state_bits_ta': 9}
 #critic = {'nr_of_clauses': 1150, 'T': int(1150 * 0.54), 's': 6.34, 'y_max': 65, 'y_min': 30, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 8}
 #critic = {'max_update_p': 0.153, 'nr_of_clauses': 1650, 'T': int(1650 * 0.68), 's': 7.33, 'y_max': 60, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, "seed": 42, 'number_of_state_bits_ta': 7}
-critic = {'max_update_p': 0.049, 'nr_of_clauses': 1100, 'T': int(1100 * 0.89), 's': 3.06, 'y_max': 65, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, "seed": 42, 'number_of_state_bits_ta': 7}
+#critic = {'max_update_p': 0.012, 'nr_of_clauses': 1650, 'T': int(1650 * 0.96), 's': 1.01, 'y_max': -25, 'y_min': -75, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 9}
+critic = {'max_update_p': 0.082, 'nr_of_clauses': 1500, 'T': int(1450 * 0.48), 's': 2.18, 'y_max': -30, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 10, "seed": 42, 'number_of_state_bits_ta': 4}
 #critic = {'nr_of_clauses': 1900, 'T': int(1900 * 0.19), 's': 5.91, 'y_max': 65, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, "seed": 42, 'number_of_state_bits_ta': 8}
 #config = {'algorithm': 'TM_DDPG_2', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'update_freq': 6, 'gamma': 0.906, 'actor': actor, 'critic': critic, 'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True}
 #config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7500, 'exploration_prob_init': 0.3, 'exploration_prob_decay': 0.004, 'soft_update_type': 'soft_update_2', 'gamma': 0.948, 'update_grad': -1, 'update_freq': 5, 'actor': actor, 'critic': critic, 'batch_size': 96, 'epochs': 3, 'test_freq': 1, "save": False, "threshold": 0, "dataset_file_name": "observation_data"}
-config = {"env_name": "cartpole", 'algorithm': 'TAC_b', 'buffer_size': 4000, 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.008, 'soft_update_type': 'soft_update_2', 'gamma': 0.942, 'update_freq': 9, 'actor': actor, 'critic': critic, 'batch_size': 112, 'epochs': 3, 'test_freq': 1, "save": True, "threshold": 0, "dataset_file_name": "observation_data"}
+#config = {"env_name": "acrobot", 'algorithm': 'TAC_b', 'buffer_size': 8500, 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.006, 'soft_update_type': 'soft_update_2', 'gamma': 0.949, 'update_freq': 8, 'actor': actor, 'critic': critic, 'batch_size': 112, 'epochs': 1, 'test_freq': 1, "save": True, "threshold": -500, "dataset_file_name": "acrobot_obs_data"}#observation_data"}
+config = {"env_name": "acrobot", 'algorithm': 'TAC_b', 'buffer_size': 7500, 'exploration_prob_init': 0.6, 'exploration_prob_decay': 0.006, 'soft_update_type': 'soft_update_2', 'gamma': 0.962, 'update_freq': 3, 'actor': actor, 'critic': critic, 'batch_size': 96, 'epochs': 2, 'test_freq': 1, "save": True, "threshold": -500, "dataset_file_name": "acrobot_obs_data"}#observation_data"}
 #config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7092, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.913, 'update_grad': -1, 'update_freq': 7, 'actor': actor, 'critic': critic, 'batch_size': 16, 'epochs': 2, 'test_freq': 1, "save": True}
 #run 5 without initialization
 #run 6 with initialization
 print(config)
 
-env = gym.make("CartPole-v1")
+#env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
 
 
 agent = DDPG(env, Policy, config)
-agent.learn(nr_of_episodes=5000)
+agent.learn(nr_of_episodes=500)
 
 from test_policy import test_policy
 

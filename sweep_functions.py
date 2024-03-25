@@ -7,6 +7,7 @@ import random
 ################################################
 
 n_episodes_1 = 1000
+n_epsidoes_acro = 500
 n_episodes_2 = 5000
 test_freq_2 = 25
 cartpole_threshold = 15
@@ -34,6 +35,7 @@ def cartpole_TAC_a(config):
                'update_grad': config.update_grad, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
                'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -67,11 +69,12 @@ def acrobot_TAC_a(config):
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
                'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
                "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = DDPG(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_1)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     return score
 
@@ -103,6 +106,7 @@ def cartpole_TAC_b(config):
                'update_freq': config.update_freq, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
                'epochs': config.epochs, 'test_freq': 1,  "threshold": cartpole_threshold, "save": False, "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -136,11 +140,12 @@ def acrobot_TAC_b(config):
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
                'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
                "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = DDPG(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_1)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     return score
 
@@ -174,6 +179,7 @@ def cartpole_TPPO(config):
                "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.epochs,
                'test_freq': 1, "save": False, "seed": 42,  "threshold": cartpole_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -208,12 +214,13 @@ def acrobot_TPPO(config):
                "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.epochs,
                'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     # env = gym.make("CartPole-v1")
     env = gym.make("Acrobot-v1")
 
     agent = PPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_1)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     return score
 
@@ -240,6 +247,7 @@ def cartpole_n_step_DQTM_a(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
         "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -269,11 +277,12 @@ def acrobot_n_step_DQTM_a(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
         "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_1)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
 
@@ -329,11 +338,12 @@ def acrobot_n_step_DQTM_b(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_2)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
 
@@ -361,6 +371,7 @@ def cartpole_DQTM_a(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
         "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -390,11 +401,12 @@ def acrobot_DQTM_a(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': config.update_grad, 'update_freq': -1,
         "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_2)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
 
@@ -421,6 +433,7 @@ def cartpole_DQTM_b(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -450,11 +463,12 @@ def acrobot_DQTM_b(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_2)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
 
@@ -482,6 +496,7 @@ def cartpole_n_step_QTM(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "observation_data"}
+    print(_config)
 
     env = gym.make("CartPole-v1")
 
@@ -511,11 +526,12 @@ def acrobot_n_step_QTM(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "acrobot_obs_data"}
+    print(_config)
 
     env = gym.make("Acrobot-v1")
 
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_2)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
 
@@ -542,9 +558,8 @@ def cartpole_QTM(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "observation_data"}
-
-    env = gym.make("CartPole-v1")
     print(_config)
+    env = gym.make("CartPole-v1")
 
     agent = TMQN(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
@@ -572,9 +587,9 @@ def acrobot_QTM(config):
         'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "acrobot_obs_data"}
-
+    print(_config)
     env = gym.make("Acrobot-v1")
     agent = TMQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_2)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
