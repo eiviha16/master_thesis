@@ -25,13 +25,21 @@ config = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'buffer_size': 2500, 'ex
 #config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7092, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.913, 'update_grad': -1, 'update_freq': 7, 'actor': actor, 'critic': critic, 'batch_size': 16, 'epochs': 2, 'test_freq': 1, "save": True}
 #run 5 without initialization
 #run 6 with initialization
+#config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.7999999999999999, 'exploration_prob_decay': 0.007, 'update_grad': 0.105, 'gamma': 0.948, 'buffer_size': 4000, 'actor': {'nr_of_clauses': 1580, 'T': 726, 's': 3.9300000000000024, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.028, 'nr_of_clauses': 1800, 'T': 756, 's': 8.670000000000007, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 96, 'epochs': 4, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+#config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.001, 'update_freq': 4, 'gamma': 0.982, 'buffer_size': 5500, 'actor': {'nr_of_clauses': 1860, 'T': 818, 's': 2.98, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 3}, 'critic': {'max_update_p': 0.07, 'nr_of_clauses': 1650, 'T': 1039, 's': 8.37, 'y_max': -10, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 5}, 'batch_size': 16, 'epochs': 3, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.006, 'update_grad': 0.749, 'gamma': 0.943, 'buffer_size': 9500, 'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 48, 'epochs': 2, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 print(config)
 
-env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
 
+############## MIGHT BE WORTH RUNNING ######################
+
+#config = {'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.5, 'exploration_prob_decay': 0.005, 'update_grad': 0.062, 'gamma': 0.904, 'buffer_size': 7000, 'actor': {'nr_of_clauses': 1380, 'T': 1297, 's': 8.870000000000008, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 6}, 'critic': {'max_update_p': 0.074, 'nr_of_clauses': 1100, 'T': 121, 's': 9.280000000000008, 'y_max': -10, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 3}, 'batch_size': 80, 'epochs': 3, 'test_freq': 1, 'save': False, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+#config = {'algorithm': 'TAC_a',  'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.009, 'update_grad': 0.583, 'gamma': 0.919, 'buffer_size': 5000, 'actor': {'nr_of_clauses': 1820, 'T': 1365, 's': 1.48, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, 'seed': 42, 'number_of_state_bits_ta': 3}, 'critic': {'max_update_p': 0.005, 'nr_of_clauses': 1200, 'T': 744, 's': 4.15, 'y_max': -10, 'y_min': -60, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'seed': 42, 'number_of_state_bits_ta': 4}, 'batch_size': 112, 'epochs': 3, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+###########
 
 agent = DDPG(env, Policy, config)
-agent.learn(nr_of_episodes=5000)
+agent.learn(nr_of_episodes=500)
 
 from test_policy import test_policy
 
@@ -41,6 +49,19 @@ agent.policy.actor.tm.set_params(tm[0]['ta_state'], tm[0]['clause_sign'], tm[0][
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
 
 test_policy(save_file, agent.policy.actor)
+
+
+
+
+
+
+
+
+
+
+
+
+
 exit(0)
 #actor = {'nr_of_classes': 2, 'nr_of_clauses': 1160, 'T': int(1160 * 0.52), 's': 4.5, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, "seed": 42, 'number_of_state_bits_ta': 9}
 actor = {'nr_of_clauses': 940, 'T': int(940 * 0.44), 's': 1.85, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, "seed": 42, 'number_of_state_bits_ta': 6}
@@ -49,7 +70,7 @@ actor = {'nr_of_clauses': 940, 'T': int(940 * 0.44), 's': 1.85, 'device': 'CPU',
 critic = {'max_update_p': 0.127, 'nr_of_clauses': 1450, 'T': int(1450 * 0.06), 's': 5.36, 'y_max': 60, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, "seed": 42, 'number_of_state_bits_ta': 9}
 #critic = {'nr_of_clauses': 1900, 'T': int(1900 * 0.19), 's': 5.91, 'y_max': 65, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, "seed": 42, 'number_of_state_bits_ta': 8}
 #config = {'algorithm': 'TM_DDPG_2', 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'update_freq': 6, 'gamma': 0.906, 'actor': actor, 'critic': critic, 'batch_size': 64, 'epochs': 1, 'test_freq': 1, "save": True}
-config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 5000, 'exploration_prob_init': 0.5, 'exploration_prob_decay': 0.008, 'soft_update_type': 'soft_update_1', 'gamma': 0.906, 'update_grad': 0.981, 'actor': actor, 'critic': critic, 'batch_size': 80, 'epochs': 6, 'test_freq': 1, "save": False, "dataset_file_name": "observation_data"}
+config = {'algorithm': 'TAC_a', 'buffer_size': 5000, 'exploration_prob_init': 0.5, 'exploration_prob_decay': 0.008, 'soft_update_type': 'soft_update_1', 'gamma': 0.906, 'update_grad': 0.981, 'actor': actor, 'critic': critic, 'batch_size': 80, 'epochs': 6, 'test_freq': 1, "save": False, "dataset_file_name": "observation_data"}
 #config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7092, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.913, 'update_grad': -1, 'update_freq': 7, 'actor': actor, 'critic': critic, 'batch_size': 16, 'epochs': 2, 'test_freq': 1, "save": True}
 #run 5 without initialization
 #run 6 with initialization

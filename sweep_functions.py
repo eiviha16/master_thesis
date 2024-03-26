@@ -7,7 +7,7 @@ import random
 ################################################
 
 n_episodes_1 = 1000
-n_epsidoes_acro = 500
+n_epsidoes_acro = 250
 n_episodes_2 = 5000
 test_freq_2 = 25
 cartpole_threshold = 15

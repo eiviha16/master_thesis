@@ -20,6 +20,8 @@ config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7500, 'exploration_prob_init'
 #config = {'algorithm': 'TM_DDPG_2', 'buffer_size': 7092, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'soft_update_type': 'soft_update_2', 'gamma': 0.913, 'update_grad': -1, 'update_freq': 7, 'actor': actor, 'critic': critic, 'batch_size': 16, 'epochs': 2, 'test_freq': 1, "save": True}
 #run 5 without initialization
 #run 6 with initialization
+{'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 0.6, 'exploration_prob_decay': 0.003, 'update_freq': 8, 'gamma': 0.955, 'buffer_size': 9000, 'actor': {'nr_of_clauses': 1160, 'T': 707, 's': 1.6600000000000006, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 10, 'seed': 42, 'number_of_state_bits_ta': 5}, 'critic': {'max_update_p': 0.059, 'nr_of_clauses': 1600, 'T': 192, 's': 6.860000000000005, 'y_max': -15, 'y_min': -65, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 80, 'epochs': 4, 'test_freq': 1, 'save': False, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+
 print(config)
 
 env = gym.make("CartPole-v1")
