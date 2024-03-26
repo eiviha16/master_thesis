@@ -10,7 +10,7 @@ n_episodes_1 = 1000
 n_epsidoes_acro = 250
 n_episodes_2 = 5000
 test_freq_2 = 25
-cartpole_threshold = 15
+cartpole_threshold = 20
 acrobot_threshold = -495
 def cartpole_TAC_a(config):
     random.seed(42)

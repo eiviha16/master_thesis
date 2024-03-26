@@ -36,7 +36,7 @@ class TMQN:
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
         if config['save']:
-            self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -56,7 +56,7 @@ class TMQN:
         self.config = config
         self.save_path = ''
         if self.save:
-            self.make_run_dir()
+            self.make_run_dir(config['algorithm'])
             self.save_config()
         self.announce()
         self.q_values = {'q1': [], 'q2': []}
@@ -70,15 +70,17 @@ class TMQN:
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
-    def make_run_dir(self):
-        base_dir = './results'
+    def make_run_dir(self, algorithm):
+        base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, self.config["algorithm"])):
-            os.makedirs(os.path.join(base_dir, self.config["algorithm"]))
-        if not os.path.exists(os.path.join(base_dir, self.config["algorithm"], self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config["algorithm"], self.run_id))
-        self.save_path = os.path.join(base_dir, self.config["algorithm"], self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
 
     def save_config(self):
         if self.save:
