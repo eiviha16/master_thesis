@@ -53,6 +53,7 @@ class DDPG:
         self.total_score = []
         self.batch_size = config['batch_size']
         self.threshold = config['threshold']
+        self.scores = []
 
 
     def announce(self):
@@ -176,7 +177,7 @@ class DDPG:
             self.save_model(True)
             self.best_score = mean
             print(f'New best mean: {mean}!')
-
+        self.scores.append(mean)
     def save_model(self, best_model):
 
         if self.save:

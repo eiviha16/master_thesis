@@ -42,6 +42,7 @@ def cartpole_TAC_a(config):
     agent = DDPG(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
     return score
 
 
@@ -76,6 +77,8 @@ def acrobot_TAC_a(config):
     agent = DDPG(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+
     return score
 
 
@@ -113,6 +116,8 @@ def cartpole_TAC_b(config):
     agent = DDPG(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+
     return score
 
 
@@ -147,6 +152,8 @@ def acrobot_TAC_b(config):
     agent = DDPG(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+
     return score
 
 

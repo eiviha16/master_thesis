@@ -12,6 +12,7 @@ from algorithms.policy.RTM import Policy
 
 
 config = {"env_name": "acrobot", 'algorithm': 'Double_QTM_b', 'soft_update_type': 'soft_update_2', 'nr_of_clauses': 1580, 'T': 711, 'max_update_p': 0.055, 'min_update_p': 0, 's': 3.8000000000000025, 'y_max': -5, 'y_min': -55, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'gamma': 0.959, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.004, 'buffer_size': 9500, 'batch_size': 80, 'epochs': 4, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': -495, 'number_of_state_bits_ta': 7, 'update_grad': -1, 'update_freq': 5, 'dataset_file_name': 'acrobot_obs_data'}
+
 print(config)
 
 #env = gym.make("CartPole-v1")
