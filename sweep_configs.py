@@ -11,7 +11,7 @@ config_cartpole_TAC_a = {
         "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "epochs": {"values": list(range(1, 8, 1))},
-        "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
         "a_nr_of_clauses": {"values": list(range(800, 1200, 20))},
         "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
@@ -41,7 +41,7 @@ config_acrobot_TAC_a = {
         "batch_size": {"values": list(range(16, 128, 16))},
         "epochs": {"values": list(range(1, 8, 1))},
 
-        "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
         "a_nr_of_clauses": {"values": list(range(1000, 2000, 20))},
         "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
@@ -74,7 +74,7 @@ config_cartpole_TAC_b = {
         "batch_size": {"values": list(range(16, 128, 16))},
         "epochs": {"values": list(range(1, 8, 1))},
 
-        "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
         "a_nr_of_clauses": {"values": list(range(800, 1200, 20))},
         "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
@@ -106,7 +106,7 @@ config_acrobot_TAC_b = {
         "batch_size": {"values": list(range(16, 128, 16))},
         "epochs": {"values": list(range(1, 8, 1))},
 
-        "a_t": {"values": list(np.arange(0.01, 1.00, 0.01))},
+        "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
         "a_nr_of_clauses": {"values": list(range(1000, 2000, 20))},
         "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
         "a_bits_per_feature": {"values": list(range(5, 15, 1))},
