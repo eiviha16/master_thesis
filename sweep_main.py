@@ -9,46 +9,46 @@ wandb.login(key="74a10e58809253b0e1f243f34bb17d8f34c21e59")
 ################################################
 
 def main_c_TAC_a():
-    wandb.init(project="cartpole-TAC_a-f")
+    wandb.init(project="cartpole-TAC_a-ff")
     score = cartpole_TAC_a(wandb.config)
     wandb.log({"score": score})
 def main_a_TAC_a():
-    wandb.init(project="acrobot-TAC_a-f")
+    wandb.init(project="acrobot-TAC_a-ff")
     score = acrobot_TAC_a(wandb.config)
     wandb.log({"score": score})
 
 def start_c_TAC_a():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_a, project="cartpole-TAC_a-f")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_a, project="cartpole-TAC_a-ff")
     wandb.agent(sweep_id, function=main_c_TAC_a, count=10_000)
 
 def start_a_TAC_a():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_a, project="acrobot-TAC_a-f")
+    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_a, project="acrobot-TAC_a-ff")
     wandb.agent(sweep_id, function=main_a_TAC_a, count=10_000)
 
 ################################################
 ################### TAC b #######################
 ################################################
 def main_c_TAC_b():
-    wandb.init(project="cartpole-TAC_b-f")
+    wandb.init(project="cartpole-TAC_b-ff")
     score = cartpole_TAC_b(wandb.config)
     wandb.log({"score": score})
 def main_a_TAC_b():
-    wandb.init(project="acrobot-TAC_b-f")
+    wandb.init(project="acrobot-TAC_b-ff")
     score = acrobot_TAC_b(wandb.config)
     wandb.log({"score": score})
 
 
 def start_c_TAC_b():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_b, project="cartpole-TAC_b-f")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_b, project="cartpole-TAC_b-ff")
     wandb.agent(sweep_id, function=main_c_TAC_b, count=10_000)
 
 
 def start_a_TAC_b():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_b, project="acrobot-TAC_b-f")
+    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_b, project="acrobot-TAC_b-ff")
     wandb.agent(sweep_id, function=main_a_TAC_b, count=10_000)
 ################################################
 ################### TPPO #######################
