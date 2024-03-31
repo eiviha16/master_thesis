@@ -1,0 +1,53 @@
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AwAAAAAAAAA=
+actor:
+  T: 1558
+  bits_per_feature: 9
+  device: CPU
+  nr_of_clauses: 1900
+  number_of_state_bits_ta: 7
+  s: 5.630000000000004
+  seed: 42
+  weighted_clauses: false
+algorithm: TAC_b
+batch_size: 112
+buffer_size: 5000
+critic:
+  T: 884
+  bits_per_feature: 9
+  device: CPU
+  max_update_p: 0.060000000000000005
+  nr_of_clauses: 1300
+  number_of_state_bits_ta: 5
+  s: 2.830000000000002
+  seed: 42
+  weighted_clauses: false
+  y_max: -10
+  y_min: -75
+dataset_file_name: acrobot_obs_data
+env_name: acrobot
+epochs: 2
+exploration_prob_decay: 0.007
+exploration_prob_init: 0.7999999999999999
+gamma: 0.933
+obs_space_size: 6
+save: true
+soft_update_type: soft_update_2
+test_freq: 1
+threshold: -495
+update_freq: 1

@@ -38,7 +38,7 @@ env = gym.make("Acrobot-v1")
 
 
 agent = PPO(env, Policy, config)
-agent.learn(nr_of_episodes=500)
+#agent.learn(nr_of_episodes=1000)
 
 from test_policy import test_policy
 
@@ -46,12 +46,14 @@ from test_policy import test_policy
 #agent.policy.actor.tms[1].set_state()
 #save_file = f'../results/TM_PPO/{agent.run_id}'
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
+#save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/run_2/final_test_results'
 
 #tms = torch.load(f'../results/TM_PPO/{agent.run_id}/best')
 tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/best')
+#tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/run_2/best')
 
 for i in range(len(tms)):
     #eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses
     agent.policy.actor.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])
 
-test_policy(save_file, agent.policy.actor)
+test_policy(save_file, agent.policy.actor, config['env_name'])

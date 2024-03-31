@@ -148,7 +148,8 @@ class DDPG:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            self.test()
+            if episode % self.config['test_freq'] == 0:
+                self.test()
             self.cur_episode = episode
             self.rollout()
             if self.best_score < self.threshold and self.cur_episode == 100:

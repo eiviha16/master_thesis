@@ -17,26 +17,57 @@ from algorithms.policy.RTM import Policy
 #config = {'comment': "Q-value on action", 'soft_update_type': 'soft_update_1', 'algorithm': 'Double_TMQN', 'nr_of_clauses': 1120, 'T': int(1120 * 0.86), 's': 3.2, 'y_max': 70, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'gamma': 0.981, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 8500, 'batch_size': 32, 'epochs': 3, 'test_freq': 1, "save": False, "seed": 42,"max_update_p": 0.05, "min_update_p": 0.0, 'dynamic_memory': False, 'number_of_state_bits_ta': 8, 'update_grad': 0.433, "threshold": 100, 'update_freq': -1,"dataset_file_name": "observation_data"}
 #config = {'env_name': "acrobot", 'algorithm': 'Double_QTM_a', 'soft_update_type': 'soft_update_1', 'nr_of_clauses': 1240, 'T': 1004, 'max_update_p': 0.157, 'min_update_p': 0, 's': 1.4700000000000004, 'y_max': -5, 'y_min': -70, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'gamma': 0.987, 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.005, 'buffer_size': 4500, 'batch_size': 64, 'epochs': 4, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': -495, 'number_of_state_bits_ta': 8, 'update_grad': 0.893, 'update_freq': -1, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {'env_name': "acrobot", 'algorithm': 'Double_QTM_a', 'soft_update_type': 'soft_update_1', 'nr_of_clauses': 1140, 'T': 353, 'max_update_p': 0.025, 'min_update_p': 0, 's': 6.240000000000005, 'y_max': -5, 'y_min': -75, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'gamma': 0.966, 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.007, 'buffer_size': 2500, 'batch_size': 48, 'epochs': 6, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': -495, 'number_of_state_bits_ta': 7, 'update_grad': 0.305, 'update_freq': -1, 'dataset_file_name': 'acrobot_obs_data'}
-config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_b',  'soft_update_type': 'soft_update_2', 'nr_of_clauses': 880, 'T': 844, 'max_update_p': 0.101, 'min_update_p': 0, 's': 7.790000000000006, 'y_max': 70, 'y_min': 30, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'gamma': 0.973, 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.005, 'buffer_size': 4500, 'batch_size': 16, 'epochs': 6, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 8, 'update_grad': -1, 'update_freq': 1, 'dataset_file_name': 'observation_data'}
+#config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_b',  'soft_update_type': 'soft_update_2', 'nr_of_clauses': 880, 'T': 844, 'max_update_p': 0.101, 'min_update_p': 0, 's': 7.790000000000006, 'y_max': 70, 'y_min': 30, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'gamma': 0.973, 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.005, 'buffer_size': 4500, 'batch_size': 16, 'epochs': 6, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 8, 'update_grad': -1, 'update_freq': 1, 'dataset_file_name': 'observation_data'}
+config = {"T": 711,
+"algorithm": "Double_QTM_b",
+"batch_size": 80,
+"bits_per_feature": 8,
+"buffer_size": 9500,
+"dataset_file_name": "acrobot_obs_data",
+"device": "CPU",
+"env_name": "acrobot",
+"epochs": 4,
+"exploration_prob_decay": 0.004,
+"exploration_prob_init": 0.7,
+"gamma": 0.959,
+"max_update_p": 0.055,
+"min_update_p": 0,
+"nr_of_clauses": 1580,
+"number_of_state_bits_ta": 7,
+"obs_space_size": 6,
+"s": 3.8000000000000025,
+"save": True,
+"seed": 42,
+"soft_update_type": "soft_update_2",
+"test_freq": 1,
+"threshold": -495,
+"update_freq": 5,
+"update_grad": -1,
+"weighted_clauses": False,
+"y_max": -5,
+"y_min": -55,
+}
 print(config)
 
-env = gym.make("CartPole-v1")
-#env = gym.make("Acrobot-v1")
+#env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
 
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=5000)
+agent.learn(nr_of_episodes=1000)
 
 from test_policy import test_policy
 
 
-tms = torch.load(f'results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/best')
+#tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/best')
+tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/run_2/best')
 
-agent.target_policy.tm1.set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
-agent.target_policy.tm2.set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
-#agent.target_policy.tm2.set_params(tms[2]['ta_state'], tms[2]['clause_sign'], tms[2]['clause_output'], tms[2]['feedback_to_clauses'])
+agent.target_policy.tms[0].set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
+agent.target_policy.tms[1].set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
+agent.target_policy.tms[2].set_params(tms[2]['ta_state'], tms[2]['clause_sign'], tms[2]['clause_output'], tms[2]['feedback_to_clauses'])
 
-save_file = f'results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}'
+#save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}'
+save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/run_2'
 test_policy(save_file, agent.target_policy, config["env_name"])
 
 exit(0)
