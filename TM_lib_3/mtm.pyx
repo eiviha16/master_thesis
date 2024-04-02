@@ -290,7 +290,6 @@ cdef class MultiClassTsetlinMachine:
 		# Initialize feedback to clauses
 		for j in xrange(self.number_of_clauses):
 			self.feedback_to_clauses[j] = 0
-
 		# Calculate feedback to clauses
 		for j in xrange(self.clause_count[target_class]):
 			if 1.0*<float>pcg32_fast()/UINT32_MAX > (1.0/(self.threshold*2))*(self.threshold - self.class_sum[target_class]):

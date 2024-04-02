@@ -12,6 +12,7 @@ n_episodes_2 = 5000
 test_freq_2 = 25
 cartpole_threshold = 20
 acrobot_threshold = -495
+
 def cartpole_TAC_a(config):
     random.seed(42)
     np.random.seed(42)
@@ -19,6 +20,75 @@ def cartpole_TAC_a(config):
 
     import gymnasium as gym
     from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.policy.CTM import ActorCriticPolicy as Policy
+
+    actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
+             's': config.a_specificity, 'device': 'CPU', 'weighted_clauses': False,
+             'bits_per_feature': config.a_bits_per_feature, "seed": 42,
+             'number_of_state_bits_ta': config.a_number_of_state_bits_ta}
+    critic = {"max_update_p": config.c_max_update_p, 'nr_of_clauses': config.c_nr_of_clauses,
+              'T': int(config.c_nr_of_clauses * config.c_t), 's': config.c_specificity, 'y_max': config.c_y_max,
+              'y_min': config.c_y_min, 'device': 'CPU',
+              'weighted_clauses': False, 'bits_per_feature': config.c_bits_per_feature, "seed": 42,
+              'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
+    _config = {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_1',
+               'exploration_prob_init': config.exploration_p_init, 'exploration_prob_decay': config.exploration_p_decay,
+               'update_grad': config.update_grad, 'gamma': config.gamma,
+               "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
+               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
+    print(_config)
+
+    env = gym.make("CartPole-v1")
+
+    agent = DDPG(env, Policy, _config)
+    agent.learn(nr_of_episodes=n_episodes_1)
+    score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score
+
+
+def acrobot_random_TAC_a(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.VPG.TAC_random import DDPG
+    from algorithms.policy.CTM import ActorCriticPolicy as Policy
+
+    actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
+             's': config.a_specificity, 'device': 'CPU', 'weighted_clauses': False,
+             'bits_per_feature': config.a_bits_per_feature, "seed": 42,
+             'number_of_state_bits_ta': config.a_number_of_state_bits_ta}
+    critic = {"max_update_p": config.c_max_update_p, 'nr_of_clauses': config.c_nr_of_clauses,
+              'T': int(config.c_nr_of_clauses * config.c_t), 's': config.c_specificity, 'y_max': config.c_y_max,
+              'y_min': config.c_y_min, 'device': 'CPU',
+              'weighted_clauses': False, 'bits_per_feature': config.c_bits_per_feature, "seed": 42,
+              'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
+    _config = {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_1',
+               'exploration_prob_init': config.exploration_p_init, 'exploration_prob_decay': config.exploration_p_decay,
+               'update_grad': config.update_grad, 'gamma': config.gamma,
+               "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
+               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
+               "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
+    print(_config)
+
+    env = gym.make("Acrobot-v1")
+
+    agent = DDPG(env, Policy, _config)
+    agent.learn(nr_of_episodes=n_epsidoes_acro)
+    score = np.array(agent.best_score)
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+
+    return score
+
+def cartpole_random_TAC_a(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.VPG.TAC_random import DDPG
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
