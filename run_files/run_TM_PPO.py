@@ -25,14 +25,16 @@ config = {'algorithm': 'TM_PPO', "n_timesteps": 430, 'gamma': 0.967, 'lam': 0.94
 critic = {"max_update_p": 0.043, "min_update_p": 0.0, 'nr_of_clauses': 1030, 'T': int(1030 * 0.56), 's': 2.03, 'y_max': 14, 'y_min': 0.5,  'bits_per_feature': 5, 'number_of_state_bits_ta': 4}
 config = {'algorithm': 'TM_PPO', "n_timesteps": 430, 'gamma': 0.944, 'lam': 0.966, "actor": actor, "critic": critic, 'device': 'CPU', 'weighted_clauses': False,  'batch_size': 384, 'epochs': 3, 'test_freq': 1, "save": True, "seed": 42, "dataset_file_name": "observation_data"} #"dataset_file_name": "acrobot_obs_data"}
 """
+config = {"env_name": "cartpole", 'algorithm': 'TPPO', 'gamma': 0.952, 'lam': 0.995, 'device': 'CPU', 'weighted_clauses': False, 'actor': {'max_update_p': 0.025, 'min_update_p': 0.0007000000000000001, 'nr_of_clauses': 1000, 'T': 830, 's': 1.2000000000000002, 'y_max': 100, 'y_min': 0, 'bits_per_feature': 14, 'number_of_state_bits_ta': 4}, 'critic': {'max_update_p': 0.093, 'min_update_p': 0.0, 'nr_of_clauses': 950, 'T': 361, 's': 2.200000000000001, 'y_max': 14.5, 'y_min': 0.6000000000000001, 'bits_per_feature': 11, 'number_of_state_bits_ta': 5}, 'batch_size': 320, 'epochs': 2, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': 20, 'n_timesteps': 8, 'dataset_file_name': 'observation_data'}
+
 print(config)
 #run_895 - 500.0
-env = gym.make("Acrobot-v1")
-#env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
 
 
 agent = PPO(env, Policy, config)
-agent.learn(nr_of_episodes=500)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
@@ -44,7 +46,7 @@ tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.
 for i in range(len(tms)):
     agent.policy.actor.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])
 
-test_policy(save_file, agent.policy.actor)
+test_policy(save_file, agent.policy.actor, config['env_name'])
 
 """CARTPOLE - 1000 episodes per sweep
 sweep_configuration = {

@@ -38,6 +38,7 @@ class PPO:
             self.save_config(config)
 
         self.best_score = float('-inf')
+        self.total_scores = []
         self.announce()
         self.cur_episode = 0
         self.abs_errors = {}
@@ -156,7 +157,7 @@ class PPO:
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.save_results(mean, std)
-
+        self.total_scores.append(mean)
         if mean > self.best_score:
             self.save_model(True)
             self.best_score = mean

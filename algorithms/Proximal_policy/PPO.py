@@ -25,8 +25,10 @@ class PPO:
 
         self.save = config['save']
         self.save_path = ''
-        self.run_id = 'run_' + str(len([i for i in os.listdir(f"./results/{config['algorithm']}")]) + 1)
-        self.make_run_dir(config['algorithm'])
+        self.config = config
+        if self.save:
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            self.make_run_dir(config['algorithm'])
 
         self.best_score = float('-inf')
         self.save_config(config)
@@ -43,7 +45,7 @@ class PPO:
     def calculate_advantage(self):
         advantage = 0
         discounted_reward = 0
-        next_value = self.batch.next_value
+        next_value = self.batch.next_value.detach().numpy()
         for i in reversed(range(len(self.batch.actions))):
             dt = self.batch.rewards[i] + self.gamma * next_value  * int(not self.batch.dones[i]) - self.batch.values[i]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
@@ -65,16 +67,17 @@ class PPO:
             obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
             self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), obs, reward, done)
             self.batch.next_value = self.policy.critic(torch.tensor(obs))
-            if done or truncated:
-                break
-
-            if len(self.batch.obs) > 1024:
+            if len(self.batch.obs) > self.config['n_steps']:
                 self.batch.convert_to_numpy()
                 self.calculate_advantage()
                 self.normalize_advantages()
-                # self.batch.convert_to_numpy()
                 self.train()
                 self.batch.clear()
+
+            if done or truncated:
+                break
+
+
                 #if len(self.batch.obs) > 500:
                 #    break
 
@@ -130,11 +133,7 @@ class PPO:
                     episode_rewards[episode] += reward
                     if done or truncated:
                         break
-                    if episode == 1:
-                        self.save_probs(probs)
-                        if episode_rewards[episode] % 5 == 0:
-                            pass
-                            #print(action, probs)
+
             mean = np.mean(episode_rewards)
             std = np.std(episode_rewards)
             self.save_results(mean, std)
@@ -170,11 +169,13 @@ class PPO:
 
 
     def make_run_dir(self, algorithm):
-        base_dir = './results'
+        base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, algorithm)):
-            os.makedirs(os.path.join(base_dir, algorithm))
-        if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)

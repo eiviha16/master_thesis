@@ -1,0 +1,13 @@
+algorithm: DQN
+batch_size: 256
+buffer_size: 50000
+c: 1
+epochs: 8
+exploration_prob_decay: 0.001
+exploration_prob_init: 1.0
+gamma: 0.99
+hidden_size: 64
+learning_rate: 0.001
+save: true
+test_freq: 1
+threshold_score: 450

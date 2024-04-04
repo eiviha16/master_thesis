@@ -7,9 +7,39 @@ torch.manual_seed(42)
 np.random.seed(42)
 from torch.distributions import Categorical
 
-
-
 class QNet(nn.Module):
+    def __init__(self, input_size, output_size, hidden_size=128, c=1, action_std=0.5):
+        super(QNet, self).__init__()
+        # activation
+        self.activation = nn.Tanh()
+        self.output_activation = nn.Sigmoid()
+
+        # layers
+        self.input_layer = nn.Linear(input_size, hidden_size)
+        self.hidden_layer = nn.Linear(hidden_size, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, output_size * 2)
+
+    def forward(self, input):
+        x = self.input_layer(input)
+        x = self.activation(x)
+
+        x = self.hidden_layer(x)
+        x = self.activation(x)
+
+        x = self.output_layer(x)
+        return x
+
+
+class Policy(QNet):
+    def __init__(self, input_size, output_size, config):
+        super(Policy, self).__init__(input_size, output_size, config['hidden_size'], config['c'])
+        self.optimizer = optim.Adam(self.parameters(), lr=config['learning_rate'])
+
+    def predict(self, input):
+        q_vals = self.forward(torch.tensor(np.array(input)))#.to('cuda'))
+        return q_vals
+
+"""class QNet(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=128):
         super(QNet, self).__init__()
         # activation
@@ -42,7 +72,7 @@ class Policy(QNet):
         q_vals = self.forward(torch.tensor(np.array(input)))
         return q_vals
 
-
+"""
 class Actor(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=128):
         super(Actor, self).__init__()
@@ -93,12 +123,12 @@ class Critic(nn.Module):
 
 
 class ActorCriticPolicy:
-    def __init__(self, input_size, output_size, hidden_size):
+    def __init__(self, input_size, output_size, hidden_size, lr):
         self.actor = Actor(input_size, output_size, hidden_size)
-        self.critic = Critic(input_size, output_size, hidden_size)
+        self.critic = Critic(input_size, output_size)
 
-        self.actor_optim = optim.Adam(self.actor.parameters(), lr=7e-5)#lr)
-        self.critic_optim = optim.Adam(self.critic.parameters(), lr=3e-4)
+        self.actor_optim = optim.Adam(self.actor.parameters(), lr=lr)
+        self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
 
     def get_action(self, obs):
         obs = torch.tensor(obs)
@@ -129,10 +159,10 @@ class ActorPolicy:
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
         action = torch.multinomial(action_probs, 1).squeeze(dim=-1)
-        return actions, F.log_softmax(action_probs, dim=-1)
+        return action, F.log_softmax(action_probs, dim=-1)
 
     def get_best_action(self, obs):
         obs = torch.tensor(obs)
         action_probs = self.actor(obs)
-        actions = torch.argmax(action_probs, dim=-1)
-        return actions, action_probs
+        action = torch.argmax(action_probs, dim=-1)
+        return action, action_probs

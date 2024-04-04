@@ -263,6 +263,7 @@ def cartpole_TPPO(config):
     agent = PPO(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
+    print(f'Mean: {np.mean(np.array(agent.total_scores))}')
     return score
 
 
@@ -299,6 +300,7 @@ def acrobot_TPPO(config):
     agent = PPO(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
+    print(f'Mean: {np.mean(np.array(agent.total_scores))}')
     return score
 
 
