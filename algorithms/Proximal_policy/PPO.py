@@ -29,18 +29,23 @@ class PPO:
         if self.save:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
             self.make_run_dir(config['algorithm'])
+        else:
+            self.run_id = "undefined run"
 
         self.best_score = float('-inf')
         self.save_config(config)
         self.announce()
         self.cur_episode = 0
+        self.scores = []
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
     def save_config(self, config):
-        with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
-            yaml.dump(config, yaml_file, default_flow_style=False)
+        if self.save:
+
+            with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
+                yaml.dump(config, yaml_file, default_flow_style=False)
 
     def calculate_advantage(self):
         advantage = 0
@@ -60,7 +65,7 @@ class PPO:
         self.batch.advantages = norm_advantages
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=42)
+        obs, _ = self.env.reset(seed=random.randint(1, 100))
 
         while True:
             action, value, log_prob = self.policy.get_action(obs)
@@ -89,8 +94,8 @@ class PPO:
 
     def calculate_actor_loss(self, log_prob, batch_idx):
         ratio = torch.exp(log_prob - torch.from_numpy(self.batch.sampled_action_log_prob[batch_idx : batch_idx + self.batch.batch_size]))
-        actor_loss = torch.from_numpy(self.batch.sampled_advantages[batch_idx : batch_idx + self.batch.batch_size]) * ratio
-        clipped_actor_loss = torch.from_numpy(self.batch.sampled_advantages[batch_idx : batch_idx + self.batch.batch_size]) * torch.clamp(ratio, 1 - self.clip_range, 1 + self.clip_range)
+        actor_loss = torch.from_numpy(self.batch.sampled_advantages[batch_idx : batch_idx + self.batch.batch_size]).squeeze() * ratio
+        clipped_actor_loss = torch.from_numpy(self.batch.sampled_advantages[batch_idx : batch_idx + self.batch.batch_size]).squeeze() * torch.clamp(ratio, 1 - self.clip_range, 1 + self.clip_range)
         actor_loss = -(torch.min(actor_loss, clipped_actor_loss)).mean()
         return actor_loss
 
@@ -116,7 +121,8 @@ class PPO:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            self.test()
+            if episode % self.config['test_freq'] == 0:
+                self.test()
             self.cur_episode = episode
             self.rollout()
 
@@ -137,7 +143,7 @@ class PPO:
             mean = np.mean(episode_rewards)
             std = np.std(episode_rewards)
             self.save_results(mean, std)
-
+            self.scores.append(mean)
             if mean > self.best_score:
                 self.save_model('best_model')
                 self.best_score = mean
@@ -145,37 +151,43 @@ class PPO:
             self.save_model('last_model')
 
     def save_model(self, file_name):
-        torch.save(self.policy, os.path.join(self.save_path, file_name))
+        if self.save:
+            torch.save(self.policy, os.path.join(self.save_path, file_name))
 
     def save_results(self, mean, std):
-        file_name = 'test_results.csv'
-        file_exists = os.path.exists(os.path.join(self.save_path, file_name))
+        if self.save:
+            file_name = 'test_results.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
-        with open(os.path.join(self.save_path, file_name), "a") as file:
-            if not file_exists:
-                file.write("mean,std\n")
-            file.write(f"{mean},{std}\n")
+            with open(os.path.join(self.save_path, file_name), "a") as file:
+                if not file_exists:
+                    file.write("mean,std\n")
+                file.write(f"{mean},{std}\n")
     def save_probs(self, probs):
-        folder_name = 'action_probabilities'
-        file_name = f'{self.cur_episode}.csv'
-        if not os.path.exists(os.path.join(self.save_path, folder_name)):
-            os.makedirs(os.path.join(self.save_path, folder_name))
-        file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
-        with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
-            if not file_exists:
-                file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
-            #file.write(f"{q_vals[0]},{q_vals[1]}\n")
-            file.write(f"{','.join(map(str, probs.detach().tolist()))}\n")
+        if self.save:
+
+            folder_name = 'action_probabilities'
+            file_name = f'{self.cur_episode}.csv'
+            if not os.path.exists(os.path.join(self.save_path, folder_name)):
+                os.makedirs(os.path.join(self.save_path, folder_name))
+            file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
+            with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
+                if not file_exists:
+                    file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
+                #file.write(f"{q_vals[0]},{q_vals[1]}\n")
+                file.write(f"{','.join(map(str, probs.detach().tolist()))}\n")
 
 
     def make_run_dir(self, algorithm):
-        base_dir = '../results'
-        if not os.path.exists(base_dir):
-            os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
-            os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+        if self.save:
+
+            base_dir = '../results'
+            if not os.path.exists(base_dir):
+                os.makedirs(base_dir)
+            if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+                os.makedirs(os.path.join(base_dir, self.config['env_name']))
+            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
+                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
+            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
+                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
+            self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)

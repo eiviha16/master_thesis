@@ -17,7 +17,7 @@ class QNet(nn.Module):
         # layers
         self.input_layer = nn.Linear(input_size, hidden_size)
         self.hidden_layer = nn.Linear(hidden_size, hidden_size)
-        self.output_layer = nn.Linear(hidden_size, output_size * 2)
+        self.output_layer = nn.Linear(hidden_size, output_size)
 
     def forward(self, input):
         x = self.input_layer(input)
@@ -93,8 +93,8 @@ class Actor(nn.Module):
         x = self.hidden_layer(x)
         x = self.activation(x)
 
-        x = self.hidden_layer2(x)
-        x = self.activation(x)
+        #x = self.hidden_layer2(x)
+        #x = self.activation(x)
 
         x = self.output_layer(x)
         action_prob = self.output_activation(x)
@@ -109,6 +109,7 @@ class Critic(nn.Module):
         # layers
         self.input_layer = nn.Linear(input_size, hidden_size)
         self.hidden_layer = nn.Linear(hidden_size, hidden_size)
+        self.hidden_layer_2 = nn.Linear(hidden_size, hidden_size)
         self.output_layer = nn.Linear(hidden_size, 1)
 
     def forward(self, input):
@@ -117,6 +118,9 @@ class Critic(nn.Module):
 
         x = self.hidden_layer(x)
         x = self.activation(x)
+
+        #x = self.hidden_layer_2(x)
+        #x = self.activation(x)
 
         x = self.output_layer(x)
         return x

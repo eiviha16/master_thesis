@@ -672,3 +672,64 @@ def acrobot_QTM(config):
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
+
+def acrobot_PPO(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.Proximal_policy.PPO import PPO
+    from algorithms.policy.DNN import ActorCriticPolicy as Policy
+
+    _config = {'env_name': 'acrobot', 'algorithm': 'PPO', 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
+              'batch_size': config.batch_size, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+
+    print(_config)
+    env = gym.make("Acrobot-v1")
+    agent = PPO(env, Policy, _config)
+    agent.learn(nr_of_episodes=5000)
+    score = agent.best_score
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score
+
+def cartpole_PPO(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.Proximal_policy.PPO import PPO
+    from algorithms.policy.DNN import ActorCriticPolicy as Policy
+
+    _config = {'env_name': 'cartpole', 'algorithm': 'PPO', 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
+              'batch_size': config.batch_size, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+
+    print(_config)
+    env = gym.make("CartPole-v1")
+    agent = PPO(env, Policy, _config)
+    agent.learn(nr_of_episodes=5000)
+    score = agent.best_score
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score
+
+def acrobot_DQN(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.Q_Network.n_step_DQN import DQN
+    from algorithms.policy.DNN import Policy as Policy
+
+    _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', "c": 0, 'gamma': config.gamma, "buffer_size": config.buffer_size,
+              'batch_size': config.batch_size, 'exploration_prob_init': config.exploration_p_init,
+        'exploration_prob_decay': config.exploration_p_decay, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+
+    print(_config)
+    env = gym.make("Acrobot-v1")
+    agent = DQN(env, Policy, _config)
+    agent.learn(nr_of_episodes=2500)
+    score = agent.best_scores['mean']
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score

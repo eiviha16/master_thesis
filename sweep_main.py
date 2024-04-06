@@ -215,3 +215,34 @@ def start_a_QTM():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_QTM, project="acrobot-QTM-f")
     wandb.agent(sweep_id, function=main_a_QTM, count=10_000)
+
+
+
+def main_c_PPO():
+    wandb.init(project="cartpole-PPO-f")
+    score = cartpole_PPO(wandb.config)
+    wandb.log({"score": score})
+def main_a_PPO():
+    wandb.init(project="acrobot-PPO-f")
+    score = acrobot_PPO(wandb.config)
+    wandb.log({"score": score})
+def start_c_PPO():
+    import wandb
+    sweep_id = wandb.sweep(sweep=config_cartpole_PPO, project="cartpole-PPO-f")
+    wandb.agent(sweep_id, function=main_c_PPO, count=10_000)
+
+def start_a_PPO():
+    import wandb
+    sweep_id = wandb.sweep(sweep=config_acrobot_PPO, project="acrobot-PPO-f")
+    wandb.agent(sweep_id, function=main_a_PPO, count=10_000)
+
+
+def main_a_DQN():
+    wandb.init(project="acrobot-n_step_DQN-f")
+    score = acrobot_DQN(wandb.config)
+    wandb.log({"score": score})
+
+def start_a_DQN():
+    import wandb
+    sweep_id = wandb.sweep(sweep=config_acrobot_DQN, project="acrobot-n_step_DQN-f")
+    wandb.agent(sweep_id, function=main_a_DQN, count=10_000)
