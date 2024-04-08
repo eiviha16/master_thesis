@@ -38,7 +38,7 @@ env = gym.make("Acrobot-v1")
 
 
 agent = PPO(env, Policy, config)
-#agent.learn(nr_of_episodes=1000)
+agent.learn(nr_of_episodes=1000)
 
 from test_policy import test_policy
 

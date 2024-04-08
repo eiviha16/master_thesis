@@ -15,12 +15,41 @@ from algorithms.policy.RTM import Policy
 #config = {'algorithm': 'n_step_Double_TMQN', 'soft_update_type': 'soft_update_1', 'n_steps': 19, 'nr_of_clauses': 1080, 'T': (1080 * 0.64), 's': 9.92, 'y_max': 70, 'y_min': 20, 'max_update_p': 0.05, "min_update_p": 0.0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, 'gamma': 0.966, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 500, 'batch_size': 96, 'epochs': 4, 'test_freq': 1,  "save": False, 'number_of_state_bits_ta': 8, 'update_grad': 0.129, 'update_freq': 9999999, "dataset_file_name": "observation_data"}
 #config = {"threshold": -500, "env_name": "acrobot", 'algorithm': 'n_step_Double_QTM_a', 'soft_update_type': 'soft_update_1', 'n_steps': 49, 'nr_of_clauses': 1620, 'T': (1620 * 0.56), 's': 2.58, 'y_max': -25, 'y_min': -80, 'max_update_p': 0.145, "min_update_p": 0.0, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'gamma': 0.986, 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.009, 'buffer_size': 8500, 'batch_size': 64, 'epochs': 6, 'test_freq': 1,  "save": True, 'number_of_state_bits_ta': 8, 'update_grad': 0.52, 'update_freq': -1, "dataset_file_name": "acrobot_obs_data"}
 config = {"env_name": "cartpole", 'algorithm': 'n_step_Double_QTM_a', 'soft_update_type': 'soft_update_1', 'n_steps': 12, 'nr_of_clauses': 1100, 'T': 1089, 'max_update_p': 0.139, 'min_update_p': 0, 's': 9.130000000000008, 'y_max': 60, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'gamma': 0.957, 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.002, 'buffer_size': 1000, 'batch_size': 64, 'epochs': 7, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 5, 'update_grad': 0.173, 'update_freq': -1, 'dataset_file_name': 'observation_data'}
-
-#env = gym.make("Acrobot-v1")
-env = gym.make("CartPole-v1")
+config = {"env_name": "cartpole", 'algorithm': 'n_step_Double_QTM_a', 'soft_update_type': 'soft_update_1', 'n_steps': 12, 'nr_of_clauses': 1100, 'T': 1089, 'max_update_p': 0.139, 'min_update_p': 0, 's': 9.130000000000008, 'y_max': 60, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'gamma': 0.957, 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.002, 'buffer_size': 1000, 'batch_size': 64, 'epochs': 7, 'test_freq': 1, 'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 5, 'update_grad': 0.173, 'update_freq': -1, 'dataset_file_name': 'observation_data'}
+config= {
+"T": 907,
+"algorithm": "n_step_Double_QTM_a",
+"batch_size": 64,
+"bits_per_feature": 11,
+"buffer_size": 8500,
+"dataset_file_name": "acrobot_obs_data",
+"device": "CPU",
+"env_name": "acrobot",
+"epochs": 6,
+"exploration_prob_decay": 0.009,
+"exploration_prob_init": 0.9,
+"gamma": 0.986,
+"max_update_p": 0.145,
+"min_update_p": 0.0,
+"n_steps": 49,
+"nr_of_clauses": 1620,
+"number_of_state_bits_ta": 8,
+"obs_space_size": 6,
+"s": 2.58,
+"save": True,
+"soft_update_type": "soft_update_1",
+"test_freq": 5,
+"threshold": -500,
+"update_freq": -1,
+"update_grad": 0.52,
+"weighted_clauses": False,
+"y_max": -25,
+"y_min": -80}
+env = gym.make("Acrobot-v1")
+#env = gym.make("CartPole-v1")
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=5000)
+agent.learn(nr_of_episodes=2500)
 
 from test_policy import test_policy
 

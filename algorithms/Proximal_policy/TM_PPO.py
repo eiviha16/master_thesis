@@ -43,6 +43,7 @@ class PPO:
         self.cur_episode = 0
         self.abs_errors = {}
         self.threshold = config['threshold']
+        self.timesteps = 0
 
 
     def announce(self):
@@ -74,8 +75,9 @@ class PPO:
             action, value, log_prob, entropy = self.policy.get_action(obs)
             obs, reward, done, truncated, _ = self.env.step(action[0])
 
-            self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, entropy)
+            self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, truncated, entropy)
             self.batch.next_value = self.policy.critic.predict(np.array(obs))
+            self.timesteps += 1
             if len(self.batch.actions) - 1 > self.n_timesteps:
                 self.batch.convert_to_numpy()
                 self.calculate_advantage()
@@ -197,8 +199,8 @@ class PPO:
 
             with open(os.path.join(self.save_path, file_name), "a") as file:
                 if not file_exists:
-                    file.write("mean,std\n")
-                file.write(f"{mean},{std}\n")
+                    file.write("mean,std,steps\n")
+                file.write(f"{mean},{std},{self.timesteps}\n")
     def make_run_dir(self, algorithm):
         base_dir = '../results'
         if not os.path.exists(base_dir):
@@ -248,5 +250,5 @@ class PPO:
 
             with open(os.path.join(self.save_path, folder_name), "a") as file:
                 if not file_exists:
-                    file.write('mean,std\n')
-                file.write(f"{np.mean(self.abs_errors['critic'])},{np.std(self.abs_errors['critic'])}\n")
+                    file.write('mean,std,steps\n')
+                file.write(f"{np.mean(self.abs_errors['critic'])},{np.std(self.abs_errors['critic'])},{self.timesteps}\n")

@@ -41,15 +41,16 @@ class PPO_c():
             self.env = gym.make("CartPole-v1")
         elif self.config["env_name"] == "acrobot":
             self.env = gym.make("Acrobot-v1")
+        self.timesteps = 0
 
-
-        #self.model = PPO("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
-        self.model = DQN("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
+        self.model = PPO("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
+       # self.model = DQN("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
 
     def learn(self, intervals):
         for i in tqdm(range(intervals)):
             self.test_environment()
             self.model.learn(total_timesteps=self.n_timesteps)
+            self.timesteps += self.n_timesteps
 
     def test_environment(self):
 
@@ -81,13 +82,13 @@ class PPO_c():
 
         with open(os.path.join(self.file_path, file_name), "a") as file:
             if not file_exists:
-                file.write("mean,std\n")
-            file.write(f"{mean},{std}\n")
+                file.write("mean,std,steps\n")
+            file.write(f"{mean},{std},{self.timesteps}\n")
 
 
 if __name__ == "__main__":
     #config = {"env_name": "acrobot", "algorithm": "PPO", "run": "run_3"}
-    config = {"env_name": "acrobot", "algorithm": "DQN", "run": "run_1"}
+    config = {"env_name": "cartpole", "algorithm": "PPO", "run": "run_1f"}
     ppo = PPO_c(config)
     ppo.learn(1000)
 

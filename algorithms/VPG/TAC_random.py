@@ -54,6 +54,7 @@ class DDPG:
         self.batch_size = config['batch_size']
         self.threshold = config['threshold']
         self.scores = []
+        self.timesteps = 0
 
 
     def announce(self):
@@ -71,7 +72,7 @@ class DDPG:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
             self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, done)
-
+            self.timesteps += 1
             if done or truncated:
                 break
             cur_obs = next_obs
@@ -197,8 +198,8 @@ class DDPG:
 
             with open(os.path.join(self.save_path, file_name), "a") as file:
                 if not file_exists:
-                    file.write("mean,std\n")
-                file.write(f"{mean},{std}\n")
+                    file.write("mean,std,steps\n")
+                file.write(f"{mean},{std},{self.timesteps}\n")
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:

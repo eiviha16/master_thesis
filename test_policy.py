@@ -68,9 +68,9 @@ def test_policy(save_file, policy, env_name, sb=False):
                     #save_vals(save_file, episode, action_val[0])
 
                 except:
-                    action_val = policy(torch.tensor(obs))
-                    action = torch.argmax(action_val)
-                    obs, reward, done, truncated, _ = env.step(action.detach().numpy())
+                    action_val = policy.predict(obs)#torch.tensor(obs))
+                    action = np.argmax(action_val.detach().numpy())
+                    obs, reward, done, truncated, _ = env.step(action)
                     #save_action_vals(save_file, episode, action_val)
 
             episode_rewards[episode] += reward

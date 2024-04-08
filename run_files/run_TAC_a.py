@@ -27,11 +27,52 @@ from algorithms.policy.CTM import ActorCriticPolicy as Policy
 #run 6 with initialization
 #config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.7999999999999999, 'exploration_prob_decay': 0.007, 'update_grad': 0.105, 'gamma': 0.948, 'buffer_size': 4000, 'actor': {'nr_of_clauses': 1580, 'T': 726, 's': 3.9300000000000024, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.028, 'nr_of_clauses': 1800, 'T': 756, 's': 8.670000000000007, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 96, 'epochs': 4, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.001, 'update_freq': 4, 'gamma': 0.982, 'buffer_size': 5500, 'actor': {'nr_of_clauses': 1860, 'T': 818, 's': 2.98, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 3}, 'critic': {'max_update_p': 0.07, 'nr_of_clauses': 1650, 'T': 1039, 's': 8.37, 'y_max': -10, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 5}, 'batch_size': 16, 'epochs': 3, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
-#config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.006, 'update_grad': 0.749, 'gamma': 0.943, 'buffer_size': 9500, 'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 48, 'epochs': 2, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.006, 'update_grad': 0.749, 'gamma': 0.943, 'buffer_size': 9500, 'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 48, 'epochs': 2, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {"env_name": "cartpole",'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.005, 'update_grad': 0.846, 'gamma': 0.936, 'buffer_size': 3500, 'actor': {'nr_of_clauses': 920, 'T': 763, 's': 2.4600000000000013, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'seed': 42, 'number_of_state_bits_ta': 4}, 'critic': {'max_update_p': 0.051, 'nr_of_clauses': 800, 'T': 32, 's': 7.130000000000005, 'y_max': 75, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 6}, 'batch_size': 96, 'epochs': 6, 'test_freq': 1, 'save': True, 'threshold': 20, 'dataset_file_name': 'observation_data'}
+config = {
+"actor":{
+  "T": 450,
+  "bits_per_feature": 14,
+  "device": "CPU",
+  "nr_of_clauses": 1960,
+  "number_of_state_bits_ta": 8,
+  "s": 7.880000000000006,
+ "seed": 42,
+  "weighted_clauses": False
+},
+"algorithm": "TAC_a",
+"batch_size": 112,
+"buffer_size": 5000,
+"critic":{
+  "T": 954,
+  "bits_per_feature": 12,
+  "device": "CPU",
+  "max_update_p": 0.053000000000000005,
+  "nr_of_clauses": 1150,
+  "number_of_state_bits_ta": 8,
+  "s": 6.700000000000005,
+  "seed": 42,
+  "weighted_clauses": False,
+  "y_max": -10,
+  "y_min": -70
+},
+"dataset_file_name": "acrobot_obs_data",
+"env_name": "acrobot",
+"epochs": 3,
+"exploration_prob_decay": 0.001,
+"exploration_prob_init": 0.8999999999999999,
+"gamma": 0.944,
+"obs_space_size": 6,
+"save": True,
+"soft_update_type": "soft_update_1",
+"test_freq": 1,
+"threshold": -495,
+"update_grad": 0.139
+}
 #config = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.005, 'update_grad': 0.722, 'gamma': 0.976, 'buffer_size': 7000, 'actor': {'nr_of_clauses': 820, 'T': 418, 's': 1.06, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 9}, 'critic': {'max_update_p': 0.018000000000000002, 'nr_of_clauses': 1050, 'T': 388, 's': 2.4700000000000015, 'y_max': 75, 'y_min': 35, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 3}, 'batch_size': 80, 'epochs': 6, 'test_freq': 1, 'save': True, 'threshold': 20, 'dataset_file_name': 'observation_data'}
-#onfig = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.008, 'update_grad': 0.785, 'gamma': 0.916, 'buffer_size': 3000, 'actor': {'nr_of_clauses': 980, 'T': 637, 's': 3.8600000000000025, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 10, 'seed': 42, 'number_of_state_bits_ta': 9}, 'critic': {'max_update_p': 0.069, 'nr_of_clauses': 1550, 'T': 744, 's': 5.400000000000004, 'y_max': 75, 'y_min': 35, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 80, 'epochs': 4, 'test_freq': 1, 'save': True, 'threshold': 20, 'dataset_file_name': 'observation_data'}
-config = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.5, 'exploration_prob_decay': 0.009000000000000001, 'update_grad': 0.258, 'gamma': 0.926, 'buffer_size': 8000, 'actor': {'nr_of_clauses': 1800, 'T': 1368, 's': 7.660000000000005, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 9, 'seed': 42, 'number_of_state_bits_ta': 5}, 'critic': {'max_update_p': 0.026, 'nr_of_clauses': 1700, 'T': 1037, 's': 3.8100000000000023, 'y_max': -5, 'y_min': -60, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 14, 'seed': 42, 'number_of_state_bits_ta': 7}, 'batch_size': 32, 'epochs': 5, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+
+#config = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.008, 'update_grad': 0.785, 'gamma': 0.916, 'buffer_size': 3000, 'actor': {'nr_of_clauses': 980, 'T': 637, 's': 3.8600000000000025, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 10, 'seed': 42, 'number_of_state_bits_ta': 9}, 'critic': {'max_update_p': 0.069, 'nr_of_clauses': 1550, 'T': 744, 's': 5.400000000000004, 'y_max': 75, 'y_min': 35, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 80, 'epochs': 4, 'test_freq': 1, 'save': True, 'threshold': 20, 'dataset_file_name': 'observation_data'}
+#config = {"env_name": "cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.5, 'exploration_prob_decay': 0.009000000000000001, 'update_grad': 0.258, 'gamma': 0.926, 'buffer_size': 8000, 'actor': {'nr_of_clauses': 1800, 'T': 1368, 's': 7.660000000000005, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 9, 'seed': 42, 'number_of_state_bits_ta': 5}, 'critic': {'max_update_p': 0.026, 'nr_of_clauses': 1700, 'T': 1037, 's': 3.8100000000000023, 'y_max': -5, 'y_min': -60, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 14, 'seed': 42, 'number_of_state_bits_ta': 7}, 'batch_size': 32, 'epochs': 5, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 print(config)
 #not tested acrobot {'algorithm': 'TM_DDPG_2', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.002, 'update_grad': 0.789, 'gamma': 0.959, 'buffer_size': 1000, 'actor': {'nr_of_clauses': 1600, 'T': 704, 's': 8.590000000000007, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 4}, 'critic': {'max_update_p': 0.093, 'nr_of_clauses': 1000, 'T': 880, 's': 1.760000000000001, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'seed': 42, 'number_of_state_bits_ta': 8}, 'batch_size': 16, 'epochs': 4, 'test_freq': 1, 'save': False, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 env = gym.make("Acrobot-v1")
@@ -44,7 +85,7 @@ env = gym.make("Acrobot-v1")
 ###########
 
 agent = DDPG(env, Policy, config)
-agent.learn(nr_of_episodes=1000)
+agent.learn(nr_of_episodes=1250)
 
 from test_policy import test_policy
 
