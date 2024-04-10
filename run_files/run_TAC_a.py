@@ -27,7 +27,7 @@ from algorithms.policy.CTM import ActorCriticPolicy as Policy
 #run 6 with initialization
 #config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.7999999999999999, 'exploration_prob_decay': 0.007, 'update_grad': 0.105, 'gamma': 0.948, 'buffer_size': 4000, 'actor': {'nr_of_clauses': 1580, 'T': 726, 's': 3.9300000000000024, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.028, 'nr_of_clauses': 1800, 'T': 756, 's': 8.670000000000007, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 96, 'epochs': 4, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_2', 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.001, 'update_freq': 4, 'gamma': 0.982, 'buffer_size': 5500, 'actor': {'nr_of_clauses': 1860, 'T': 818, 's': 2.98, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 7, 'seed': 42, 'number_of_state_bits_ta': 3}, 'critic': {'max_update_p': 0.07, 'nr_of_clauses': 1650, 'T': 1039, 's': 8.37, 'y_max': -10, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 5}, 'batch_size': 16, 'epochs': 3, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
-config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.006, 'update_grad': 0.749, 'gamma': 0.943, 'buffer_size': 9500, 'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 48, 'epochs': 2, 'test_freq': 1, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
+config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.8999999999999999, 'exploration_prob_decay': 0.006, 'update_grad': 0.749, 'gamma': 0.943, 'buffer_size': 9500, 'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 8}, 'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5, 'y_min': -80, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9}, 'batch_size': 48, 'epochs': 2, 'test_freq': 5, 'save': True, 'threshold': -495, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {"env_name": "cartpole",'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_1', 'exploration_prob_init': 0.9, 'exploration_prob_decay': 0.005, 'update_grad': 0.846, 'gamma': 0.936, 'buffer_size': 3500, 'actor': {'nr_of_clauses': 920, 'T': 763, 's': 2.4600000000000013, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'seed': 42, 'number_of_state_bits_ta': 4}, 'critic': {'max_update_p': 0.051, 'nr_of_clauses': 800, 'T': 32, 's': 7.130000000000005, 'y_max': 75, 'y_min': 25, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 11, 'seed': 42, 'number_of_state_bits_ta': 6}, 'batch_size': 96, 'epochs': 6, 'test_freq': 1, 'save': True, 'threshold': 20, 'dataset_file_name': 'observation_data'}
 config = {
 "actor":{
@@ -65,7 +65,7 @@ config = {
 "obs_space_size": 6,
 "save": True,
 "soft_update_type": "soft_update_1",
-"test_freq": 1,
+"test_freq": 5,
 "threshold": -495,
 "update_grad": 0.139
 }
@@ -85,7 +85,7 @@ env = gym.make("Acrobot-v1")
 ###########
 
 agent = DDPG(env, Policy, config)
-agent.learn(nr_of_episodes=1250)
+agent.learn(nr_of_episodes=2500)
 
 from test_policy import test_policy
 
