@@ -56,7 +56,7 @@ env = gym.make("Acrobot-v1")
 
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=2500)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 

@@ -23,14 +23,16 @@ from algorithms.policy.RTM import Policy
 #config = {"env_name": "cartpole",'algorithm': 'QTM', 'nr_of_clauses': 960, 'T': 451, 'max_update_p': 0.5, 'min_update_p': 0, 's': 5.750000000000004, 'y_max': 70, 'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 5, 'gamma': 0.991, 'exploration_prob_init': 0.8, 'exploration_prob_decay': 0.009000000000000001, 'buffer_size': 6000, 'threshold': 20, 'batch_size': 64, 'epochs': 3, 'test_freq': 1, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 3, 'dataset_file_name': 'observation_data'}
 #config = {"env_name": "acrobot", 'algorithm': 'QTM', 'nr_of_clauses': 1160, 'T': 730, 'max_update_p': 0.186, 'min_update_p': 0, 's': 1.2900000000000005, 'y_max': -10, 'y_min': -70, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'gamma': 0.988, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.009000000000000001, 'buffer_size': 9500, 'threshold': -495, 'batch_size': 96, 'epochs': 6, 'test_freq': 1, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 6, 'dataset_file_name': 'acrobot_obs_data'}
 #config = {"env_name": "acrobot", 'algorithm': 'QTM',  'nr_of_clauses': 1660, 'T': 431, 'max_update_p': 0.127, 'min_update_p': 0, 's': 7.360000000000006, 'y_max': -5, 'y_min': -55, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 9, 'gamma': 0.944, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.004, 'buffer_size': 7500, 'threshold': -495, 'batch_size': 48, 'epochs': 1, 'test_freq': 1, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 6, 'dataset_file_name': 'acrobot_obs_data'}
-config = {'env_name': 'acrobot', 'algorithm': 'QTM', 'nr_of_clauses': 1160, 'T': 730, 'max_update_p': 0.186, 'min_update_p': 0, 's': 1.2900000000000005, 'y_max': -10, 'y_min': -70, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'gamma': 0.988, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.009000000000000001, 'buffer_size': 9500, 'threshold': -495, 'batch_size': 96, 'epochs': 6, 'test_freq': 1, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 6, 'dataset_file_name': 'acrobot_obs_data'}
+#config = {'env_name': 'acrobot', 'algorithm': 'QTM', 'nr_of_clauses': 1160, 'T': 730, 'max_update_p': 0.186, 'min_update_p': 0, 's': 1.2900000000000005, 'y_max': -10, 'y_min': -70, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 8, 'gamma': 0.988, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.009000000000000001, 'buffer_size': 9500, 'threshold': -495, 'batch_size': 96, 'epochs': 6, 'test_freq': 5, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 6, 'dataset_file_name': 'acrobot_obs_data'}
+config = {'env_name': 'acrobot', 'algorithm': 'QTM', 'nr_of_clauses': 1240, 'T': 1165, 'max_update_p': 0.186, 'min_update_p': 0, 's': 1.3700000000000003, 'y_max': -5, 'y_min': -55, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 6, 'gamma': 0.977, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.006, 'buffer_size': 7000, 'threshold': -495, 'batch_size': 96, 'epochs': 3, 'test_freq': 5, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 8, 'dataset_file_name': 'acrobot_obs_data'}
+
 print(config)
 #env = gym.make("CartPole-v1")
 env = gym.make("Acrobot-v1")
 
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=1000)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'

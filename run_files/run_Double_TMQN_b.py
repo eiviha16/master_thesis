@@ -39,7 +39,7 @@ config = {"T": 711,
 "save": True,
 "seed": 42,
 "soft_update_type": "soft_update_2",
-"test_freq": 1,
+"test_freq": 5,
 "threshold": -495,
 "update_freq": 5,
 "update_grad": -1,
@@ -54,7 +54,7 @@ env = gym.make("Acrobot-v1")
 
 
 agent = TMQN(env, Policy, config)
-agent.learn(nr_of_episodes=1000)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 
