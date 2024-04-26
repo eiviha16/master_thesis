@@ -16,10 +16,11 @@ import gymnasium as gym
 #config = {"env_name": "acrobot", 'algorithm': 'n_step_DQN', 'n_steps': 47, 'gamma': 0.99, 'c':  1, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.001, 'buffer_size': 5000, 'batch_size': 64, 'epochs': 4, 'hidden_size': 128, 'learning_rate': 0.0003, 'test_freq': 50, "save": True}
 
 
-config = {'env_name': 'acrobot', 'n_steps': 28, 'algorithm': 'n_step_DQN', 'c': 0, 'gamma': 0.994, 'buffer_size': 7000, 'batch_size': 96, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.005, 'epochs': 8, 'hidden_size': 160, 'learning_rate': 0.00623, 'test_freq': 50, 'save': True}
+#config = {'env_name': 'acrobot', 'n_steps': 28, 'algorithm': 'n_step_DQN', 'c': 0, 'gamma': 0.994, 'buffer_size': 7000, 'batch_size': 96, 'exploration_prob_init': 0.7, 'exploration_prob_decay': 0.005, 'epochs': 8, 'hidden_size': 160, 'learning_rate': 0.00623, 'test_freq': 1, 'save': True}
+config = {'env_name': 'cartpole', 'n_steps': 15, 'algorithm': 'n_step_DQN', 'c': 0, 'gamma': 0.99, 'buffer_size': 5000, 'batch_size': 128, 'exploration_prob_init': 1.0, 'exploration_prob_decay': 0.005, 'epochs': 8, 'hidden_size': 160, 'learning_rate': 0.003, 'test_freq': 1, 'save': True}
 
-#env = gym.make("CartPole-v1")
-env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
 
 
 agent = DQN(env, Policy, config)

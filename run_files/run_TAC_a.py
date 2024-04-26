@@ -65,7 +65,7 @@ config = {
 "obs_space_size": 6,
 "save": True,
 "soft_update_type": "soft_update_1",
-"test_freq": 5,
+"test_freq": 1,
 "threshold": -495,
 "update_grad": 0.139
 }

@@ -38,7 +38,7 @@ config= {
 "s": 2.58,
 "save": True,
 "soft_update_type": "soft_update_1",
-"test_freq": 5,
+"test_freq": 1,
 "threshold": -500,
 "update_freq": -1,
 "update_grad": 0.52,
@@ -59,6 +59,6 @@ tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.
 
 agent.target_policy.tms[0].set_params(tms[0]['ta_state'], tms[0]['clause_sign'], tms[0]['clause_output'], tms[0]['feedback_to_clauses'])
 agent.target_policy.tms[1].set_params(tms[1]['ta_state'], tms[1]['clause_sign'], tms[1]['clause_output'], tms[1]['feedback_to_clauses'])
-#agent.target_policy.tms[2].set_params(tms[2]['ta_state'], tms[2]['clause_sign'], tms[2]['clause_output'], tms[2]['feedback_to_clauses'])
+agent.target_policy.tms[2].set_params(tms[2]['ta_state'], tms[2]['clause_sign'], tms[2]['clause_output'], tms[2]['feedback_to_clauses'])
 
 test_policy(save_file, agent.target_policy, config['env_name'])

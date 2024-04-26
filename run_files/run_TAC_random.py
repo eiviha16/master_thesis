@@ -52,7 +52,7 @@ env = gym.make("Acrobot-v1")
 ###########
 
 agent = DDPG(env, Policy, config)
-agent.learn(nr_of_episodes=1000)
+agent.learn(nr_of_episodes=2500)
 
 from test_policy import test_policy
 
