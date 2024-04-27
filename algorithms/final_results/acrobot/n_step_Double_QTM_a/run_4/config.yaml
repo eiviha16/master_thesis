@@ -1,0 +1,45 @@
+T: 907
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AwAAAAAAAAA=
+algorithm: n_step_Double_QTM_a
+batch_size: 64
+bits_per_feature: 11
+buffer_size: 8500
+dataset_file_name: acrobot_obs_data
+device: CPU
+env_name: acrobot
+epochs: 6
+exploration_prob_decay: 0.009
+exploration_prob_init: 0.9
+gamma: 0.986
+max_update_p: 0.145
+min_update_p: 0.0
+n_steps: 49
+nr_of_clauses: 1620
+number_of_state_bits_ta: 8
+obs_space_size: 6
+s: 2.58
+save: true
+soft_update_type: soft_update_1
+test_freq: 1
+threshold: -500
+update_freq: -1
+update_grad: 0.52
+weighted_clauses: false
+y_max: -25
+y_min: -80
