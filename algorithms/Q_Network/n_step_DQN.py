@@ -153,7 +153,12 @@ class DQN:
                 self.q_values[q_val] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                action, q_vals_ = self.get_next_action(obs)
+                #action, q_vals_ = self.get_next_action(obs)
+                if self.cur_episode % 25 == 0:
+                    action, q_vals_ = self.get_next_action(obs)
+                else:
+                    q_vals = self.policy.predict(obs)
+                    action = torch.argmax(q_vals)
                 obs, reward, done, truncated, _ = self.env.step(action.numpy())
                 episode_rewards[episode] += reward
                 if done or truncated:
