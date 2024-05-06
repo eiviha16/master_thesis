@@ -93,7 +93,9 @@ def test_policy(save_file, policy, env_name, sb=False):
 
 if __name__ == '__main__':
     #file = './results/DQN/run_50/best_model'
-    file = './algorithms/final_results/cartpole/DQN/run_10/best_model'
+    #file = './algorithms/final_results/cartpole/DQN/run_10/best_model'
+    file = f'./results/cartpole/DQN/run_15/best_model'
+
     #file = './results/PPO/run_117/best_model'
     model = torch.load(file)
-    test_policy('./algorithms/final_results/cartpole/DQN/run_10/', model, "cartpole")
+    test_policy('./results/cartpole/DQN/run_15/', model, "cartpole")

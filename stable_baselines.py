@@ -33,7 +33,7 @@ class PPO_c():
         self.best_score = - float("inf")
         self.config = config
         #self.n_timesteps = 100
-        self.n_timesteps = 100
+        self.n_timesteps = 200
         self.file_path = f'./results/{self.config["env_name"]}/{self.config["algorithm"]}/{self.config["run"]}'
 
         # Parallel environments
@@ -88,7 +88,7 @@ class PPO_c():
 
 if __name__ == "__main__":
     #config = {"env_name": "acrobot", "algorithm": "PPO", "run": "run_3"}
-    config = {"env_name": "cartpole", "algorithm": "PPO", "run": "run_1f"}
+    config = {"env_name": "cartpole", "algorithm": "PPO", "run": "run_3"}
     ppo = PPO_c(config)
     ppo.learn(1000)
 
