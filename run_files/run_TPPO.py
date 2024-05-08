@@ -6,7 +6,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Proximal_policy.TM_PPO import PPO
+from algorithms.Proximal_policy.TPPO import TPPO
 from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
 
@@ -19,7 +19,7 @@ print(config)
 env = gym.make("Acrobot-v1")
 
 
-agent = PPO(env, Policy, config)
+agent = TPPO(env, Policy, config)
 agent.learn(nr_of_episodes=2500)
 
 from test_policy import test_policy

@@ -237,7 +237,7 @@ def cartpole_TPPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.TM_PPO import PPO
+    from algorithms.Proximal_policy.TPPO import TPPO
     from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
     actor = {"max_update_p": config.a_max_update_p, "min_update_p": config.a_min_update_p,
@@ -260,7 +260,7 @@ def cartpole_TPPO(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = PPO(env, Policy, _config)
+    agent = TPPO(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
     print(f'Mean: {np.mean(np.array(agent.total_scores))}')
@@ -273,7 +273,7 @@ def acrobot_TPPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.TM_PPO import PPO
+    from algorithms.Proximal_policy.TPPO import TPPO
     from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
     actor = {"max_update_p": config.a_max_update_p, "min_update_p": config.a_min_update_p,
@@ -297,7 +297,7 @@ def acrobot_TPPO(config):
     # env = gym.make("CartPole-v1")
     env = gym.make("Acrobot-v1")
 
-    agent = PPO(env, Policy, _config)
+    agent = TPPO(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     print(f'Mean: {np.mean(np.array(agent.total_scores))}')

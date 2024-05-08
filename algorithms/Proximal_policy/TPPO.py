@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 
-class PPO:
+class TPPO:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
