@@ -61,17 +61,17 @@ class QTM:
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
             os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)
 
     def save_config(self):
         if self.save:
@@ -123,19 +123,8 @@ class QTM:
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
 
-        #self.save_abs_errors()
         self.abs_errors = {}
 
-    def save_feedback_data(self, feedback_1, feedback_2, nr_of_steps):
-        if self.save:
-
-            file_name = 'feedback.csv'
-            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
-
-            with open(os.path.join(self.save_path, file_name), "a") as file:
-                if not file_exists:
-                    file.write("1_typeI, 1_typeII, 2_typeI, 2_typeII, steps\n")
-                file.write(f"{feedback_1[0]},{feedback_1[1]},{feedback_2[0]},{feedback_2[1]},{nr_of_steps}\n")
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
@@ -244,3 +233,14 @@ class QTM:
                 if not file_exists:
                     file.write('actor1_mean,actor1_std,actor2_mean,actor2_std\n')
                 file.write(f"{np.mean(self.abs_errors['actor1'])},{np.std(self.abs_errors['actor1'])},{np.mean(self.abs_errors['actor2'])},{np.std(self.abs_errors['actor2'])}\n")
+
+    def save_feedback_data(self, feedback_1, feedback_2, nr_of_steps):
+        if self.save:
+
+            file_name = 'feedback.csv'
+            file_exists = os.path.exists(os.path.join(self.save_path, file_name))
+
+            with open(os.path.join(self.save_path, file_name), "a") as file:
+                if not file_exists:
+                    file.write("1_typeI, 1_typeII, 2_typeI, 2_typeII, steps\n")
+                file.write(f"{feedback_1[0]},{feedback_1[1]},{feedback_2[0]},{feedback_2[1]},{nr_of_steps}\n")

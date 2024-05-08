@@ -28,7 +28,7 @@ class PPO:
         self.config = config
         if self.save:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
-            self.make_run_dir(config['algorithm'])
+            self.make_run_dir()
         else:
             self.run_id = "undefined run"
 
@@ -181,16 +181,14 @@ class PPO:
                 file.write(f"{','.join(map(str, probs.detach().tolist()))}\n")
 
 
-    def make_run_dir(self, algorithm):
-        if self.save:
-
-            base_dir = '../results'
-            if not os.path.exists(base_dir):
-                os.makedirs(base_dir)
-            if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
-                os.makedirs(os.path.join(base_dir, self.config['env_name']))
-            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-            self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+    def make_run_dir(self):
+        base_dir = '../results'
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)

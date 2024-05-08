@@ -44,7 +44,7 @@ class TAC:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
         if self.save:
-            self.make_run_dir(config['algorithm'])
+            self.make_run_dir()
             self.save_config(config)
         self.best_score = float('-inf')
         self.announce()
@@ -189,7 +189,7 @@ class TAC:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
 
-    def soft_update_2(self, online_tm, target_tm):
+    def soft_update_b(self, online_tm, target_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
             target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
             eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
@@ -202,7 +202,7 @@ class TAC:
                             eval_ta_state[i][j][k] -= 1
             target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
-    def soft_update_1(self, online_tm, target_tm):
+    def soft_update_a(self, online_tm, target_tm):
         target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
         eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
         nr_of_clauses = len(list(target_clause_sign))
@@ -217,14 +217,14 @@ class TAC:
 
         target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
             os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)

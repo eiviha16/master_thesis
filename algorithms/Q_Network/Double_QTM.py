@@ -54,7 +54,7 @@ class QTM:
         self.config = config
         self.save_path = ''
         if self.save:
-            self.make_run_dir(config['algorithm'])
+            self.make_run_dir()
             self.save_config()
         self.announce()
         self.q_values = {'q1': [], 'q2': []}
@@ -68,17 +68,17 @@ class QTM:
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
             os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)
 
     def save_config(self):
         if self.save:
@@ -129,18 +129,18 @@ class QTM:
 
             tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
-            abs_errors = self.online_policy.update(tm_inputs)
+            _ = self.online_policy.update(tm_inputs)
 
 
-        if self.config['soft_update_type'] == 'soft_update_1':
+        if self.config['soft_update_type'] == 'soft_update_a':
             for i in range(len(self.online_policy.tms)):
-                self.soft_update_1(self.online_policy.tms[i], self.target_policy.tms[i])
-        else:
+                self.soft_update_a(self.online_policy.tms[i], self.target_policy.tms[i])
+        elif self.config['soft_update_type'] == 'soft_update_b':
             for i in range(len(self.online_policy.tms)):
-                self.soft_update_2(self.online_policy.tms[i], self.target_policy.tms[i])
+                self.soft_update_b(self.online_policy.tms[i], self.target_policy.tms[i])
 
 
-    def soft_update_2(self, target_tm, evaluation_tm):
+    def soft_update_b(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
             target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
             eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
@@ -153,7 +153,7 @@ class QTM:
                             eval_ta_state[i][j][k] -= 1
             evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
-    def soft_update_1(self, target_tm, evaluation_tm):
+    def soft_update_a(self, target_tm, evaluation_tm):
         target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
         eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
         nr_of_clauses = len(list(target_clause_sign))

@@ -15,7 +15,6 @@ class QTM:
         config['action_space_size'] = self.action_space_size
         config['obs_space_size'] = self.obs_space_size
 
-
         self.policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
@@ -47,7 +46,7 @@ class QTM:
         self.config = config
         self.save_path = ''
         if self.save:
-            self.make_run_dir(self.config['algorithm'])
+            self.make_run_dir()
             self.save_config()
         self.announce()
         self.prev_feedback = {'tm1': [0, 0], 'tm2': [0, 0]}
@@ -63,17 +62,17 @@ class QTM:
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
             os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)
     def save_config(self):
         if self.save:
             with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
@@ -84,7 +83,6 @@ class QTM:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
-
         return np.argmax(q_vals), q_vals
 
     def temporal_difference(self, next_q_vals):
@@ -107,7 +105,6 @@ class QTM:
         self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
-
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
         actions = self.replay_buffer.sampled_actions
         for index, action in enumerate(actions):

@@ -20,7 +20,6 @@ class TPPO:
         self.config = config
         self.gamma = config['gamma']
         self.lam = config['lam']
-        #self.clip = config["clip"]
         self.n_timesteps = config['n_timesteps']
         self.epochs = config['epochs']
 
@@ -29,12 +28,11 @@ class TPPO:
         self.save_path = ''
         if self.save:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
-            #self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
         if self.save:
-            self.make_run_dir(config['algorithm'])
+            self.make_run_dir()
             self.save_config(config)
 
         self.best_score = float('-inf')
@@ -204,27 +202,17 @@ class TPPO:
                 if not file_exists:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
             os.makedirs(base_dir)
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
             os.makedirs(os.path.join(base_dir, self.config['env_name']))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
-
-    """def make_run_dir(self, algorithm):
-        base_dir = './results'
-        if not os.path.exists(base_dir):
-            os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, algorithm)):
-            os.makedirs(os.path.join(base_dir, algorithm))
-        if not os.path.exists(os.path.join(base_dir, algorithm, self.run_id)):
-            os.makedirs(os.path.join(base_dir, algorithm, self.run_id))
-        self.save_path = os.path.join(base_dir, algorithm, self.run_id)"""
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+        if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+            os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+        self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)
 
     def save_probs(self, probs):
         if self.save:

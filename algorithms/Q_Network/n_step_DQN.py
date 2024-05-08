@@ -31,7 +31,7 @@ class DQN:
 
         if self.save:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f"../results/{config['env_name']}/{config['algorithm']}")]) + 1)
-            self.make_run_dir(config["algorithm"])
+            self.make_run_dir()
             self.save_config()
         else:
             self.run_id = "Unidentified run"
@@ -51,18 +51,18 @@ class DQN:
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
-    def make_run_dir(self, algorithm):
+    def make_run_dir(self):
         if self.save:
             base_dir = '../results'
             if not os.path.exists(base_dir):
                 os.makedirs(base_dir)
             if not os.path.exists(os.path.join(base_dir, self.config['env_name'])):
                 os.makedirs(os.path.join(base_dir, self.config['env_name']))
-            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm)):
-                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm))
-            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
-                os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
-            self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
+            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'])):
+                os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm']))
+            if not os.path.exists(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)):
+                os.makedirs(os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id))
+            self.save_path = os.path.join(base_dir, self.config['env_name'], self.config['algorithm'], self.run_id)
 
     def save_config(self):
         with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
