@@ -18,7 +18,8 @@ class QTM:
         self.target_policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
         self.sample_iterations = config['sampling_iterations']
@@ -97,7 +98,7 @@ class QTM:
                 1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]

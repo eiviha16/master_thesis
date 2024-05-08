@@ -14,10 +14,11 @@ class DQN:
         self.obs_space_size = env.observation_space.shape[0]
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
         self.gamma = config['gamma']  # discount factor
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
-        self.sampling_iterations = config['sampling_iterations']
+        #self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
 
@@ -82,7 +83,7 @@ class DQN:
         return torch.argmax(q_vals), q_vals
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def get_q_val_for_action(self, q_vals):
         indices = np.array(self.replay_buffer.sampled_actions)
@@ -90,20 +91,20 @@ class DQN:
         return selected_q_vals
 
     def train(self):
-        for _ in range(self.sampling_iterations):
-            self.replay_buffer.clear_cache()
-            self.replay_buffer.sample()
-            with torch.no_grad():
-                next_q_vals = self.policy.predict(self.replay_buffer.sampled_next_obs)  # next_obs?
-                next_q_vals, _ = torch.max(next_q_vals, dim=1)
-                target_q_vals = self.temporal_difference(next_q_vals)
+        self.replay_buffer.clear_cache()
+        self.replay_buffer.sample()
+        with torch.no_grad():
+            next_q_vals = self.policy.predict(self.replay_buffer.sampled_next_obs)  # next_obs?
+            next_q_vals, _ = torch.max(next_q_vals, dim=1)
+            target_q_vals = self.temporal_difference(next_q_vals)
 
-            cur_q_vals = self.policy.predict(self.replay_buffer.sampled_cur_obs)
-            cur_q_vals = self.get_q_val_for_action(cur_q_vals)
-            self.policy.optimizer.zero_grad()
-            loss = F.mse_loss(target_q_vals, cur_q_vals)
-            loss.backward()
-            self.policy.optimizer.step()
+        cur_q_vals = self.policy.predict(self.replay_buffer.sampled_cur_obs)
+        cur_q_vals = self.get_q_val_for_action(cur_q_vals)
+        self.policy.optimizer.zero_grad()
+        loss = F.mse_loss(target_q_vals, cur_q_vals)
+        loss.backward()
+        self.policy.optimizer.step()
+
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
@@ -123,8 +124,6 @@ class DQN:
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-            #if self.nr_of_steps >= self.batch_size:
-            #    self.train()
             self.update_epsilon_greedy()
 
 
@@ -137,7 +136,8 @@ class DQN:
                 self.q_values[q_val] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                action, q_vals_ = self.get_next_action(obs)#.numpy()#.cpu().numpy()
+                q_vals = self.policy.predict(obs)
+                action = torch.argmax(q_vals)
                 action = action.detach().numpy()
                 obs, reward, done, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward

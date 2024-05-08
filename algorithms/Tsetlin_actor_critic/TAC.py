@@ -17,7 +17,8 @@ class TAC:
         self.gamma = config['gamma']
         self.policy = Policy(config)
         self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
         self.epochs = config['epochs']
@@ -142,7 +143,7 @@ class TAC:
             self.soft_update_2(self.policy.online_critic.tm, self.policy.target_critic.tm)
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):

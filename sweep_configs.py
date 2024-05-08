@@ -579,6 +579,22 @@ config_acrobot_PPO = {
     }
 }
 
+config_acrobot_nDQN = {
+    "method": "bayes",
+    "metric": {"goal": "maximize", "name": "score"},
+    "parameters": {
+        "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
+        "epsilon_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
+        "epsilon_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
+        "batch_size": {"values": list(range(16, 128, 16))},
+        "n_steps": {"values": list(range(15, 50, 1))},
+        "hidden_size": {"values": list(range(16, 256, 16))},
+        "lr": {"values": list(np.arange(0.00001, 0.01, 0.00001))},
+        "buffer_size": {"values": list(range(500, 10_000, 500))},
+
+    }
+}
+
 config_acrobot_DQN = {
     "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
@@ -587,8 +603,6 @@ config_acrobot_DQN = {
         "epsilon_decay": {"values": list(np.arange(0.001, 0.01, 0.001))},
         "epsilon_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
         "batch_size": {"values": list(range(16, 128, 16))},
-        "sampling_iterations": {"values": list(range(1, 10, 1))},
-        "n_steps": {"values": list(range(15, 50, 1))},
         "hidden_size": {"values": list(range(16, 256, 16))},
         "lr": {"values": list(np.arange(0.00001, 0.01, 0.00001))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},

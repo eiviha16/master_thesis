@@ -253,7 +253,7 @@ def cartpole_TPPO(config):
 
     _config = {'comment': 'newest', 'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
                'weighted_clauses': False,
-               "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.epochs,
+               "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.sampling_iterations,
                'test_freq': 1, "save": False, "seed": 42,  "threshold": cartpole_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "observation_data"}
     print(_config)
@@ -289,7 +289,7 @@ def acrobot_TPPO(config):
 
     _config = {'comment': 'newest', 'algorithm': 'TM_PPO', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
                'weighted_clauses': False,
-               "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.epochs,
+               "actor": actor, "critic": critic, 'batch_size': config.batch_size, 'epochs': config.sampling_iterations,
                'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -681,7 +681,7 @@ def acrobot_PPO(config):
     from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
     _config = {'env_name': 'acrobot', 'algorithm': 'PPO', 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
-              'batch_size': config.batch_size, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+              'batch_size': config.batch_size, 'epochs': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
 
     print(_config)
     env = gym.make("Acrobot-v1")
@@ -701,7 +701,7 @@ def cartpole_PPO(config):
     from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
     _config = {'env_name': 'cartpole', 'algorithm': 'PPO', 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
-              'batch_size': config.batch_size, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+              'batch_size': config.batch_size, 'epochs': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
 
     print(_config)
     env = gym.make("CartPole-v1")
@@ -711,7 +711,7 @@ def cartpole_PPO(config):
     print(f'mean: {np.mean(np.array(agent.scores))}')
     return score
 
-def acrobot_DQN(config):
+def acrobot_nDQN(config):
     random.seed(42)
     np.random.seed(42)
     torch.manual_seed(42)
@@ -720,9 +720,29 @@ def acrobot_DQN(config):
     from algorithms.Q_Network.n_step_DQN import DQN
     from algorithms.policy.DNN import Policy as Policy
 
-    _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', "c": 0, 'gamma': config.gamma, "buffer_size": config.buffer_size,
+    _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,
               'batch_size': config.batch_size,
-            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'sampling_iterations': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+
+    print(_config)
+    env = gym.make("Acrobot-v1")
+    agent = DQN(env, Policy, _config)
+    agent.learn(nr_of_episodes=2500)
+    score = agent.best_scores['mean']
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score
+def acrobot_DQN(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.Q_Network.DQN import DQN
+    from algorithms.policy.DNN import Policy as Policy
+
+    _config = {'env_name': 'acrobot', 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,
+              'batch_size': config.batch_size,
+            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
 
     print(_config)
     env = gym.make("Acrobot-v1")

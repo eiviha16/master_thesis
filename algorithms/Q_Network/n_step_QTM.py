@@ -19,7 +19,8 @@ class QTM:
         self.policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
         self.sampling_iterations = config['sampling_iterations']
@@ -103,7 +104,7 @@ class QTM:
         return target_q_vals
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
 

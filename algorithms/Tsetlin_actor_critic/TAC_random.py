@@ -17,7 +17,8 @@ class TAC:
         self.gamma = config['gamma']
         self.policy = Policy(config)
         self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
         self.epochs = config['epochs']
@@ -65,7 +66,6 @@ class TAC:
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
-
         while True:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
@@ -76,7 +76,6 @@ class TAC:
             cur_obs = next_obs
 
     def get_actor_update(self, actions):
-
         tm = {'observations': [], 'actions': [], 'feedback': []}
         for index, action in enumerate(np.argmax(actions, axis=1)):
             random_float = np.random.rand()
@@ -121,7 +120,7 @@ class TAC:
 
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -155,6 +154,7 @@ class TAC:
             self.best_score = mean
             print(f'New best mean: {mean}!')
         self.scores.append(mean)
+
     def save_model(self, best_model):
         if self.save:
             if best_model:

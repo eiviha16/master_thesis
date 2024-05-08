@@ -238,11 +238,20 @@ def start_a_PPO():
 
 
 def main_a_DQN():
-    wandb.init(project="acrobot-n_step_DQN-f")
+    wandb.init(project="acrobot-DQN-ff")
     score = acrobot_DQN(wandb.config)
     wandb.log({"score": score})
 
 def start_a_DQN():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_DQN, project="acrobot-n_step_DQN-f")
+    sweep_id = wandb.sweep(sweep=config_acrobot_DQN, project="acrobot-DQN-ff")
     wandb.agent(sweep_id, function=main_a_DQN, count=10_000)
+def main_a_nDQN():
+    wandb.init(project="acrobot-n_step_DQN-ff")
+    score = acrobot_nDQN(wandb.config)
+    wandb.log({"score": score})
+
+def start_a_nDQN():
+    import wandb
+    sweep_id = wandb.sweep(sweep=config_acrobot_nDQN, project="acrobot-n_step_DQN-ff")
+    wandb.agent(sweep_id, function=main_a_nDQN, count=10_000)

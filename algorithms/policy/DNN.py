@@ -32,7 +32,7 @@ class QNet(nn.Module):
 
 class Policy(QNet):
     def __init__(self, input_size, output_size, config):
-        super(Policy, self).__init__(input_size, output_size, config['hidden_size'], config['c'])
+        super(Policy, self).__init__(input_size, output_size, config['hidden_size'])
         self.optimizer = optim.Adam(self.parameters(), lr=config['learning_rate'])
 
     def predict(self, input):

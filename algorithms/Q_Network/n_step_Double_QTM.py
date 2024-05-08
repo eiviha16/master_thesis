@@ -18,7 +18,8 @@ class QTM:
         self.target_policy = Policy(config)
         #hey
         self.gamma = config['gamma']  # discount factor
-        self.epsilon = config['epsilon_init']
+        self.init_epsilon = config['epsilon_init']
+        self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
         self.sampling_iterations = config['sampling_iterations']
@@ -111,7 +112,7 @@ class QTM:
         return target_q_vals
 
     def update_epsilon_greedy(self):
-        self.epsilon *= np.exp(-self.epsilon_decay)
+        self.epsilon = self.init_epsilon * np.exp(-self.cur_episode * self.epsilon_decay)
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:

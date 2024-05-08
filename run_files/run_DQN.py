@@ -5,7 +5,7 @@ from algorithms.policy.DNN import Policy
 import torch
 import numpy as np
 
-config = {'env_name': 'cartpole', 'algorithm': 'DQN', 'gamma': 0.99, 'c':  1, 'epsilon_init': 1.0, 'epsilon_decay': 0.001, 'buffer_size': 40_000, 'batch_size': 256, 'sampling_iterations': 8, 'hidden_size': 64, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
+config = {'env_name': 'cartpole', 'algorithm': 'DQN', 'gamma': 0.99, 'epsilon_init': 1.0, 'epsilon_decay': 0.001, 'buffer_size': 50_000, 'batch_size': 256, 'sampling_iterations': 1, 'hidden_size': 64, 'learning_rate': 0.001, 'test_freq': 1, 'threshold_score': 450, "save": True}
 print(config)
 random.seed(42)
 np.random.seed(42)
