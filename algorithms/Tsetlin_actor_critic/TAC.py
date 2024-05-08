@@ -82,7 +82,7 @@ class TAC:
     def get_actor_update(self, actions, target_q_vals):
 
         tm = {'observations': [], 'actions': [], 'feedback': []}
-        q_vals = self.policy.target_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
+        q_vals = self.policy.online_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
 
         for index, action in enumerate(np.argmax(actions, axis=1)):
             if q_vals[index] >= target_q_vals[index]:
