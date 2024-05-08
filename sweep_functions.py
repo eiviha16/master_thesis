@@ -19,7 +19,7 @@ def cartpole_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -40,7 +40,7 @@ def cartpole_TAC_a(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -53,7 +53,7 @@ def acrobot_random_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC_random import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC_random import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -75,7 +75,7 @@ def acrobot_random_TAC_a(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -88,7 +88,7 @@ def cartpole_random_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC_random import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC_random import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -109,7 +109,7 @@ def cartpole_random_TAC_a(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -122,7 +122,7 @@ def acrobot_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -144,7 +144,7 @@ def acrobot_TAC_a(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -162,7 +162,7 @@ def cartpole_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -183,7 +183,7 @@ def cartpole_TAC_b(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -197,7 +197,7 @@ def acrobot_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TAC import DDPG
+    from algorithms.Tsetlin_actor_critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -219,7 +219,7 @@ def acrobot_TAC_b(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = DDPG(env, Policy, _config)
+    agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_score)
     print(f'mean: {np.mean(np.array(agent.scores))}')
@@ -313,7 +313,7 @@ def cartpole_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -330,7 +330,7 @@ def cartpole_n_step_DQTM_a(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -343,7 +343,7 @@ def acrobot_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -359,7 +359,7 @@ def acrobot_n_step_DQTM_a(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
@@ -374,7 +374,7 @@ def cartpole_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -390,7 +390,7 @@ def cartpole_n_step_DQTM_b(config):
     print(_config)
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -403,7 +403,7 @@ def acrobot_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -420,7 +420,7 @@ def acrobot_n_step_DQTM_b(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
@@ -436,7 +436,7 @@ def cartpole_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import TMQN
+    from algorithms.Q_Network.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -453,7 +453,7 @@ def cartpole_DQTM_a(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -466,7 +466,7 @@ def acrobot_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import TMQN
+    from algorithms.Q_Network.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -483,7 +483,7 @@ def acrobot_DQTM_a(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
@@ -498,7 +498,7 @@ def cartpole_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import TMQN
+    from algorithms.Q_Network.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -515,7 +515,7 @@ def cartpole_DQTM_b(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -528,7 +528,7 @@ def acrobot_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import TMQN
+    from algorithms.Q_Network.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -545,7 +545,7 @@ def acrobot_DQTM_b(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
@@ -561,7 +561,7 @@ def cartpole_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_QTM import TMQN
+    from algorithms.Q_Network.n_step_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -578,7 +578,7 @@ def cartpole_n_step_QTM(config):
 
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -591,7 +591,7 @@ def acrobot_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_QTM import TMQN
+    from algorithms.Q_Network.n_step_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -608,7 +608,7 @@ def acrobot_n_step_QTM(config):
 
     env = gym.make("Acrobot-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
@@ -623,7 +623,7 @@ def cartpole_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.QTM import TMQN
+    from algorithms.Q_Network.QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -639,7 +639,7 @@ def cartpole_QTM(config):
     print(_config)
     env = gym.make("CartPole-v1")
 
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_2)
     scores = np.array(agent.total_score)
     score = np.mean(scores)
@@ -652,7 +652,7 @@ def acrobot_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.QTM import TMQN
+    from algorithms.Q_Network.QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -666,7 +666,7 @@ def acrobot_QTM(config):
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
     env = gym.make("Acrobot-v1")
-    agent = TMQN(env, Policy, _config)
+    agent = QTM(env, Policy, _config)
     agent.learn(nr_of_episodes=n_epsidoes_acro)
     score = np.array(agent.best_scores['mean'])
     return score
