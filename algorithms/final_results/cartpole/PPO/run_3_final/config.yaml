@@ -1,0 +1,12 @@
+algorithm: PPO
+batch_size: 32
+clip_range: 0.2
+env_name: cartpole
+epochs: 16
+gamma: 0.95
+hidden_size: 64
+lam: 0.9
+learning_rate: 0.003
+n_steps: 16
+save: true
+test_freq: 1
