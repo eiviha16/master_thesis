@@ -15,10 +15,10 @@ class DQN:
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
         #self.policy.to('cuda')
         self.gamma = config['gamma']  # discount factor
-        self.exploration_prob = config['exploration_prob_init']
-        self.exploration_prob_decay = config['exploration_prob_decay']
+        self.epsilon = config['epsilon_init']
+        self.epsilon_decay = config['epsilon_decay']
 
-        self.epochs = config['epochs']
+        self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
 
@@ -74,7 +74,7 @@ class DQN:
                 1 - torch.tensor(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def get_next_action(self, cur_obs):
-        if np.random.random() < self.exploration_prob:
+        if np.random.random() < self.epsilon:
             q_vals = torch.tensor([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
@@ -83,7 +83,7 @@ class DQN:
         return torch.argmax(q_vals), q_vals
 
     def update_exploration_prob(self):
-        self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_for_action(self, q_vals):
         indices = np.array(self.replay_buffer.sampled_actions)
@@ -91,7 +91,7 @@ class DQN:
         return selected_q_vals
 
     def train(self):
-        for epoch in range(self.epochs):
+        for _ in range(self.sampling_iterations):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
             with torch.no_grad():
@@ -116,20 +116,22 @@ class DQN:
             self.nr_of_steps += 1
             if done or truncated:
                 break
+            if self.nr_of_steps >= self.batch_size:
+                self.train()
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-            if self.nr_of_steps >= self.batch_size:
-                self.train()
+            #if self.nr_of_steps >= self.batch_size:
+            #    self.train()
             self.update_exploration_prob()
 
 
     def test(self, nr_of_steps):
-        exploration_prob = self.exploration_prob
-        self.exploration_prob = 0
+        epsilon = self.epsilon
+        self.epsilon = 0
         episode_rewards = np.array([0 for i in range(self.nr_of_test_episodes)])
         for episode in range(self.nr_of_test_episodes):
             for q_val in self.q_values:
@@ -147,7 +149,7 @@ class DQN:
         std = np.std(episode_rewards)
         self.scores.append(mean)
         self.save_results(mean, std, nr_of_steps)
-        self.exploration_prob = exploration_prob
+        self.epsilon = epsilon
         if mean > self.best_scores['mean']:
             self.save_model('best_model')
             self.best_scores['mean'] = mean

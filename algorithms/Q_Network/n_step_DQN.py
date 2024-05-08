@@ -19,8 +19,8 @@ class DQN:
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
         #self.policy.to('cuda')
         self.gamma = config['gamma']  # discount factor
-        self.exploration_prob = config['exploration_prob_init']
-        self.exploration_prob_decay = config['exploration_prob_decay']
+        self.epsilon = config['epsilon_init']
+        self.epsilon_decay = config['epsilon_decay']
         self.config = config
         self.epochs = config['epochs']
         self.buffer_size = config['buffer_size']
@@ -76,7 +76,7 @@ class DQN:
                 1 - torch.tensor(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def get_next_action(self, cur_obs):
-        if np.random.random() < self.exploration_prob:
+        if np.random.random() < self.epsilon:
             q_vals = torch.tensor([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
@@ -84,8 +84,8 @@ class DQN:
                 self.q_values[key].append(q_vals[i])
         return torch.argmax(q_vals), q_vals
 
-    def update_exploration_prob(self):
-        self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
+    def update_epsilon(self):
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_for_action(self, q_vals):
         sampled_actions = np.array(self.replay_buffer.sampled_actions)
@@ -132,21 +132,21 @@ class DQN:
             self.nr_of_steps += 1
             if done or truncated:
                 break
+            if self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
+                self.train()
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-            if self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
-                self.train()
-            self.update_exploration_prob()
+            self.update_epsilon()
 
 
 
     def test(self, nr_of_steps):
-        exploration_prob = self.exploration_prob
-        self.exploration_prob = 0
+        exploration_prob = self.epsilon
+        self.epsilon = 0
         episode_rewards = np.array([0 for i in range(self.nr_of_test_episodes)])
         for episode in range(self.nr_of_test_episodes):
             for q_val in self.q_values:
@@ -169,7 +169,7 @@ class DQN:
         self.scores.append(mean)
 
         self.save_results(mean, std, nr_of_steps)
-        self.exploration_prob = exploration_prob
+        self.epsilon = exploration_prob
         if mean > self.best_scores['mean']:
             self.save_model('best_model')
             self.best_scores['mean'] = mean

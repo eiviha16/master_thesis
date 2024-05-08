@@ -20,10 +20,10 @@ class TMQN:
         self.evaluation_policy = Policy(config)
         #hey
         self.gamma = config['gamma']  # discount factor
-        self.exploration_prob = config['exploration_prob_init']
-        self.exploration_prob_decay = config['exploration_prob_decay']
+        self.epsilon = config['epsilon_init']
+        self.epsilon_decay = config['epsilon_decay']
 
-        self.epochs = config['epochs']
+        self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
         #self.update_grad = config['update_grad']
@@ -100,7 +100,7 @@ class TMQN:
                 yaml.dump(self.config, yaml_file, default_flow_style=False)
 
     def get_next_action(self, cur_obs):
-        if np.random.random() < self.exploration_prob:
+        if np.random.random() < self.epsilon:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.target_policy.predict(cur_obs)
@@ -125,7 +125,7 @@ class TMQN:
         return target_q_vals
 
     def update_exploration_prob(self):
-        self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def soft_update_2(self, target_tm, evaluation_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
@@ -172,7 +172,7 @@ class TMQN:
         return np.array(q_vals)
 
     def train(self):
-        for epoch in range(self.epochs):
+        for _ in range(self.sampling_iterations):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample_n_seq()
 
@@ -228,8 +228,8 @@ class TMQN:
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
         self.nr_actions = 0
-        exploration_prob = self.exploration_prob
-        self.exploration_prob = 0
+        exploration_prob = self.epsilon
+        self.epsilon = 0
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
         for episode in range(self.nr_of_test_episodes):
@@ -249,7 +249,7 @@ class TMQN:
         std = np.std(episode_rewards)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
-        self.exploration_prob = exploration_prob
+        self.epsilon = exploration_prob
         if mean > self.best_scores['mean']:
             self.save_model(True)
             self.best_scores['mean'] = mean

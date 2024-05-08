@@ -20,10 +20,10 @@ class TMQN:
         self.evaluation_policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
-        self.exploration_prob = config['exploration_prob_init']
-        self.exploration_prob_decay = config['exploration_prob_decay']
+        self.epsilon = config['epsilon_init']
+        self.epsilon_decay = config['epsilon_decay']
 
-        self.epochs = config['epochs']
+        self.sample_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
         self.dynamic_memory = False#config['dynamic_memory']
@@ -88,7 +88,7 @@ class TMQN:
                 yaml.dump(self.config, yaml_file, default_flow_style=False)
 
     def get_next_action(self, cur_obs):
-        if np.random.random() < self.exploration_prob:
+        if np.random.random() < self.epsilon:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.target_policy.predict(cur_obs)
@@ -100,7 +100,7 @@ class TMQN:
                 1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def update_exploration_prob(self):
-        self.exploration_prob = self.exploration_prob * np.exp(-self.exploration_prob_decay)
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
@@ -109,21 +109,7 @@ class TMQN:
             tm_inputs[action]['target_q_vals'].append(target_q_vals[index])
 
         return tm_inputs
-        """tm_1_input, tm_2_input = {'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
-        # actions = self.replay_buffer.sampled_actions
-        for index, action in enumerate(actions):
-            if action == 0:
-                tm_1_input['observations'].append(self.replay_buffer.sampled_cur_obs[index])
-                tm_1_input['target_q_vals'].append(target_q_vals[index])
 
-            elif action == 1:
-                tm_2_input['observations'].append(self.replay_buffer.sampled_cur_obs[index])
-                tm_2_input['target_q_vals'].append(target_q_vals[index])
-
-            else:
-                print('Error with get_q_val_for_action')
-
-        return tm_1_input, tm_2_input"""
 
     def get_q_val_for_action(self, actions, q_values):
         q_vals = []
@@ -132,7 +118,7 @@ class TMQN:
         return np.array(q_vals)
 
     def train(self):
-        for epoch in range(self.epochs):
+        for _ in range(self.sample_iterations):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
@@ -147,11 +133,6 @@ class TMQN:
 
             abs_errors = self.target_policy.update(tm_inputs)
 
-            for key in abs_errors:
-                if key not in self.abs_errors:
-                    self.abs_errors[key] = []
-                for val in abs_errors[key]:
-                    self.abs_errors[key].append(val)
 
         if self.config['soft_update_type'] == 'soft_update_1':
             for i in range(len(self.target_policy.tms)):
@@ -215,8 +196,8 @@ class TMQN:
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
         self.nr_actions = 0
-        exploration_prob = self.exploration_prob
-        self.exploration_prob = 0
+        exploration_prob = self.epsilon
+        self.epsilon = 0
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
         for episode in range(self.nr_of_test_episodes):
@@ -237,7 +218,7 @@ class TMQN:
         self.total_score.append(mean)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
-        self.exploration_prob = exploration_prob
+        self.epsilon = exploration_prob
         if mean > self.best_scores['mean']:
             self.save_model(True)
             self.best_scores['mean'] = mean
