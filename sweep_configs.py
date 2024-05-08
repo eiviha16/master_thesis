@@ -8,7 +8,7 @@ config_cartpole_random_TAC_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "sampling_iterations": {"values": list(range(1, 8, 1))},
         "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
@@ -37,7 +37,7 @@ config_acrobot_random_TAC_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "sampling_iterations": {"values": list(range(1, 8, 1))},
 
@@ -259,7 +259,7 @@ config_cartpole_n_step_DQTM_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "n_steps": {"values":list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
@@ -283,7 +283,7 @@ config_acrobot_n_step_DQTM_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "n_steps": {"values": list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
@@ -362,7 +362,7 @@ config_cartpole_DQTM_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "sampling_iterations": {"values": list(range(1, 8, 1))},
@@ -385,7 +385,7 @@ config_acrobot_DQTM_a = {
     "metric": {"goal": "maximize", "name": "score"},
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
-        "update_grad": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "sampling_iterations": {"values": list(range(1, 8, 1))},
