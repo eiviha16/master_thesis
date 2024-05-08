@@ -112,7 +112,7 @@ class TMQN:
             target_q_vals.append(target_q_val)
         return target_q_vals
 
-    def update_greedy_epsilon(self):
+    def update_epsilon_greedy(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
 
     def soft_update_2(self, target_tm, evaluation_tm):
@@ -211,7 +211,7 @@ class TMQN:
             self.rollout()
             if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
                 self.train()
-            self.update_greedy_epsilon()
+            self.update_epsilon_greedy()
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]

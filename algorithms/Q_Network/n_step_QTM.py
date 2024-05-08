@@ -102,7 +102,7 @@ class TMQN:
             target_q_vals.append(target_q_val)
         return target_q_vals
 
-    def update_greedy_epsilon(self):
+    def update_epsilon_greedy(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
@@ -162,7 +162,7 @@ class TMQN:
             self.rollout()
             if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
                 self.train()
-            self.update_greedy_epsilon()
+            self.update_epsilon_greedy()
 
 
     def test(self, nr_of_steps):

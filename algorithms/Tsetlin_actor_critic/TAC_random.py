@@ -126,8 +126,8 @@ class DDPG:
             self.policy.actor.update(actor_tm_feedback)
 
 
-    def update_exploration_prob(self):
-        self.epsilon = self.epsilon * np.exp(-self.exploration_prob_decay)
+    def update_epsilon_greedy(self):
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -139,7 +139,7 @@ class DDPG:
                 break
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
-            self.update_exploration_prob()
+            self.update_epsilon_greedy()
 
     def test(self):
         # remember to remove exploration when doing this

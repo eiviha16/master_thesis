@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import yaml
-# from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
 from algorithms.misc.replay_buffer import ReplayBuffer
 import torch
 from tqdm import tqdm
@@ -87,7 +86,6 @@ class DDPG:
         q_vals = self.policy.target_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
 
         for index, action in enumerate(np.argmax(actions, axis=1)):
-            # feedback = 1 if q_vals[index] > target_q_vals[index] else 2
             if q_vals[index] >= target_q_vals[index]:
                 feedback = 1
             else:
@@ -144,8 +142,8 @@ class DDPG:
         else:
             self.soft_update_2(self.policy.target_critic.tm, self.policy.evaluation_critic.tm)
 
-    def update_exploration_prob(self):
-        self.epsilon = self.epsilon * np.exp(-self.epsilon_decay)
+    def update_epsilon_greedy(self):
+        self.epsilon *= np.exp(-self.epsilon_decay)
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -157,7 +155,7 @@ class DDPG:
                 break
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
-            self.update_exploration_prob()
+            self.update_epsilon_greedy()
 
     def test(self):
         # remember to remove exploration when doing this

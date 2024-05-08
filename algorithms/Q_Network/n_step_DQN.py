@@ -83,7 +83,7 @@ class DQN:
                 self.q_values[key].append(q_vals[i])
         return torch.argmax(q_vals), q_vals
 
-    def update_greedy_epsilon(self):
+    def update_epsilon_greedy(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_for_action(self, q_vals):
@@ -139,7 +139,7 @@ class DQN:
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-            self.update_greedy_epsilon()
+            self.update_epsilon_greedy()
 
 
 
