@@ -141,7 +141,6 @@ class TPPO:
 
 
     def test(self):
-        # remember to remove exploration when doing this
         episode_rewards = np.array([0 for _ in range(100)])
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
@@ -185,9 +184,6 @@ class TPPO:
                     tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
-
     def save_results(self, mean, std):
         if self.save:
             file_name = 'test_results.csv'
@@ -222,8 +218,6 @@ class TPPO:
                 if not file_exists:
                     file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
                 file.write(f"{','.join(map(str, probs))}\n")
-
-
 
     def save_abs_errors(self):
         if self.save:

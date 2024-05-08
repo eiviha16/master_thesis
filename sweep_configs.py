@@ -572,7 +572,6 @@ config_acrobot_PPO = {
         "lam": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "n_steps": {"values": list(range(16, 2048, 16))},
         "batch_size": {"values": list(range(16, 128, 16))},
-        "epochs": {"values": list(range(1, 10, 1))},
         "hidden_size": {"values": list(range(16, 256, 16))},
         "lr": {"values": list(np.arange(0.00001, 0.01, 0.00001))},
         "clip_range": {"values": list(np.arange(0.01, 0.5, 0.01))}

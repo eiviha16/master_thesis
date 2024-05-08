@@ -2,7 +2,7 @@ import wandb
 from sweep_configs import *
 from sweep_functions import *
 
-wandb.login(key="74a10e58809253b0e1f243f34bb17d8f34c21e59")
+wandb.login(key="addkey")
 
 def main_c_random_TAC_a():
     wandb.init(project="cartpole-TAC_a-random")

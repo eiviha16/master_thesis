@@ -152,7 +152,7 @@ class QTM:
 
     def test(self, nr_of_steps):
 
-        exploration_prob = self.epsilon
+        epsilon = self.epsilon
         self.epsilon = 0
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
@@ -170,7 +170,7 @@ class QTM:
         self.total_score.append(mean)
         self.cur_mean = mean
         self.save_results(mean, std, nr_of_steps)
-        self.epsilon = exploration_prob
+        self.epsilon = epsilon
         if mean > self.best_scores['mean']:
             self.save_model(True)
             self.best_scores['mean'] = mean

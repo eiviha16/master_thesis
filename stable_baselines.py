@@ -43,8 +43,7 @@ class PPO_c():
             self.env = gym.make("Acrobot-v1")
         self.timesteps = 0
 
-        self.model = PPO("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
-       # self.model = DQN("MlpPolicy", self.env, seed=42, verbose=0)#, n_steps=16)
+        self.model = PPO("MlpPolicy", self.env, seed=42, verbose=0)
 
     def learn(self, intervals):
         for i in tqdm(range(intervals)):
@@ -57,7 +56,7 @@ class PPO_c():
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
         for episode in range(self.nr_of_test_episodes):
-            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
+            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 action, _states = self.model.predict(obs, deterministic=True)
                 obs, reward, done, truncated, _ = self.env.step(action)
