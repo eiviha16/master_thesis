@@ -26,8 +26,8 @@ from test_policy import test_policy
 tms = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/best')
 
 for i in range(len(tms)):
-    agent.target_policy.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])
+    agent.online_policy.tms[i].set_params(tms[i]['ta_state'], tms[i]['clause_sign'], tms[i]['clause_output'], tms[i]['feedback_to_clauses'])
 
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}'
 
-test_policy(save_file, agent.target_policy, config["env_name"])
+test_policy(save_file, agent.online_policy, config["env_name"])

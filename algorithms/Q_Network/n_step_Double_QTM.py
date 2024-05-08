@@ -4,20 +4,18 @@ import os
 import yaml
 from tqdm import tqdm
 import random
-from copy import deepcopy
 from algorithms.misc.replay_buffer import ReplayBuffer
-from algorithms.misc.plot_test_results import plot_test_results
 
 
-class TMQN:
+class QTM:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
         config['action_space_size'] = self.action_space_size
         config['obs_space_size'] = self.obs_space_size
+        self.online_policy = Policy(config)
         self.target_policy = Policy(config)
-        self.evaluation_policy = Policy(config)
         #hey
         self.gamma = config['gamma']  # discount factor
         self.epsilon = config['epsilon_init']
@@ -92,7 +90,7 @@ class TMQN:
         if np.random.random() < self.epsilon:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
-            q_vals = self.target_policy.predict(cur_obs)
+            q_vals = self.online_policy.predict(cur_obs)
 
         return np.argmax(q_vals), q_vals
 
@@ -166,26 +164,26 @@ class TMQN:
 
             # calculate target_q_vals
             sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
-            next_q_vals = self.evaluation_policy.predict(sampled_next_obs[:, -1, :])
-            actions = np.argmax(self.target_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
+            next_q_vals = self.target_policy.predict(sampled_next_obs[:, -1, :])
+            actions = np.argmax(self.online_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
             next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
 
             # calculate target q vals
             target_q_vals = self.n_step_temporal_difference(next_q_vals)
             tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
-            abs_errors = self.target_policy.update(tm_inputs)
+            abs_errors = self.online_policy.update(tm_inputs)
             for key in abs_errors:
                 if key not in self.abs_errors:
                     self.abs_errors[key] = []
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
         if self.config['soft_update_type'] == 'soft_update_1':
-            for i in range(len(self.target_policy.tms)):
-                self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            for i in range(len(self.online_policy.tms)):
+                self.soft_update_1(self.online_policy.tms[i], self.target_policy.tms[i])
         else:
-            for i in range(len(self.target_policy.tms)):
-                self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            for i in range(len(self.online_policy.tms)):
+                self.soft_update_2(self.online_policy.tms[i], self.target_policy.tms[i])
 
         self.abs_errors = {}
     def rollout(self):
@@ -244,14 +242,12 @@ class TMQN:
             print(f'New best mean after {nr_of_steps} steps: {mean}!')
         self.save_model(False)
         self.total_score.append(mean)
-        #self.save_q_vals(nr_of_steps)
 
     def save_model(self, best_model):
         if self.save:
-
             if best_model:
 
-                tms = self.target_policy.tms
+                tms = self.online_policy.tms
                 tms_save = []
                 for n in range(len(tms)):
                     ta_state, clause_sign, clause_output, feedback_to_clauses = tms[n].get_params()
@@ -272,8 +268,6 @@ class TMQN:
                          'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms_save, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
 
     def save_results(self, mean, std, nr_of_steps):
         if self.save:
@@ -297,7 +291,6 @@ class TMQN:
 
     def save_q_vals(self, q_vals):
         if self.save:
-
             folder_name = 'q_values'
             file_name = f'{self.cur_episode}.csv'
             if not os.path.exists(os.path.join(self.save_path, folder_name)):
@@ -310,7 +303,6 @@ class TMQN:
                 file.write(f"{','.join(map(str, q_vals))}\n")
     def save_abs_errors(self):
         if self.save:
-
             for key in self.abs_errors:
                 self.abs_errors[key] = np.array(self.abs_errors[key])
             folder_name = 'absolute_errors.csv'

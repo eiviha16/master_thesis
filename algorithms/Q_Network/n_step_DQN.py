@@ -4,7 +4,6 @@ import yaml
 from tqdm import tqdm
 import random
 from algorithms.misc.replay_buffer import ReplayBuffer
-from algorithms.misc.plot_test_results import plot_test_results
 import torch
 import torch.nn.functional as F
 
@@ -43,7 +42,6 @@ class DQN:
         self.q_values = {f'q{i}': [] for i in range(self.action_space_size)}
         self.nr_actions = 0
 
-        #self.observations = []
         self.announce()
         self.cur_episode = 0
         self.nr_of_steps = 0

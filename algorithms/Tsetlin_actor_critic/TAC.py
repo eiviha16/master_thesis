@@ -7,7 +7,7 @@ from tqdm import tqdm
 import random
 
 
-class DDPG:
+class TAC:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
@@ -22,7 +22,6 @@ class DDPG:
 
         self.epochs = config['epochs']
         self.config = config
-        #self.update_grad = config['update_grad']
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
@@ -158,7 +157,6 @@ class DDPG:
             self.update_epsilon_greedy()
 
     def test(self):
-        # remember to remove exploration when doing this
         episode_rewards = np.array([0 for _ in range(100)])
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
@@ -182,7 +180,6 @@ class DDPG:
 
         if self.save:
             if best_model:
-                # self.policy.actor.tm.save_state()
                 tms = []
                 ta_state, clause_sign, clause_count = self.policy.actor.tm.get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
@@ -217,10 +214,10 @@ class DDPG:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
 
-    def soft_update_2(self, target_tm, evaluation_tm):
+    def soft_update_2(self, online_tm, target_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
-            target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
-            eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
+            target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
+            eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
             for i in range(len(target_ta_state)):
                 for j in range(len(target_ta_state[i])):
                     for k in range(len(target_ta_state[i][j])):
@@ -228,11 +225,11 @@ class DDPG:
                             eval_ta_state[i][j][k] += 1
                         if target_ta_state[i][j][k] < eval_ta_state[i][j][k]:
                             eval_ta_state[i][j][k] -= 1
-            evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
+            target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
-    def soft_update_1(self, target_tm, evaluation_tm):
-        target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
-        eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
+    def soft_update_1(self, online_tm, target_tm):
+        target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
+        eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
         nr_of_clauses = len(list(target_clause_sign))
         clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.config['update_grad']))
         for clause in clauses_to_update:
@@ -243,7 +240,7 @@ class DDPG:
                 for j in range(len(target_ta_state[clause][i])):
                     eval_ta_state[clause][i][j] = target_ta_state[clause][i][j]
 
-        evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
+        target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
     def make_run_dir(self, algorithm):
         base_dir = '../results'

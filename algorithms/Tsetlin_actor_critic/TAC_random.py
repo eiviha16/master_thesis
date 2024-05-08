@@ -1,14 +1,13 @@
 import numpy as np
 import os
 import yaml
-# from algorithms.misc.batch_buffer import Batch_TM_DDPG as Batch
 from algorithms.misc.replay_buffer import ReplayBuffer
 import torch
 from tqdm import tqdm
 import random
 
 
-class DDPG:
+class TAC:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
@@ -23,7 +22,6 @@ class DDPG:
 
         self.epochs = config['epochs']
         self.config = config
-        #self.update_grad = config['update_grad']
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
                                   71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
@@ -142,7 +140,6 @@ class DDPG:
             self.update_epsilon_greedy()
 
     def test(self):
-        # remember to remove exploration when doing this
         episode_rewards = np.array([0 for _ in range(100)])
         for episode, seed in enumerate(self.test_random_seeds):
             obs, _ = self.env.reset(seed=seed)
@@ -166,7 +163,6 @@ class DDPG:
 
         if self.save:
             if best_model:
-                # self.policy.actor.tm.save_state()
                 tms = []
                 ta_state, clause_sign, clause_count = self.policy.actor.tm.get_params()
                 ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
@@ -188,14 +184,11 @@ class DDPG:
                     {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
 
     def save_results(self, mean, std):
         if self.save:
             file_name = 'test_results.csv'
             file_exists = os.path.exists(os.path.join(self.save_path, file_name))
-
             with open(os.path.join(self.save_path, file_name), "a") as file:
                 if not file_exists:
                     file.write("mean,std,steps\n")

@@ -7,7 +7,7 @@ import random
 from algorithms.misc.replay_buffer import ReplayBuffer
 
 
-class TMQN:
+class QTM:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
@@ -121,13 +121,11 @@ class TMQN:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample_n_seq()
 
-            # calculate target_q_vals
             sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
 
             next_q_vals = self.policy.predict(sampled_next_obs[:, -1, :])  # next_obs?
             next_q_vals = np.max(next_q_vals, axis=1)
 
-            # calculate target q vals
             target_q_vals = self.n_step_temporal_difference(next_q_vals)
             tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
             abs_errors = self.policy.update(tm_inputs)
@@ -198,9 +196,7 @@ class TMQN:
 
     def save_model(self, best_model):
         if self.save:
-
             if best_model:
-
                 tms = self.policy.tms
                 tms_save = []
                 for tm in range(len(tms)):
@@ -220,8 +216,6 @@ class TMQN:
                     tms_save.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms_save, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
     def save_results(self, mean, std, nr_of_steps):
         if self.save:
             file_name = 'test_results.csv'
@@ -244,7 +238,6 @@ class TMQN:
 
     def save_q_vals(self, q_vals):
         if self.save:
-
             folder_name = 'q_values'
             file_name = f'{self.cur_episode}.csv'
             if not os.path.exists(os.path.join(self.save_path, folder_name)):
@@ -257,7 +250,6 @@ class TMQN:
                 file.write(f"{','.join(map(str, q_vals))}\n")
     def save_abs_errors(self):
         if self.save:
-
             for key in self.abs_errors:
                 self.abs_errors[key] = np.array(self.abs_errors[key])
             folder_name = 'absolute_errors.csv'

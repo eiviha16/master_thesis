@@ -7,15 +7,15 @@ import random
 from algorithms.misc.replay_buffer import ReplayBuffer
 
 
-class TMQN:
+class QTM:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
         config['action_space_size'] = self.action_space_size
         config['obs_space_size'] = self.obs_space_size
+        self.online_policy = Policy(config)
         self.target_policy = Policy(config)
-        self.evaluation_policy = Policy(config)
 
         self.gamma = config['gamma']  # discount factor
         self.epsilon = config['epsilon_init']
@@ -88,7 +88,7 @@ class TMQN:
         if np.random.random() < self.epsilon:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
-            q_vals = self.target_policy.predict(cur_obs)
+            q_vals = self.online_policy.predict(cur_obs)
 
         return np.argmax(q_vals), q_vals
 
@@ -119,8 +119,8 @@ class TMQN:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
-            actions = np.argmax(self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs)), axis=1)  # next_obs?
-            next_q_vals = self.evaluation_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+            actions = np.argmax(self.online_policy.predict(np.array(self.replay_buffer.sampled_next_obs)), axis=1)  # next_obs?
+            next_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
             next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
             # calculate target q vals
@@ -128,15 +128,15 @@ class TMQN:
 
             tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
-            abs_errors = self.target_policy.update(tm_inputs)
+            abs_errors = self.online_policy.update(tm_inputs)
 
 
         if self.config['soft_update_type'] == 'soft_update_1':
-            for i in range(len(self.target_policy.tms)):
-                self.soft_update_1(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            for i in range(len(self.online_policy.tms)):
+                self.soft_update_1(self.online_policy.tms[i], self.target_policy.tms[i])
         else:
-            for i in range(len(self.target_policy.tms)):
-                self.soft_update_2(self.target_policy.tms[i], self.evaluation_policy.tms[i])
+            for i in range(len(self.online_policy.tms)):
+                self.soft_update_2(self.online_policy.tms[i], self.target_policy.tms[i])
 
 
     def soft_update_2(self, target_tm, evaluation_tm):
@@ -171,7 +171,6 @@ class TMQN:
         while True:
             action, _ = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
-
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)
             cur_obs = next_obs
             self.nr_of_steps += 1
@@ -227,7 +226,7 @@ class TMQN:
         if self.save:
             if best_model:
 
-                tms = self.target_policy.tms
+                tms = self.online_policy.tms
                 tms_save = []
                 for tm in range(len(tms)):
                     ta_state, clause_sign, clause_output, feedback_to_clauses = tms[tm].get_params()

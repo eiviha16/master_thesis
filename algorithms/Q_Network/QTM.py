@@ -6,10 +6,9 @@ from tqdm import tqdm
 import random
 
 from algorithms.misc.replay_buffer import ReplayBuffer
-#from algorithms.misc.plot_test_results import plot_test_results, feedback
 
 
-class TMQN:
+class QTM:
     def __init__(self, env, Policy, config):
         self.env = env
         self.action_space_size = env.action_space.n
@@ -19,14 +18,13 @@ class TMQN:
 
         self.policy = Policy(config)
 
-        self.gamma = config['gamma']  # discount factor
+        self.gamma = config['gamma']
         self.epsilon = config['epsilon_init']
         self.epsilon_decay = config['epsilon_decay']
 
         self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        #self.dynamic_memory = config['dynamic_memory']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
@@ -36,7 +34,6 @@ class TMQN:
         self.nr_of_test_episodes = 100
         if config['save']:
             self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
-           # self.run_id = 'run_' + str(len([i for i in os.listdir(f'./results/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -85,8 +82,7 @@ class TMQN:
             q_vals = np.array([np.random.random() for _ in range(self.action_space_size)])
         else:
             q_vals = self.policy.predict(cur_obs)
-            #self.q_values['q1'].append(q_vals[0])
-            #self.q_values['q2'].append(q_vals[0])
+
         return np.argmax(q_vals), q_vals
 
     def temporal_difference(self, next_q_vals):
@@ -117,7 +113,6 @@ class TMQN:
             # calculate target q vals
             target_q_vals = self.temporal_difference((next_q_vals))
 
-            #tm_1_input, tm_2_input = self.get_q_val_and_obs_for_tm(target_q_vals)
             tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
             abs_errors = self.policy.update(tm_inputs)
 
@@ -145,7 +140,6 @@ class TMQN:
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
             action, _ = self.get_next_action(cur_obs)
-            # actions[action] += 1
             next_obs, reward, done, truncated, _ = self.env.step(action)
 
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)
@@ -180,8 +174,7 @@ class TMQN:
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-                #if episode == 1:
-                    #self.save_q_vals(q_vals_)
+
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.total_score.append(mean)
@@ -193,11 +186,9 @@ class TMQN:
             self.best_scores['mean'] = mean
             print(f'New best mean after {nr_of_steps} steps: {mean}!')
         self.save_model(False)
-        #self.save_q_vals(nr_of_steps)
 
     def save_model(self, best_model):
         if self.save:
-
             if best_model:
                 tms = self.policy.tms
                 tms_save = []
@@ -218,12 +209,8 @@ class TMQN:
                     tms_save.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms_save, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
-
     def save_results(self, mean, std, nr_of_steps):
         if self.save:
-
             file_name = 'test_results.csv'
             file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
@@ -234,7 +221,6 @@ class TMQN:
 
     def save_q_vals(self, q_vals):
         if self.save:
-
             folder_name = 'q_values'
             file_name = f'{self.cur_episode}.csv'
             if not os.path.exists(os.path.join(self.save_path, folder_name)):
@@ -244,12 +230,10 @@ class TMQN:
             with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
                 if not file_exists:
                     file.write(f"{'actor_' + str(i) for i in range(len(q_vals))}\n")
-                #file.write(f"{q_vals[0][0]}, {q_vals[0][1]}\n")
                 file.write(f"{','.join(map(str, q_vals))}\n")
 
     def save_abs_errors(self):
         if self.save:
-
             for key in self.abs_errors:
                 self.abs_errors[key] = np.array(self.abs_errors[key])
             folder_name = 'absolute_errors.csv'
