@@ -35,7 +35,7 @@ def cartpole_TAC_a(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'clause_update_p': config.clause_update_p, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")
@@ -69,7 +69,7 @@ def acrobot_random_TAC_a(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'clause_update_p': config.clause_update_p, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
                "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
     print(_config)
 
@@ -104,7 +104,7 @@ def cartpole_random_TAC_a(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'clause_update_p': config.clause_update_p, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")
@@ -138,7 +138,7 @@ def acrobot_TAC_a(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'clause_update_p': config.clause_update_p, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
                "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
     print(_config)
 
@@ -178,7 +178,7 @@ def cartpole_TAC_b(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'update_freq': config.update_freq, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1,  "threshold": cartpole_threshold, "save": False, "dataset_file_name": "observation_data"}
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1,  "threshold": cartpole_threshold, "save": False, "dataset_file_name": "observation_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")
@@ -213,7 +213,7 @@ def acrobot_TAC_b(config):
                'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
                'update_freq': config.update_freq, 'gamma': config.gamma,
                "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'epochs': config.epochs, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "threshold": acrobot_threshold,
                "dataset_file_name": "acrobot_obs_data"}  # "observation_data"}
     print(_config)
 
@@ -323,7 +323,7 @@ def cartpole_n_step_DQTM_a(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'clause_update_p': config.clause_update_p, 'update_freq': -1,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -352,7 +352,7 @@ def acrobot_n_step_DQTM_a(config):
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma, 'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'clause_update_p': config.clause_update_p, 'update_freq': -1,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -384,7 +384,7 @@ def cartpole_n_step_DQTM_b(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -413,7 +413,7 @@ def acrobot_n_step_DQTM_b(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -446,7 +446,7 @@ def cartpole_DQTM_a(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'clause_update_p': config.clause_update_p, 'update_freq': -1,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -476,7 +476,7 @@ def acrobot_DQTM_a(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'clause_update_p': config.clause_update_p, 'update_freq': -1,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -508,7 +508,7 @@ def cartpole_DQTM_b(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,  "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -538,7 +538,7 @@ def acrobot_DQTM_b(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'update_grad': -1, 'update_freq': config.update_freq,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -571,7 +571,7 @@ def cartpole_n_step_QTM(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,  "threshold": cartpole_threshold,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -601,7 +601,7 @@ def acrobot_n_step_QTM(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size, "threshold": acrobot_threshold,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -633,7 +633,7 @@ def cartpole_QTM(config):
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma,
         'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,  "threshold": cartpole_threshold,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': test_freq_2, "save": False, "seed": 42,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "observation_data"}
     print(_config)
@@ -661,7 +661,7 @@ def acrobot_QTM(config):
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': config.bits_per_feature,
         'gamma': config.gamma, 'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,  "threshold": acrobot_threshold,
-        'batch_size': config.batch_size, 'epochs': config.epochs, 'test_freq': 1, "save": False, "seed": 42,
+        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
         "dataset_file_name": "acrobot_obs_data"}
     print(_config)
@@ -722,7 +722,7 @@ def acrobot_DQN(config):
 
     _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', "c": 0, 'gamma': config.gamma, "buffer_size": config.buffer_size,
               'batch_size': config.batch_size,
-            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'epochs': config.epochs, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'sampling_iterations': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
 
     print(_config)
     env = gym.make("Acrobot-v1")
