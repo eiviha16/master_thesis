@@ -4,7 +4,6 @@ import yaml
 import random
 from algorithms.misc.batch_buffer import Batch
 import torch
-import torch.nn.functional as F
 from tqdm import tqdm
 
 
@@ -99,15 +98,13 @@ class TPPO:
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
-            #print(i, self.batch.action_log_prob[i][idx], ' - ', self.batch.action_log_prob[i])
-
             tm[idx]['advantages'].append(self.batch.advantages[i])
             tm[idx]['entropy'].append(self.batch.entropies[i][idx])
 
         return tm
 
     def get_update_data_critic(self):
-        tm = [{'observations': [], 'target': []} for _ in range(self.action_space_size)]#, {'observations': [], 'target': []}]
+        tm = [{'observations': [], 'target': []} for _ in range(self.action_space_size)]
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
@@ -169,9 +166,7 @@ class TPPO:
 
     def save_model(self, best_model):
         if self.save:
-
             if best_model:
-
                 tms = []
                 for tm in range(len(self.policy.actor.tms)):
                     ta_state, clause_sign, clause_output, feedback_to_clauses = self.policy.actor.tms[tm].get_params()
