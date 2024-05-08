@@ -124,7 +124,7 @@ class TAC:
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
             b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
-            next_q_vals = self.policy.evaluation_critic.predict(
+            next_q_vals = self.policy.target_critic.predict(
                 np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
 
             # calculate target q vals
@@ -134,12 +134,12 @@ class TAC:
 
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
-            self.policy.target_critic.update(critic_update)
+            self.policy.online_critic.update(critic_update)
 
         if self.config['soft_update_type'] == 'soft_update_1':
-            self.soft_update_1(self.policy.target_critic.tm, self.policy.evaluation_critic.tm)
+            self.soft_update_1(self.policy.online_critic.tm, self.policy.target_critic.tm)
         else:
-            self.soft_update_2(self.policy.target_critic.tm, self.policy.evaluation_critic.tm)
+            self.soft_update_2(self.policy.online_critic.tm, self.policy.target_critic.tm)
 
     def update_epsilon_greedy(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
@@ -176,6 +176,7 @@ class TAC:
             self.best_score = mean
             print(f'New best mean: {mean}!')
         self.scores.append(mean)
+
     def save_model(self, best_model):
 
         if self.save:

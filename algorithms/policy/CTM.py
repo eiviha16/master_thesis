@@ -110,15 +110,14 @@ class RTMS:
 
 class ActorCriticPolicy:
     def __init__(self, config):
+        self.online_critic = RTMS(config)
         self.target_critic = RTMS(config)
-        self.evaluation_critic = RTMS(config)
         self.actor = MTMS(config)
 
 
     def get_action(self, obs):
         actions = self.actor.predict(obs)
         action = np.argmax(actions, axis=1)
-
         return action[0], actions[0]
 
     def get_best_action(self, obs):
