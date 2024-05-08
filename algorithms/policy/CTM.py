@@ -7,8 +7,8 @@ pyximport.install(setup_args={
     reload_support=True)
 
 
-import TM_lib_3.rtm as RTM
-import TM_lib_3.mtm as MTM
+import TM_lib.rtm as RTM
+import TM_lib.mtm as MTM
 
 import numpy as np
 import random

@@ -7,7 +7,7 @@ pyximport.install(setup_args={
     "include_dirs": np.get_include()},
     reload_support=True)
 
-import TM_lib_3.rtm as RTM
+import TM_lib.rtm as RTM
 
 import numpy as np
 import random
