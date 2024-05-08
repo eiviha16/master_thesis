@@ -13,7 +13,6 @@ class DQN:
         self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
-        #self.policy.to('cuda')
         self.gamma = config['gamma']  # discount factor
         self.epsilon = config['epsilon_init']
         self.epsilon_decay = config['epsilon_decay']
@@ -82,7 +81,7 @@ class DQN:
                 self.q_values[key].append(q_vals[i])
         return torch.argmax(q_vals), q_vals
 
-    def update_exploration_prob(self):
+    def update_greedy_epsilon(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_for_action(self, q_vals):
@@ -126,7 +125,7 @@ class DQN:
             self.rollout()
             #if self.nr_of_steps >= self.batch_size:
             #    self.train()
-            self.update_exploration_prob()
+            self.update_greedy_epsilon()
 
 
     def test(self, nr_of_steps):

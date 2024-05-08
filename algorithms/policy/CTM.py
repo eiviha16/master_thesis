@@ -1,6 +1,4 @@
 from tmu.preprocessing.standard_binarizer.binarizer import StandardBinarizer
-from tmu.models.regression.vanilla_regressor import TMRegressor
-import torch.nn.functional as F
 import numpy as np
 import pyximport;
 
@@ -8,15 +6,10 @@ pyximport.install(setup_args={
     "include_dirs": np.get_include()},
     reload_support=True)
 
-# import RTM.RegressionTsetlinMachine as RTM
-#import TM_lib.rtm as RTM
-#import TM_lib_2.rtm as RTM
+
 import TM_lib_3.rtm as RTM
-#import TM_lib.mtm as MTM
-#import TM_lib_2.mtm as MTM
 import TM_lib_3.mtm as MTM
-# import RTM.rtm_custom_continious as RTM
-# import RTM.rtm_custom as RTM
+
 import numpy as np
 import random
 import torch
@@ -24,7 +17,6 @@ import torch
 random.seed(42)
 torch.manual_seed(42)
 np.random.seed(42)
-#https://github.com/cair/TsetlinMachine/blob/master/MultiClassTsetlinMachine.pyx
 
 
 class MTMS:
@@ -45,11 +37,9 @@ class MTMS:
 
 
     def init_binarizer(self):
-        # create a list of lists of values?
         self.binarizer.fit(self.vals)
 
     def update(self, tm_input):
-        # take a list for each tm that is being updated.
         if len(tm_input['observations']) > 0:
             tm_input['observations'] = self.binarizer.transform(np.array(tm_input['observations']))
             self.tm.fit(tm_input['observations'].astype(dtype=np.int32), np.array(tm_input['actions']).astype(dtype=np.int32), np.array(tm_input['feedback']).astype(dtype=np.int32))

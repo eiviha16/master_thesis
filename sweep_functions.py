@@ -313,7 +313,7 @@ def cartpole_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_TMQN import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -343,7 +343,7 @@ def acrobot_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_TMQN import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -374,7 +374,7 @@ def cartpole_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_TMQN import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -403,7 +403,7 @@ def acrobot_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_TMQN import TMQN
+    from algorithms.Q_Network.n_step_Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -436,7 +436,7 @@ def cartpole_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_TMQN import TMQN
+    from algorithms.Q_Network.Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -466,7 +466,7 @@ def acrobot_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_TMQN import TMQN
+    from algorithms.Q_Network.Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -498,7 +498,7 @@ def cartpole_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_TMQN import TMQN
+    from algorithms.Q_Network.Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -528,7 +528,7 @@ def acrobot_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_TMQN import TMQN
+    from algorithms.Q_Network.Double_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -561,7 +561,7 @@ def cartpole_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_TMQN import TMQN
+    from algorithms.Q_Network.n_step_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -591,7 +591,7 @@ def acrobot_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_TMQN import TMQN
+    from algorithms.Q_Network.n_step_QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -623,7 +623,7 @@ def cartpole_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.TMQN import TMQN
+    from algorithms.Q_Network.QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -652,7 +652,7 @@ def acrobot_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.TMQN import TMQN
+    from algorithms.Q_Network.QTM import TMQN
     from algorithms.policy.RTM import Policy
 
     _config = {

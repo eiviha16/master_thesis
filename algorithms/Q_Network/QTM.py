@@ -74,15 +74,6 @@ class TMQN:
         if not os.path.exists(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)):
             os.makedirs(os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id))
         self.save_path = os.path.join(base_dir, self.config['env_name'], algorithm, self.run_id)
-    """def make_run_dir(self):
-        base_dir = './results'
-        if not os.path.exists(base_dir):
-            os.makedirs(base_dir)
-        if not os.path.exists(os.path.join(base_dir, self.config["algorithm"])):
-            os.makedirs(os.path.join(base_dir, self.config["algorithm"]))
-        if not os.path.exists(os.path.join(base_dir, self.config["algorithm"], self.run_id)):
-            os.makedirs(os.path.join(base_dir, self.config["algorithm"], self.run_id))
-        self.save_path = os.path.join(base_dir, self.config["algorithm"], self.run_id)"""
 
     def save_config(self):
         if self.save:
@@ -102,13 +93,12 @@ class TMQN:
         return np.array(self.replay_buffer.sampled_rewards) + (
                 1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
-    def update_exploration_prob(self):
+    def update_greedy_epsilon(self):
         self.epsilon *= np.exp(-self.epsilon_decay)
 
     def get_q_val_and_obs_for_tm(self, target_q_vals):
 
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
-        #tm_1_input, tm_2_input = [{'observations': [], 'target_q_vals': []}, {'observations': [], 'target_q_vals': []}
         actions = self.replay_buffer.sampled_actions
         for index, action in enumerate(actions):
             tm_inputs[action]['observations'].append(self.replay_buffer.sampled_cur_obs[index])
@@ -174,7 +164,7 @@ class TMQN:
             self.rollout()
             if self.nr_of_steps >= self.batch_size:
                 self.train()
-            self.update_exploration_prob()
+            self.update_greedy_epsilon()
 
     def test(self, nr_of_steps):
 

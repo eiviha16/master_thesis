@@ -1,6 +1,5 @@
 from tmu.preprocessing.standard_binarizer.binarizer import StandardBinarizer
-from tmu.models.regression.vanilla_regressor import TMRegressor
-import torch.nn.functional as F
+
 import numpy as np
 import pyximport;
 
@@ -8,13 +7,8 @@ pyximport.install(setup_args={
     "include_dirs": np.get_include()},
     reload_support=True)
 
-# import RTM.RegressionTsetlinMachine as RTM
-# import RTM.rtm_custom2 as RTM
-#import TM_lib.rtm as RTM
-#import TM_lib_2.rtm as RTM
 import TM_lib_3.rtm as RTM
-# import RTM.rtm_custom_continious as RTM
-# import RTM.rtm_custom as RTM
+
 import numpy as np
 import random
 import torch
@@ -59,7 +53,6 @@ class Policy():
 
 
 
-    #def update(self, tm_input, tm_2_input):
     def update(self, tms_input):
         # take a list for each tm that is being updated.
         abs_errors = {f'actor{i}': [] for i in range(len(self.tms))}
@@ -174,10 +167,7 @@ class ActorCriticPolicy:
         actions = np.apply_along_axis(lambda x: np.random.choice(range(self.config['action_space_size']), p=x), axis=-1, arr=normalized_action_prob)
         entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
         values = self.critic.predict(obs)
-        #for i in range(len(actions)):
-        #    print(action_probs[i][actions[i]], ' - ', action_probs[i])
-
-        return actions, values, action_probs, entropy  # done away with log softmax
+        return actions, values, action_probs, entropy
 
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)

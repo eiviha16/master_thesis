@@ -7,7 +7,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Q_Network.Double_TMQN import TMQN
+from algorithms.Q_Network.Double_QTM import TMQN
 from algorithms.policy.RTM import Policy
 
 

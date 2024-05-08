@@ -7,7 +7,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Q_Network.n_step_TMQN import TMQN
+from algorithms.Q_Network.n_step_QTM import TMQN
 from algorithms.policy.RTM import Policy
 
 config = {"env_name": "acrobot", 'algorithm': 'n_step_QTM', 'n_steps': 30, 'nr_of_clauses': 1700, 'T': 1258, 'max_update_p': 0.106, 'min_update_p': 0, 's': 2.270000000000002, 'y_max': -10, 'y_min': -70, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 12, 'gamma': 0.983, 'epsilon_init': 0.7, 'epsilon_decay': 0.009000000000000001, 'buffer_size': 5000, 'threshold': -495, 'batch_size': 96, 'epochs': 1, 'test_freq': 5, 'save': True, 'seed': 42, 'number_of_state_bits_ta': 8, 'dataset_file_name': 'acrobot_obs_data'}
