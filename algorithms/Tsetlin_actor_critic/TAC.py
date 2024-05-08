@@ -21,7 +21,7 @@ class TAC:
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
 
-        self.epochs = config['epochs']
+        self.sampling_iterations = config['sampling_iterations']
         self.config = config
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
@@ -121,7 +121,7 @@ class TAC:
         return tms
 
     def train(self):
-        for epoch in range(self.epochs):
+        for _ in range(self.sampling_iterations):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
             b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))

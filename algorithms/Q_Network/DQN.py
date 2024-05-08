@@ -106,7 +106,8 @@ class DQN:
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
-            action, _ = self.get_next_action(cur_obs)
+            q_vals = self.policy.predict(obs)
+            action = torch.argmax(q_vals)
             action = action.detach().numpy()
             next_obs, reward, done, truncated, _ = self.env.step(action)
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)

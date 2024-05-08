@@ -202,14 +202,14 @@ class QTM:
             self.q_values['q2'] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                action, q_vals_ = self.get_next_action(obs)
+                q_vals = self.online_policy.predict(obs)
+                action = np.argmax(q_vals)
                 self.nr_actions += 1
                 obs, reward, done, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
                 if done or truncated:
                     break
-                if episode == 1:
-                    self.save_q_vals(q_vals_)
+
         mean = np.mean(episode_rewards)
         std = np.std(episode_rewards)
         self.total_score.append(mean)

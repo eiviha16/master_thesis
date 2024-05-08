@@ -192,7 +192,6 @@ class QTM:
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
             action, _ = self.get_next_action(cur_obs)
-            # actions[action] += 1
             next_obs, reward, done, truncated, _ = self.env.step(action)
 
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)
@@ -225,7 +224,8 @@ class QTM:
             self.q_values['q2'] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                action, q_vals_ = self.get_next_action(obs)
+                q_vals = self.online_policy.predict(obs)
+                action = np.argmax(q_vals)
                 self.nr_actions += 1
                 obs, reward, done, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward

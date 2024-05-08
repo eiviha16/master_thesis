@@ -47,7 +47,7 @@ class QTM:
         self.config = config
         self.save_path = ''
         if self.save:
-            self.make_run_dir(config['algorithm'])
+            self.make_run_dir()
             self.save_config()
         self.announce()
         self.q_values = {f'q{i}': [] for i in range(self.action_space_size)}
@@ -157,7 +157,7 @@ class QTM:
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
 
         for episode in range(self.nr_of_test_episodes):
-            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])  # episode)
+            obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
                 action, q_vals_ = self.get_next_action(obs)
                 obs, reward, done, truncated, _ = self.env.step(action)
