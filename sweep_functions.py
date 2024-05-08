@@ -19,7 +19,7 @@ def cartpole_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.VPG.TAC import DDPG
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -122,7 +122,7 @@ def acrobot_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.VPG.TAC import DDPG
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -162,7 +162,7 @@ def cartpole_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.VPG.TAC import DDPG
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -197,7 +197,7 @@ def acrobot_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.VPG.TM_DDPG import DDPG
+    from algorithms.VPG.TAC import DDPG
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
