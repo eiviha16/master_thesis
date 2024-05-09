@@ -19,7 +19,7 @@ def cartpole_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -53,7 +53,7 @@ def acrobot_random_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC_random import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC_random import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -88,7 +88,7 @@ def cartpole_random_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC_random import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC_random import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -122,7 +122,7 @@ def acrobot_TAC_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -162,7 +162,7 @@ def cartpole_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -196,7 +196,7 @@ def acrobot_TAC_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Tsetlin_actor_critic.TAC import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC import TAC
     from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
     actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
@@ -235,7 +235,7 @@ def cartpole_TPPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.TPPO import TPPO
+    from algorithms.Proximal_Policy_Optimization.TPPO import TPPO
     from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
     actor = {"max_update_p": config.a_max_update_p, "min_update_p": config.a_min_update_p,
@@ -270,7 +270,7 @@ def acrobot_TPPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.TPPO import TPPO
+    from algorithms.Proximal_Policy_Optimization.TPPO import TPPO
     from algorithms.policy.RTM import ActorCriticPolicy as Policy
 
     actor = {"max_update_p": config.a_max_update_p, "min_update_p": config.a_min_update_p,
@@ -309,7 +309,7 @@ def cartpole_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import QTM
+    from algorithms.Q_Networks.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -339,7 +339,7 @@ def acrobot_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import QTM
+    from algorithms.Q_Networks.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -370,7 +370,7 @@ def cartpole_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import QTM
+    from algorithms.Q_Networks.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -399,7 +399,7 @@ def acrobot_n_step_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_Double_QTM import QTM
+    from algorithms.Q_Networks.n_step_Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -432,7 +432,7 @@ def cartpole_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import QTM
+    from algorithms.Q_Networks.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -462,7 +462,7 @@ def acrobot_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import QTM
+    from algorithms.Q_Networks.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -494,7 +494,7 @@ def cartpole_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import QTM
+    from algorithms.Q_Networks.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -524,7 +524,7 @@ def acrobot_DQTM_b(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.Double_QTM import QTM
+    from algorithms.Q_Networks.Double_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -557,7 +557,7 @@ def cartpole_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_QTM import QTM
+    from algorithms.Q_Networks.n_step_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -587,7 +587,7 @@ def acrobot_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_QTM import QTM
+    from algorithms.Q_Networks.n_step_QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -619,7 +619,7 @@ def cartpole_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.QTM import QTM
+    from algorithms.Q_Networks.QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -648,7 +648,7 @@ def acrobot_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.QTM import QTM
+    from algorithms.Q_Networks.QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -673,7 +673,7 @@ def acrobot_PPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.PPO import PPO
+    from algorithms.Proximal_Policy_Optimization.PPO import PPO
     from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
     _config = {'env_name': 'acrobot', 'algorithm': 'PPO', "batch_size": config.batch_size, 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
@@ -693,7 +693,7 @@ def cartpole_PPO(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Proximal_policy.PPO import PPO
+    from algorithms.Proximal_Policy_Optimization.PPO import PPO
     from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
     _config = {'env_name': 'cartpole', 'algorithm': 'PPO', "batch_size": config.batch_size, 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
@@ -713,7 +713,7 @@ def acrobot_nDQN(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.n_step_DQN import DQN
+    from algorithms.Q_Networks.n_step_DQN import DQN
     from algorithms.policy.DNN import Policy as Policy
 
     _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,
@@ -734,7 +734,7 @@ def acrobot_DQN(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Network.DQN import DQN
+    from algorithms.Q_Networks.DQN import DQN
     from algorithms.policy.DNN import Policy as Policy
 
     _config = {'env_name': 'acrobot', 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,

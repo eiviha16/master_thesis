@@ -6,12 +6,11 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Proximal_policy.PPO import PPO
+from algorithms.Proximal_Policy_Optimization.PPO import PPO
 from algorithms.policy.DNN import ActorCriticPolicy as Policy
 
 
 config = {'env_name': 'cartpole', 'algorithm': 'PPO', 'n_steps': 512, "batch_size": 256, 'gamma': 0.99, 'lam': 0.973, 'clip_range': 0.35000000000000003, 'epochs': 3, 'hidden_size': 32, 'learning_rate': 0.0006600000000000001, 'test_freq': 1, 'save': True}
-
 print(config)
 
 env = gym.make("CartPole-v1")

@@ -6,7 +6,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Tsetlin_actor_critic.TAC import TAC
+from algorithms.Tsetlin_Actor_Critic.TAC import TAC
 from algorithms.policy.CTM import ActorCriticPolicy as Policy
 
 
@@ -24,5 +24,5 @@ tm = torch.load(f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.r
 agent.policy.actor.tm.set_params(tm[0]['ta_state'], tm[0]['clause_sign'], tm[0]['clause_count'])
 
 save_file = f'../results/{config["env_name"]}/{config["algorithm"]}/{agent.run_id}/final_test_results'
-
 test_policy(save_file, agent.policy.actor, config['env_name'])
+

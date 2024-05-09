@@ -6,7 +6,7 @@ random.seed(42)
 np.random.seed(42)
 torch.manual_seed(42)
 
-from algorithms.Q_Network.n_step_DQN import DQN
+from algorithms.Q_Networks.n_step_DQN import DQN
 from algorithms.policy.DNN import Policy
 import gymnasium as gym
 
