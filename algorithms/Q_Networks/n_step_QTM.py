@@ -152,9 +152,7 @@ class QTM:
 
             if done or truncated:
                 break
-            if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
@@ -163,6 +161,9 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
+            if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
+                self.train()
+            self.update_epsilon_greedy()
 
 
 

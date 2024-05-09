@@ -76,9 +76,7 @@ class TAC:
             if done or truncated:
                 break
             cur_obs = next_obs
-            if len(self.replay_buffer.cur_obs) >= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
 
     def get_actor_update(self, actions):
         tm = {'observations': [], 'actions': [], 'feedback': []}
@@ -117,10 +115,11 @@ class TAC:
         return tms
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample()
-        actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions)
-        self.policy.actor.update(actor_tm_feedback)
+        for _ in range(self.sampling_iterations):
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample()
+            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions)
+            self.policy.actor.update(actor_tm_feedback)
 
 
     def update_epsilon_greedy(self):
@@ -133,6 +132,9 @@ class TAC:
                 self.test()
             self.cur_episode = episode
             self.rollout()
+            if len(self.replay_buffer.cur_obs) >= self.batch_size:
+                self.train()
+            self.update_epsilon_greedy()
             if self.best_score < self.threshold and self.cur_episode == 100:
                 break
 

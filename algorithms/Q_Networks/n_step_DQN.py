@@ -20,7 +20,7 @@ class DQN:
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
-        self.epsilon_min = 0
+        self.epsilon_min = config['epsilon_min']
 
         self.config = config
         self.buffer_size = config['buffer_size']
@@ -145,8 +145,6 @@ class DQN:
 
 
     def test(self, nr_of_steps):
-        epsilon = self.epsilon
-        self.epsilon = 0
         episode_rewards = np.array([0 for i in range(self.nr_of_test_episodes)])
         for episode in range(self.nr_of_test_episodes):
             for q_val in self.q_values:
@@ -165,7 +163,6 @@ class DQN:
         self.scores.append(mean)
 
         self.save_results(mean, std, nr_of_steps)
-        self.epsilon = epsilon
         if mean > self.best_scores['mean']:
             self.save_model('best_model')
             self.best_scores['mean'] = mean

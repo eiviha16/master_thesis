@@ -171,27 +171,29 @@ class QTM:
         return np.array(q_vals)
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample_n_seq()
+        for _ in self.sampling_iterations:
 
-        # calculate target_q_vals
-        sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
-        next_q_vals = self.target_policy.predict(sampled_next_obs[:, -1, :])
-        actions = np.argmax(self.online_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
-        next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample_n_seq()
+
+            # calculate target_q_vals
+            sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
+            next_q_vals = self.target_policy.predict(sampled_next_obs[:, -1, :])
+            actions = np.argmax(self.online_policy.predict(np.array(sampled_next_obs[:, -1, :])), axis=1)  # next_obs?
+            next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
 
-        # calculate target q vals
-        target_q_vals = self.n_step_temporal_difference(next_q_vals)
-        tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
-        abs_errors = self.online_policy.update(tm_inputs)
-        for key in abs_errors:
-            if key not in self.abs_errors:
-                self.abs_errors[key] = []
-            for val in abs_errors[key]:
-                self.abs_errors[key].append(val)
+            # calculate target q vals
+            target_q_vals = self.n_step_temporal_difference(next_q_vals)
+            tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
+            abs_errors = self.online_policy.update(tm_inputs)
+            for key in abs_errors:
+                if key not in self.abs_errors:
+                    self.abs_errors[key] = []
+                for val in abs_errors[key]:
+                    self.abs_errors[key].append(val)
 
-        self.abs_errors = {}
+            self.abs_errors = {}
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
@@ -204,9 +206,7 @@ class QTM:
 
             if done or truncated:
                 break
-            if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -216,6 +216,9 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
+            if self.nr_of_steps - self.config['n_steps']>= self.batch_size:
+                self.train()
+            self.update_epsilon_greedy()
             self.soft_update()
 
 

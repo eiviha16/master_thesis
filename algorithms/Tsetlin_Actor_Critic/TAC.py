@@ -77,9 +77,7 @@ class TAC:
             if done or truncated:
                 break
             cur_obs = next_obs
-            if len(self.replay_buffer.cur_obs) >= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
 
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
@@ -126,20 +124,21 @@ class TAC:
         return tms
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample()
-        b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
-        next_q_vals = self.policy.target_critic.predict(
-            np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
+        for _ in range(self.sampling_iterations):
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample()
+            b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
+            next_q_vals = self.policy.target_critic.predict(
+                np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
 
-        # calculate target q vals
-        target_q_vals = self.temporal_difference(next_q_vals)
-        critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
-                                                          target_q_vals)
+            # calculate target q vals
+            target_q_vals = self.temporal_difference(next_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
+                                                              target_q_vals)
 
-        actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
-        self.policy.actor.update(actor_tm_feedback)
-        self.policy.online_critic.update(critic_update)
+            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
+            self.policy.actor.update(actor_tm_feedback)
+            self.policy.online_critic.update(critic_update)
 
 
     def update_epsilon_greedy(self):
@@ -152,6 +151,9 @@ class TAC:
                 self.test()
             self.cur_episode = episode
             self.rollout()
+            if len(self.replay_buffer.cur_obs) >= self.batch_size:
+                self.train()
+                self.update_epsilon_greedy()
             self.soft_update()
             if self.best_score < self.threshold and self.cur_episode == 100:
                 break

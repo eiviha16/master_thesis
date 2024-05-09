@@ -23,7 +23,7 @@ class QTM:
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0
 
-        self.sample_iterations = config['sampling_iterations']
+        self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
 
@@ -119,19 +119,20 @@ class QTM:
         return np.array(q_vals)
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample()
+        for _ in self.sampling_iterations:
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample()
 
-        actions = np.argmax(self.online_policy.predict(np.array(self.replay_buffer.sampled_next_obs)), axis=1)  # next_obs?
-        next_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
-        next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
+            actions = np.argmax(self.online_policy.predict(np.array(self.replay_buffer.sampled_next_obs)), axis=1)  # next_obs?
+            next_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+            next_q_vals = self.get_q_val_for_action(actions, next_q_vals) #|
 
-        # calculate target q vals
-        target_q_vals = self.temporal_difference(next_q_vals)
+            # calculate target q vals
+            target_q_vals = self.temporal_difference(next_q_vals)
 
-        tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
+            tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
-        _ = self.online_policy.update(tm_inputs)
+            _ = self.online_policy.update(tm_inputs)
 
     def soft_update(self):
         if self.config['soft_update_type'] == 'soft_update_a':
@@ -179,9 +180,7 @@ class QTM:
 
             if done or truncated:
                 break
-            if self.nr_of_steps >= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
@@ -190,6 +189,9 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
+            if self.nr_of_steps >= self.batch_size:
+                self.train()
+            self.update_epsilon_greedy()
             self.soft_update()
 
     def test(self, nr_of_steps):
@@ -247,8 +249,6 @@ class QTM:
                     tms_save.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms_save, os.path.join(self.save_path, 'best'))
 
-            else:
-                pass
 
     def save_results(self, mean, std, nr_of_steps):
         if self.save:

@@ -17,8 +17,7 @@ class DQN:
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
-        self.epsilon_min = 0.01
-
+        self.epsilon_min = config['epsilon_min']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
 
@@ -124,6 +123,7 @@ class DQN:
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
+
 
 
 

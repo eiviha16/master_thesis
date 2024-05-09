@@ -107,25 +107,26 @@ class QTM:
         return tm_inputs
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample()
-        next_q_vals = self.policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
+        for _ in range(self.sampling_iterations):
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample()
+            next_q_vals = self.policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
 
-        next_q_vals = np.max(next_q_vals, axis=1)
+            next_q_vals = np.max(next_q_vals, axis=1)
 
-        # calculate target q vals
-        target_q_vals = self.temporal_difference((next_q_vals))
+            # calculate target q vals
+            target_q_vals = self.temporal_difference((next_q_vals))
 
-        tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
-        abs_errors = self.policy.update(tm_inputs)
+            tm_inputs = self.get_q_val_and_obs_for_tm(target_q_vals)
+            abs_errors = self.policy.update(tm_inputs)
 
-        for key in abs_errors:
-            if key not in self.abs_errors:
-                self.abs_errors[key] = []
-            for val in abs_errors[key]:
-                self.abs_errors[key].append(val)
+            for key in abs_errors:
+                if key not in self.abs_errors:
+                    self.abs_errors[key] = []
+                for val in abs_errors[key]:
+                    self.abs_errors[key].append(val)
 
-        self.abs_errors = {}
+            self.abs_errors = {}
 
 
     def rollout(self):
@@ -140,9 +141,7 @@ class QTM:
 
             if done or truncated:
                 break
-            if self.nr_of_steps >= self.batch_size:
-                self.train()
-                self.update_epsilon_greedy()
+
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode
@@ -151,6 +150,9 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
+            if self.nr_of_steps >= self.batch_size:
+                self.train()
+            self.update_epsilon_greedy()
 
 
     def test(self, nr_of_steps):
