@@ -210,7 +210,7 @@ class QTM:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:

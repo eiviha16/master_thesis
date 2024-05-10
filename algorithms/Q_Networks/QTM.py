@@ -24,7 +24,6 @@ class QTM:
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0
 
-
         self.sampling_iterations = config['sampling_iterations']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
@@ -144,7 +143,7 @@ class QTM:
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:

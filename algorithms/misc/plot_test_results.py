@@ -7,7 +7,6 @@ def plot(data, text, file_path):
     x = np.arange(1, len(data['mean']) + 1)
 
     plt.plot(x, data['mean'])
-    # plt.plot(data['timesteps'], data['mean'])
     plt.fill_between(x, np.array(data['mean']) - np.array(data['std']), np.array(data['mean']) + np.array(data['std']),
                      alpha=0.25)
     plt.gca().yaxis.grid(True, linestyle='dashed')
@@ -39,7 +38,6 @@ def get_csv_performance(file_path):
             if row[0] != 'mean':
                 data['mean'].append(float(row[0]))
                 data['std'].append(float(row[1]))
-                #data['timesteps'].append(float(row[2]))
         data['mean'] = data['mean'][:10000]
         data['std'] = data['std'][:10000]
     return data
@@ -59,7 +57,6 @@ def prune(data, new_size):
 def plot_many_rewards(algorithms, new_size):
     data = {}
     for algorithm in algorithms:
-        #data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
         data[algorithm] = get_csv_performance(f'../../cartpole_results/{algorithm}/{algorithms[algorithm]}')
     title = 'Cartpole'
     data, ratio = prune(data, new_size)

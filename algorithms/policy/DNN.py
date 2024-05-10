@@ -12,6 +12,7 @@ class QNet(nn.Module):
         super(QNet, self).__init__()
         # activation
         self.activation = nn.Tanh()
+        #self.activation = nn.ReLU()
         self.output_activation = nn.Sigmoid()
 
         # layers

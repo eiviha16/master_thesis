@@ -1,0 +1,14 @@
+algorithm: DQN
+batch_size: 256
+buffer_size: 20000
+env_name: cartpole
+epsilon_decay: 0.001
+epsilon_init: 1.0
+epsilon_min: 0
+gamma: 0.99
+hidden_size: 64
+learning_rate: 0.001
+sampling_iterations: 4
+save: true
+test_freq: 1
+threshold_score: 450

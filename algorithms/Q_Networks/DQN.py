@@ -13,6 +13,7 @@ class DQN:
         self.action_space_size = env.action_space.n
         self.obs_space_size = env.observation_space.shape[0]
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
+        self.target = Policy(self.obs_space_size, self.action_space_size, config)
         self.gamma = config['gamma']  # discount factor
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
@@ -20,7 +21,7 @@ class DQN:
         self.epsilon_min = config['epsilon_min']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-
+        self.tau = 0.001
         self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
@@ -92,7 +93,7 @@ class DQN:
         self.replay_buffer.clear_cache()
         self.replay_buffer.sample()
         with torch.no_grad():
-            next_q_vals = self.policy.predict(self.replay_buffer.sampled_next_obs)  # next_obs?
+            next_q_vals = self.target.predict(self.replay_buffer.sampled_next_obs)
             next_q_vals, _ = torch.max(next_q_vals, dim=1)
             target_q_vals = self.temporal_difference(next_q_vals)
 
@@ -102,7 +103,8 @@ class DQN:
         loss = F.mse_loss(target_q_vals, cur_q_vals)
         loss.backward()
         self.policy.optimizer.step()
-
+        for action_param, eval_param in zip(self.policy.parameters(), self.target.parameters()):
+            eval_param.data.copy_(self.tau * action_param + (1 - self.tau) * eval_param)
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
@@ -114,18 +116,16 @@ class DQN:
             self.nr_of_steps += 1
             if done or truncated:
                 break
-            if self.nr_of_steps >= self.batch_size:
+            if self.nr_of_steps > 1_000 and self.nr_of_steps >= self.batch_size:
                 self.train()
-                self.update_epsilon_greedy()
+
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-
-
-
+            self.update_epsilon_greedy()
 
 
     def test(self, nr_of_steps):

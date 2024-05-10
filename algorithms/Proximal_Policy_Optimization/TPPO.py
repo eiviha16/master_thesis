@@ -131,7 +131,7 @@ class TPPO:
                 self.test()
             if self.best_score < self.threshold and self.cur_episode == 100:
                 break
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             self.rollout()
 
             """self.batch.convert_to_numpy()

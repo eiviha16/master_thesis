@@ -2,7 +2,7 @@ import wandb
 from sweep_configs import *
 from sweep_functions import *
 
-wandb.login(key="addkey")
+wandb.login(key="keyname")
 
 def main_c_random_TAC_a():
     wandb.init(project="cartpole-TAC_a-random")
@@ -47,6 +47,7 @@ def start_a_TAC_a():
     sweep_id = wandb.sweep(sweep=config_acrobot_TAC_a, project="acrobot-TAC_a-ff")
     wandb.agent(sweep_id, function=main_a_TAC_a, count=10_000)
 
+
 ################################################
 ################### TAC b #######################
 ################################################
@@ -70,6 +71,8 @@ def start_a_TAC_b():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_TAC_b, project="acrobot-TAC_b-ff")
     wandb.agent(sweep_id, function=main_a_TAC_b, count=10_000)
+
+
 ################################################
 ################### TPPO #######################
 ################################################
@@ -92,6 +95,7 @@ def start_a_TPPO():
     sweep_id = wandb.sweep(sweep=config_acrobot_TPPO, project="acrobot-TPPO-f")
     wandb.agent(sweep_id, function=main_a_TPPO, count=10_000)
 
+
 ################################################
 ######### n-step Double QTM type a ############
 ################################################
@@ -113,8 +117,10 @@ def start_a_n_step_DQTM_a():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_n_step_DQTM_a, project="acrobot-n_step_DQTM_a-f")
     wandb.agent(sweep_id, function=main_a_n_step_DQTM_a, count=10_000)
+
+
 ################################################
-######### n-step Double TMQN type b ############
+######### n-step Double QTM type b ############
 ################################################
 
 def main_c_n_step_DQTM_b():
@@ -135,8 +141,10 @@ def start_a_n_step_DQTM_b():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_n_step_DQTM_b, project="acrobot-n_step_DQTM_b-f")
     wandb.agent(sweep_id, function=main_a_n_step_DQTM_b, count=10_000)
+
+
 ################################################
-############ Double TMQN type a ################
+############ Double QTM type a ################
 ################################################
 def main_c_DQTM_a():
     wandb.init(project="cartpole-DQTM_a-f")
@@ -155,8 +163,10 @@ def start_a_DQTM_a():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_DQTM_a, project="acrobot-DQTM_a-f")
     wandb.agent(sweep_id, function=main_a_DQTM_a, count=10_000)
+
+
 ################################################
-############ Double TMQN type b ################
+############ Double QTM type b ################
 ################################################
 def main_c_DQTM_b():
     wandb.init(project="cartpole-DQTM_b-f")
@@ -175,8 +185,10 @@ def start_a_DQTM_b():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_DQTM_b, project="acrobot-DQTM_b-f")
     wandb.agent(sweep_id, function=main_a_DQTM_b, count=10_000)
+
+
 ################################################
-################# n-step TMQN  #################
+################# n-step QTM  #################
 ################################################
 def main_c_n_step_QTM():
     wandb.init(project="cartpole-n_step_QTM-f")
@@ -195,8 +207,10 @@ def start_a_n_step_QTM():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_n_step_QTM, project="acrobot-n_step_QTM-f")
     wandb.agent(sweep_id, function=main_a_n_step_QTM, count=10_000)
+
+
 ################################################
-################### TMQN  ######################
+################### QTM  ######################
 ################################################
 def main_c_QTM():
     wandb.init(project="cartpole-QTM-f")
@@ -216,42 +230,15 @@ def start_a_QTM():
     sweep_id = wandb.sweep(sweep=config_acrobot_QTM, project="acrobot-QTM-f")
     wandb.agent(sweep_id, function=main_a_QTM, count=10_000)
 
-
-
-def main_c_PPO():
-    wandb.init(project="cartpole-PPO-f")
-    score = cartpole_PPO(wandb.config)
-    wandb.log({"score": score})
-def main_a_PPO():
-    wandb.init(project="acrobot-PPO-f")
-    score = acrobot_PPO(wandb.config)
-    wandb.log({"score": score})
-def start_c_PPO():
-    import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_PPO, project="cartpole-PPO-f")
-    wandb.agent(sweep_id, function=main_c_PPO, count=10_000)
-
-def start_a_PPO():
-    import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_PPO, project="acrobot-PPO-f")
-    wandb.agent(sweep_id, function=main_a_PPO, count=10_000)
-
-
-def main_a_DQN():
-    wandb.init(project="acrobot-DQN-ff")
-    score = acrobot_DQN(wandb.config)
-    wandb.log({"score": score})
-
-def start_a_DQN():
-    import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_DQN, project="acrobot-DQN-ff")
-    wandb.agent(sweep_id, function=main_a_DQN, count=10_000)
+################################################
+################### DNN  ######################
+################################################
 def main_a_nDQN():
-    wandb.init(project="acrobot-n_step_DQN-ff")
+    wandb.init(project="acrobot-n_step_DQN-fff")
     score = acrobot_nDQN(wandb.config)
     wandb.log({"score": score})
 
 def start_a_nDQN():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_nDQN, project="acrobot-n_step_DQN-ff")
+    sweep_id = wandb.sweep(sweep=config_acrobot_nDQN, project="acrobot-n_step_DQN-fff")
     wandb.agent(sweep_id, function=main_a_nDQN, count=10_000)

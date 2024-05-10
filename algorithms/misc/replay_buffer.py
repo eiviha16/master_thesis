@@ -53,7 +53,7 @@ class ReplayBuffer:
             self.sampled_rewards.append(self.rewards[s: s + self.n])
             self.sampled_dones.append(self.dones[s: s + self.n])
 
-    def save_experience(self, action, cur_obs, next_obs, reward, done, i=0):
+    def save_experience(self, action, cur_obs, next_obs, reward, done):
         if self.buffer_size <= len(self.rewards):
             self.actions.pop(0)
             self.cur_obs.pop(0)

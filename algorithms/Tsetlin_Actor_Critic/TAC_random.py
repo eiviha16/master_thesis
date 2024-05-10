@@ -22,7 +22,6 @@ class TAC:
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0
 
-
         self.sampling_iterations = config['sampling_iterations']
         self.config = config
 
@@ -41,7 +40,8 @@ class TAC:
         self.save_path = ''
 
         if self.save:
-            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(
+                len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -56,7 +56,6 @@ class TAC:
         self.threshold = config['threshold']
         self.scores = []
         self.timesteps = 0
-
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -76,7 +75,6 @@ class TAC:
             if done or truncated:
                 break
             cur_obs = next_obs
-
 
     def get_actor_update(self, actions):
         tm = {'observations': [], 'actions': [], 'feedback': []}
@@ -121,23 +119,21 @@ class TAC:
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions)
             self.policy.actor.update(actor_tm_feedback)
 
-
     def update_epsilon_greedy(self):
-        self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(-self.cur_episode * self.epsilon_decay)
-
+        self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(
+            -self.cur_episode * self.epsilon_decay)
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             if episode % self.config['test_freq'] == 0:
                 self.test()
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             self.rollout()
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
             self.update_epsilon_greedy()
             if self.best_score < self.threshold and self.cur_episode == 100:
                 break
-
 
     def test(self):
         episode_rewards = np.array([0 for _ in range(100)])
@@ -183,7 +179,6 @@ class TAC:
                 tms.append(
                     {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
-
 
     def save_results(self, mean, std):
         if self.save:

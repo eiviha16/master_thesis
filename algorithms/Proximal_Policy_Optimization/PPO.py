@@ -126,7 +126,7 @@ class PPO:
         for episode in tqdm(range(nr_of_episodes)):
             if episode % self.config['test_freq'] == 0:
                 self.test()
-            self.cur_episode = episode
+            self.cur_episode = episode + 1
             self.rollout()
 
 

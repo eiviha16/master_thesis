@@ -16,16 +16,15 @@ class DQN:
         config['action_space_size'] = self.action_space_size
         config['obs_space_size'] = self.obs_space_size
         self.policy = Policy(self.obs_space_size, self.action_space_size, config)
-        self.target = Policy(self.obs_space_size, self.action_space_size, config)
         self.gamma = config['gamma']  # discount factor
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = config['epsilon_min']
+        self.sampling_iterations = config['sampling_iterations']
         self.config = config
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-        self.tau = config['tau']
         self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
@@ -106,22 +105,22 @@ class DQN:
         return torch.stack(target_q_vals)
 
     def train(self):
-        self.replay_buffer.clear_cache()
-        self.replay_buffer.sample_n_seq()
-        with torch.no_grad():
-            sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
-            next_q_vals = self.target.predict(sampled_next_obs[:, -1, :])
-            next_q_vals, _ = torch.max(next_q_vals, dim=1)
-            target_q_vals = self.n_step_temporal_difference(next_q_vals)
-        sampled_cur_obs = np.array(self.replay_buffer.sampled_cur_obs)
-        cur_q_vals = self.policy.predict(sampled_cur_obs[:, 0, :])
-        cur_q_vals = self.get_q_val_for_action(cur_q_vals)
-        self.policy.optimizer.zero_grad()
-        loss = F.mse_loss(target_q_vals, cur_q_vals)
-        loss.backward()
-        self.policy.optimizer.step()
-        for action_param, eval_param in zip(self.policy.parameters(), self.target.parameters()):
-                eval_param.data.copy_(self.tau * action_param + (1 - self.tau) * eval_param)
+        for _ in range(self.sampling_iterations):
+            self.replay_buffer.clear_cache()
+            self.replay_buffer.sample_n_seq()
+            with torch.no_grad():
+                sampled_next_obs = np.array(self.replay_buffer.sampled_next_obs)
+                next_q_vals = self.policy.predict(sampled_next_obs[:, -1, :])
+                next_q_vals, _ = torch.max(next_q_vals, dim=1)
+                target_q_vals = self.n_step_temporal_difference(next_q_vals)
+            sampled_cur_obs = np.array(self.replay_buffer.sampled_cur_obs)
+            cur_q_vals = self.policy.predict(sampled_cur_obs[:, 0, :])
+            cur_q_vals = self.get_q_val_for_action(cur_q_vals)
+            self.policy.optimizer.zero_grad()
+            loss = F.mse_loss(target_q_vals, cur_q_vals)
+            loss.backward()
+            self.policy.optimizer.step()
+
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
@@ -134,8 +133,8 @@ class DQN:
             self.nr_of_steps += 1
             if done or truncated:
                 break
-            if self.nr_of_steps > 1_000 and self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
-                self.train()
+            #if self.nr_of_steps > 1_000 and self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
+            #    self.train()
 
 
     def learn(self, nr_of_episodes):
@@ -144,6 +143,8 @@ class DQN:
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
+            if self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
+                self.train()
             self.update_epsilon_greedy()
 
 

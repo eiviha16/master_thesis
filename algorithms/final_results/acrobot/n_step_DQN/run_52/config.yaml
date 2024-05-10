@@ -1,0 +1,33 @@
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AwAAAAAAAAA=
+algorithm: n_step_DQN
+batch_size: 64
+buffer_size: 10000
+env_name: acrobot
+epsilon_decay: 0.001
+epsilon_init: 1.0
+epsilon_min: 0.01
+gamma: 0.99
+hidden_size: 160
+learning_rate: 0.0007
+n_steps: 50
+obs_space_size: 6
+sampling_iterations: 8
+save: true
+test_freq: 5
+comment: uses per-episode training

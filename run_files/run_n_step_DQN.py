@@ -11,10 +11,10 @@ from algorithms.policy.DNN import Policy
 import gymnasium as gym
 
 
-config = {'env_name': 'cartpole', 'n_steps': 50, 'algorithm': 'n_step_DQN', 'gamma': 0.994, 'buffer_size': 10000, 'batch_size': 16, 'epsilon_init': 1.0, 'epsilon_decay': 0.001, 'epsilon_min': 0.01, 'hidden_size': 160, 'learning_rate': 0.0007, 'test_freq': 5, 'save': True}
+config = {'env_name': 'acrobot', 'n_steps': 44, "tau": 0.001, 'algorithm': 'n_step_DQN', 'gamma': 0.997, 'buffer_size': 9_000, 'batch_size': 80, 'epsilon_init': 0.9, 'epsilon_decay': 0.002, 'epsilon_min': 0.03, 'hidden_size': 160, 'learning_rate': 0.0007, 'test_freq': 5, 'save': True}
 print(config)
-env = gym.make("CartPole-v1")
-#env = gym.make("Acrobot-v1")
+#env = gym.make("CartPole-v1")
+env = gym.make("Acrobot-v1")
 
 
 agent = DQN(env, Policy, config)

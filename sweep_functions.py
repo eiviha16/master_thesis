@@ -290,7 +290,6 @@ def acrobot_TPPO(config):
                'n_timesteps': config.n_timesteps, "dataset_file_name": "acrobot_obs_data"}
     print(_config)
 
-    # env = gym.make("CartPole-v1")
     env = gym.make("Acrobot-v1")
 
     agent = TPPO(env, Policy, _config)
@@ -667,45 +666,6 @@ def acrobot_QTM(config):
     score = np.array(agent.best_scores['mean'])
     return score
 
-def acrobot_PPO(config):
-    random.seed(42)
-    np.random.seed(42)
-    torch.manual_seed(42)
-
-    import gymnasium as gym
-    from algorithms.Proximal_Policy_Optimization.PPO import PPO
-    from algorithms.policy.DNN import ActorCriticPolicy as Policy
-
-    _config = {'env_name': 'acrobot', 'algorithm': 'PPO', "batch_size": config.batch_size, 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
-               'epochs': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
-
-    print(_config)
-    env = gym.make("Acrobot-v1")
-    agent = PPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=5000)
-    score = agent.best_score
-    print(f'mean: {np.mean(np.array(agent.scores))}')
-    return score
-
-def cartpole_PPO(config):
-    random.seed(42)
-    np.random.seed(42)
-    torch.manual_seed(42)
-
-    import gymnasium as gym
-    from algorithms.Proximal_Policy_Optimization.PPO import PPO
-    from algorithms.policy.DNN import ActorCriticPolicy as Policy
-
-    _config = {'env_name': 'cartpole', 'algorithm': 'PPO', "batch_size": config.batch_size, 'n_steps': config.n_steps, 'gamma': config.gamma, 'lam': config.lam, 'clip_range': config.clip_range,
-              'batch_size': config.batch_size, 'epochs': config.sampling_iterations, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
-
-    print(_config)
-    env = gym.make("CartPole-v1")
-    agent = PPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=5000)
-    score = agent.best_score
-    print(f'mean: {np.mean(np.array(agent.scores))}')
-    return score
 
 def acrobot_nDQN(config):
     random.seed(42)
@@ -718,28 +678,7 @@ def acrobot_nDQN(config):
 
     _config = {'env_name': 'acrobot', "n_steps": config.n_steps, 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,
               'batch_size': config.batch_size,
-            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
-
-    print(_config)
-    env = gym.make("Acrobot-v1")
-    agent = DQN(env, Policy, _config)
-    agent.learn(nr_of_episodes=2500)
-    score = agent.best_scores['mean']
-    print(f'mean: {np.mean(np.array(agent.scores))}')
-    return score
-
-def acrobot_DQN(config):
-    random.seed(42)
-    np.random.seed(42)
-    torch.manual_seed(42)
-
-    import gymnasium as gym
-    from algorithms.Q_Networks.DQN import DQN
-    from algorithms.policy.DNN import Policy as Policy
-
-    _config = {'env_name': 'acrobot', 'algorithm': 'DQN', 'gamma': config.gamma, "buffer_size": config.buffer_size,
-              'batch_size': config.batch_size,
-            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
+            'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'epsilon_min': config.epsilon_min, 'hidden_size': config.hidden_size, 'learning_rate': config.lr, 'test_freq': 50, "save": False}
 
     print(_config)
     env = gym.make("Acrobot-v1")
