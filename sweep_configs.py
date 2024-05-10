@@ -200,7 +200,6 @@ config_cartpole_TPPO = {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "lam": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "n_timesteps": {"values": list(range(4, 512, 4))},
-        "batch_size": {"values": list(range(16, 512, 16))},
         "epochs": {"values": list(range(1, 5, 1))},
 
         "a_t": {"values": list(np.arange(0.3, 0.9, 0.01))},
@@ -228,7 +227,6 @@ config_acrobot_TPPO = {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "lam": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "n_timesteps": {"values": list(range(4, 512, 4))},
-        "batch_size": {"values": list(range(16, 512, 16))},
         "epochs": {"values": list(range(1, 5, 1))},
 
         "a_t": {"values": list(np.arange(0.3, 0.9, 0.01))},
