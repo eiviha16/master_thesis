@@ -11,6 +11,9 @@ myenv/
 wandb/
 TMU/
 RTM/
+plot
+
+
 # Distribution / packaging
 .Python
 build/
