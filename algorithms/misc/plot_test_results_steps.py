@@ -3,21 +3,6 @@ import csv
 import numpy as np
 
 
-def plot(data, text, file_path):
-    #x = np.arange(1, len(data['mean']) + 1)
-
-    plt.plot(np.array(data['steps']), data['mean'])
-    # plt.plot(data['timesteps'], data['mean'])
-    plt.fill_between(np.array(data['steps']), np.array(data['mean']) - np.array(data['std']), np.array(data['mean']) + np.array(data['std']),
-                     alpha=0.10)
-    # plt.fill_between(data['timesteps'], np.array(data['mean']) - np.array(data['std']), np.array(data['mean']) + np.array(data['std']), alpha=0.25)
-    plt.gca().yaxis.grid(True, linestyle='dashed')
-    plt.ylabel(f'Rewards')
-    plt.xlabel(f'Timesteps')
-    plt.title(f'{text["title"]}')
-    plt.savefig(f'{file_path}/sample_plot.png')
-
-    plt.show()
 def plot_many(names, data, title, ratio):
     plt.figure(figsize=(7, 5.5))
     for key in data:
@@ -110,9 +95,9 @@ def plot_many_rewards(environment, algorithms, new_size):
     #title = f'{environment} - Double Q-Tsetlin-Machine - Type b update'
     #title = f'{environment} - n-step Double Q-Tsetlin-Machine - Type b update'
     #title = f'{environment} - n-step Q-Tsetlin-Machine'
-    title = f'{environment} - Deep Q-Network'
+    #title = f'{environment} - Deep Q-Network'
     #title = f'{environment} - n-step Deep Q-Network'
-    #title = f'{environment} - Tsetlin Actor-Critic - Type b update'
+    title = f'{environment} - Tsetlin Actor-Critic - Type a update'
     #title = f'{environment} - Tsetlin Proximal Policy Optimization'
     #title = f'{environment} - Proximal Policy Optimization'
     if new_size != -1:
@@ -132,11 +117,11 @@ if __name__ == "__main__":
         #'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
     }
 
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
+    algorithms = {
+    #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
         'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_15', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
+    #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
+    }
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
         'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'DQTM - Type a update'},

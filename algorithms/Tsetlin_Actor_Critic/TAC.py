@@ -22,6 +22,7 @@ class TAC:
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0
 
+
         self.sampling_iterations = config['sampling_iterations']
         self.config = config
 
@@ -40,8 +41,7 @@ class TAC:
         self.save_path = ''
 
         if self.save:
-            self.run_id = 'run_' + str(
-                len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -56,6 +56,7 @@ class TAC:
         self.threshold = config['threshold']
         self.scores = []
         self.timesteps = 0
+
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
@@ -77,9 +78,10 @@ class TAC:
                 break
             cur_obs = next_obs
 
+
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
-                1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+                    1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
 
     def get_actor_update(self, actions, target_q_vals):
 
@@ -87,14 +89,16 @@ class TAC:
         q_vals = self.policy.online_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
 
         for index, action in enumerate(np.argmax(actions, axis=1)):
-            if q_vals[index] >= target_q_vals[index]:
+            if q_vals[index] < target_q_vals[index]:
                 feedback = 1
-            else:
+                tm['feedback'].append(feedback)
+                tm['actions'].append(action)
+                tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
+            elif q_vals[index] > target_q_vals[index]:
                 feedback = 2
-
-            tm['feedback'].append(feedback)
-            tm['actions'].append(action)
-            tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
+                tm['feedback'].append(feedback)
+                tm['actions'].append(action)
+                tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
         return tm
 
     def get_q_val_for_action(self, actions, q_values):
@@ -132,15 +136,16 @@ class TAC:
             # calculate target q vals
             target_q_vals = self.temporal_difference(next_q_vals)
             critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
-                                                          target_q_vals)
+                                                              target_q_vals)
 
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.online_critic.update(critic_update)
 
+
     def update_epsilon_greedy(self):
-        self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(
-            -self.cur_episode * self.epsilon_decay)
+        self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(-self.cur_episode * self.epsilon_decay)
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -154,6 +159,7 @@ class TAC:
             self.soft_update()
             if self.best_score < self.threshold and self.cur_episode == 100:
                 break
+
 
     def test(self):
         episode_rewards = np.array([0 for _ in range(100)])
@@ -201,6 +207,7 @@ class TAC:
                     {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
 
+
     def save_results(self, mean, std):
         if self.save:
             file_name = 'test_results.csv'
@@ -210,7 +217,6 @@ class TAC:
                 if not file_exists:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
-
     def soft_update(self):
         if self.config['soft_update_type'] == 'soft_update_a':
             self.soft_update_a(self.policy.online_critic.tm, self.policy.target_critic.tm)
@@ -244,7 +250,6 @@ class TAC:
                         if target_ta_state[i][j][k] < eval_ta_state[i][j][k]:
                             eval_ta_state[i][j][k] -= 1
             target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
-
     def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):

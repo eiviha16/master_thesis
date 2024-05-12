@@ -122,11 +122,6 @@ def plot_many(environment, algorithms, new_size):
     data = {}
     names = []
     for algorithm in algorithms:
-        # data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
-        # data[algorithm] = get_csv_performance(f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
-        # data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
-        # data[algorithm] = get_csv_performance_2(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
-        # data[algorithm] = get_csv_performance_2(f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         if environment == 'Cartpole':
             if algorithm == "DQN" or algorithm == "TAC random":
                 data[algorithm] = get_csv_performance(
@@ -153,87 +148,16 @@ def plot_many(environment, algorithms, new_size):
 
 
 if __name__ == '__main__':
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_TMQN', 'run': 'run_143', 'name': 'n-step QTM'},
-        'n-step Double QTM \n Update type a': {'folder': 'n_step_Double_TMQN', 'run': 'run_35', 'name': f'n-step Double QTM \n Update Type a'},
-        'n-step Double QTM \n Update type b': {'folder': 'n_step_Double_TMQN', 'run': 'run_33', 'name': f'n-step Double QTM \n Update Type b'},
-    }"""
-    """algorithms = {
-        'QTM': {'folder': 'TMQN', 'run': 'run_8', 'name': 'QTM'},
-        'Double QTM \n Update type a': {'folder': 'Double_TMQN', 'run': 'run_181', 'name': 'Double QTM \nUpdate Type a'},
-        'Double QTM \n Update type b': {'folder': 'Double_TMQN', 'run': 'run_180', 'name': 'Double QTM \nUpdate Type b'},
-    }"""
+
+    ################## cartpole ##############################
+    ################## cartpole ##############################
+    ################## cartpole ##############################
+    ################## cartpole ##############################
     algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_2', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_3', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_3', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }
-    """    algorithms = {
-        'DQN': {'folder': 'DQN', 'run': 'run_10', 'name': 'DQN'},
-        'PPO': {'folder': 'PPO', 'run': 'run_30', 'name': 'PPO'},
-    }"""
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_1', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_2_finished', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_7', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
-
-    """  algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_1', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_2', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_4', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
-    algorithms = {
-        'QTM': {'folder': 'QTM', 'run': 'run_4', 'name': 'QTM'},
-        'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_11', 'name': 'DQTM - Type a update'},
-        'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_2_b', 'name': 'DQTM - Type b update'},
-    }
-
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_3', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_2', 'name': 'n-step DQTM - Type b update'},
-    }"""
-
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_1', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_5', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_8', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
-    """algorithms = {
-        'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
-        'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'DQTM - Type a update'},
-        'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_2', 'name': 'DQTM - Type b update'},
-    }"""
-
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_2', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_7', 'name': 'n-step DQTM - Type b update'},
-    }"""
-    """    algorithms = {
-        'QTM': {'folder': 'QTM', 'run': 'run_4', 'name': 'QTM'},
-        'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_11', 'name': 'DQTM - Type a update'},
-        'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_2', 'name': 'DQTM - Type b update'},
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_3', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2',
-                                         'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_2',
-                                         'name': 'n-step DQTM - Type b update'},
-        'TPPO': {'folder': 'TPPO', 'run': 'run_2', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_4', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_12', 'name': 'Tsetlin Actor-Critic - Type b update'},
-
-    }"""
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    """algorithms = {
         'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
         'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
         'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
-    }"""
+    }
 
     """algorithms = {
         'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
@@ -251,49 +175,37 @@ if __name__ == '__main__':
         'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2', 'name': 'n-step DQTM - Type a update'},
         'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_7', 'name': 'n-step DQTM - Type b update'},
     }"""
+
+
+
     #########¤ Acrobot ##############
     #########¤ Acrobot ##############
     #########¤ Acrobot ##############
     #########¤ Acrobot ##############
     #########¤ Acrobot ##############
-    algorithms = {
+    """algorithms = {
         'n-step DQN': {'folder': 'n_step_DQN', 'run': 'run_66', 'name': 'n-step DQN'},#20
         'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
         'TAC random': {'folder': 'TAC_random', 'run': 'run_12', 'name': 'TAC random'}
-    }
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_6', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_5', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_13', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }"""
+    algorithms = {
+        'TPPO': {'folder': 'TPPO', 'run': 'run_6', 'name': 'TPPO'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_25', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_23', 'name': 'Tsetlin Actor-Critic - Type b update'},
+    }
 
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_8', 'name': 'QTM'},
         'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_14', 'name': 'DQTM - Type a update'},
         'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_1b', 'name': 'DQTM - Type b update'},
     }"""
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_1', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_4', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4', 'name': 'n-step DQTM - Type b update'},
-    }"""
+
     """algorithms = {
         'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_1', 'name': 'n-step QTM'},
         'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_3', 'name': 'n-step DQTM - Type a update'},
         'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4', 'name': 'n-step DQTM - Type b update'},
     }"""
-    """algorithms = {
-        #'DQN': {'folder': 'DQN', 'run': 'run_10', 'name': 'DQN'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4',
-                                         'name': 'n-step DQTM - Type b update'},
 
-    }"""
-
-    """algorithms = {
-        'n-step DQN': {'folder': 'n_step_DQN', 'run': 'run_24', 'name': 'n-step DQN'},#20
-        'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
-        'TAC random': {'folder': 'TAC_random', 'run': 'run_11', 'name': 'TAC random'}
-    }"""
     """algorithms = {
         'n-step DQN': {'folder': 'n_step_DQN', 'run': 'run_66', 'name': 'n-step DQN'},  # 20
         'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
@@ -315,11 +227,4 @@ if __name__ == '__main__':
     }"""
 
 
-    ####
-
-    """ algorithms = {
-        'DQN': {'folder': 'DQN', 'run': 'run_10', 'name': 'DQN'},
-        #'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
-        #'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
-    }"""
     plot_many('Acrobot', algorithms, new_size=-1)

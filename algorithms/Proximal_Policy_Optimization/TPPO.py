@@ -134,12 +134,6 @@ class TPPO:
             self.cur_episode = episode + 1
             self.rollout()
 
-            """self.batch.convert_to_numpy()
-            self.calculate_advantage()
-            self.train()
-            self.batch.clear()"""
-
-
     def test(self):
         episode_rewards = np.array([0 for _ in range(100)])
         for episode, seed in enumerate(self.test_random_seeds):

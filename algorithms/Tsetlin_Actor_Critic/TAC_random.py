@@ -214,7 +214,6 @@ class TAC:
             for i in range(len(target_ta_state[clause])):
                 for j in range(len(target_ta_state[clause][i])):
                     eval_ta_state[clause][i][j] = target_ta_state[clause][i][j]
-
         target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
 
     def make_run_dir(self):
