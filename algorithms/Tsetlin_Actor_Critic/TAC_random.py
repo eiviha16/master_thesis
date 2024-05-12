@@ -189,33 +189,6 @@ class TAC:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
 
-    def soft_update_b(self, online_tm, target_tm):
-        if self.cur_episode % self.config['update_freq'] == 0:
-            target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
-            eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
-            for i in range(len(target_ta_state)):
-                for j in range(len(target_ta_state[i])):
-                    for k in range(len(target_ta_state[i][j])):
-                        if target_ta_state[i][j][k] > eval_ta_state[i][j][k]:
-                            eval_ta_state[i][j][k] += 1
-                        if target_ta_state[i][j][k] < eval_ta_state[i][j][k]:
-                            eval_ta_state[i][j][k] -= 1
-            target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
-
-    def soft_update_a(self, online_tm, target_tm):
-        target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = online_tm.get_params()
-        eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = target_tm.get_params()
-        nr_of_clauses = len(list(target_clause_sign))
-        clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.config['clause_update_p']))
-        for clause in clauses_to_update:
-            eval_clause_sign[clause] = target_clause_sign[clause]
-            eval_clause_output[clause] = target_clause_output[clause]
-            eval_feedback_to_clauses[clause] = target_feedback_to_clauses[clause]
-            for i in range(len(target_ta_state[clause])):
-                for j in range(len(target_ta_state[clause][i])):
-                    eval_ta_state[clause][i][j] = target_ta_state[clause][i][j]
-        target_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
-
     def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
