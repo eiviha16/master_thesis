@@ -1,4 +1,5 @@
 import numpy as np
+
 values = """-70
 -87
 -77
@@ -104,4 +105,3 @@ values = values.split('\n')
 values = np.array([int(value) for value in values])
 print('mean: ', np.mean(values))
 print('std: ', np.std(values))
-

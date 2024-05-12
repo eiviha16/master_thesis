@@ -62,7 +62,6 @@ config_acrobot_random_TAC_a = {
     }
 }
 
-
 config_cartpole_TAC_a = {
     "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
@@ -155,8 +154,6 @@ config_cartpole_TAC_b = {
     }
 }
 
-
-
 config_acrobot_TAC_b = {
     "method": "bayes",
     "metric": {"goal": "maximize", "name": "score"},
@@ -186,7 +183,6 @@ config_acrobot_TAC_b = {
         "epsilon_init": {"values": list(np.arange(0.5, 1.00, 0.1))},
     }
 }
-
 
 ################################################
 ################### TPPO #######################
@@ -258,7 +254,7 @@ config_cartpole_n_step_DQTM_a = {
     "parameters": {
         "gamma": {"values": list(np.arange(0.90, 1.00, 0.001))},
         "clause_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
-        "n_steps": {"values":list(range(5, 50, 1))},
+        "n_steps": {"values": list(range(5, 50, 1))},
         "batch_size": {"values": list(range(16, 128, 16))},
         "buffer_size": {"values": list(range(500, 10_000, 500))},
         "sampling_iterations": {"values": list(range(1, 8, 1))},
@@ -299,7 +295,6 @@ config_acrobot_n_step_DQTM_a = {
 
     }
 }
-
 
 ################################################
 ######### n-step Double TMQN type b ############

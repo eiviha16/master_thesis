@@ -17,7 +17,6 @@ class Batch:
         self.discounted_rewards = []
         self.trunc = []
 
-
         self.sampled_actions = []
         self.sampled_action_log_prob = []
         self.sampled_values = []
@@ -30,7 +29,6 @@ class Batch:
         self.next_value = 0
         self.sampled_trunc = []
 
-
     def clear(self):
         self.actions = []
         self.action_log_prob = []
@@ -42,6 +40,7 @@ class Batch:
         self.entropies = []
         self.discounted_rewards = []
         self.trunc = []
+
     def shuffle(self):
         self.sampled_actions = []
         self.sampled_action_log_prob = []
@@ -66,7 +65,7 @@ class Batch:
             self.sampled_entropies.append(self.entropies[s])
             self.sampled_trunc.append(self.trunc[s])
 
-            #self.sampled_discounted_rewards.append(self.discounted_rewards[s])
+            # self.sampled_discounted_rewards.append(self.discounted_rewards[s])
 
         self.sampled_actions = np.array(self.sampled_actions)
         self.sampled_action_log_prob = np.array(self.sampled_action_log_prob)
@@ -78,7 +77,8 @@ class Batch:
         self.sampled_entropies = np.array(self.sampled_entropies)
         self.sampled_trunc = np.array(self.trunc)
 
-        #self.sampled_discounted_rewards = np.array(self.sampled_discounted_rewards)
+        # self.sampled_discounted_rewards = np.array(self.sampled_discounted_rewards)
+
     def sample(self):
         self.sampled_actions = []
         self.sampled_action_log_prob = []
@@ -133,8 +133,8 @@ class Batch:
         self.actions.append(action)
         self.action_log_prob.append(action_log_prob)
         self.values.append(value)
-        #self.action_log_prob.append(action_log_prob.detach().numpy())
-        #self.values.append(value.detach().numpy())
+        # self.action_log_prob.append(action_log_prob.detach().numpy())
+        # self.values.append(value.detach().numpy())
         self.obs.append(obs)
         self.rewards.append(reward)
         self.dones.append(done)
@@ -190,6 +190,7 @@ class Batch_VPG:
         # self.rewards = torch.tensor(self.rewards, dtype=torch.float32)
         self.discounted_rewards = torch.tensor(self.discounted_rewards, dtype=torch.float32)
 
+
 class Batch_TM_VPG:
     def __init__(self, batch_size=64):
         self.batch_size = batch_size
@@ -207,6 +208,7 @@ class Batch_TM_VPG:
         self.sampled_rewards = []
         self.sampled_q_vals = []
         self.sampled_dones = []
+
     def sample(self):
         self.sampled_actions = []
         self.sampled_action_log_prob = []
@@ -226,7 +228,6 @@ class Batch_TM_VPG:
                 self.sampled_q_vals.append(self.q_vals[s])
                 self.sampled_rewards.append(self.rewards[s])
                 self.sampled_dones.append(self.dones[s])
-
 
             self.sampled_actions = np.array(self.sampled_actions)
             self.sampled_action_log_prob = np.array(self.sampled_action_log_prob)
@@ -272,6 +273,8 @@ class Batch_TM_VPG:
         self.q_vals = np.array(self.q_vals)
         self.rewards = np.array(self.rewards)
         self.dones = np.array(self.dones)
+
+
 class Batch_TM_DDPG:
     def __init__(self, batch_size=64):
         self.batch_size = batch_size
@@ -286,6 +289,7 @@ class Batch_TM_DDPG:
         self.sampled_next_obs = []
         self.sampled_rewards = []
         self.sampled_dones = []
+
     def sample(self):
         self.sampled_actions = []
         self.sampled_cur_obs = []
@@ -301,7 +305,6 @@ class Batch_TM_DDPG:
                 self.sampled_next_obs.append(self.next_obs[s])
                 self.sampled_rewards.append(self.rewards[s])
                 self.sampled_dones.append(self.dones[s])
-
 
             self.sampled_actions = np.array(self.sampled_actions)
             self.sampled_cur_obs = np.array(self.sampled_cur_obs)
@@ -337,6 +340,6 @@ class Batch_TM_DDPG:
         self.rewards = np.array(self.rewards)
         self.dones = np.array(self.dones)
 
+
 if __name__ == '__main__':
     pass
-

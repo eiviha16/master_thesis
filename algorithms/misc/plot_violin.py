@@ -46,17 +46,17 @@ def plot_violin(data, title, ratio):
                }"""
     df_melted = df.melt(var_name='Algorithm', value_name='Mean')
     plt.figure(figsize=(7, 5.5))
-    #df_melted['category'] = df_melted['Algorithm'].map(mapping)
-    #plt.figure(figsize=(16, 5.5))
-    #palette = sns.color_palette("Paired", 3)
+    # df_melted['category'] = df_melted['Algorithm'].map(mapping)
+    # plt.figure(figsize=(16, 5.5))
+    # palette = sns.color_palette("Paired", 3)
 
-    #df_melted['color'] = df_melted['Algorithm'].map(color_dict)
+    # df_melted['color'] = df_melted['Algorithm'].map(color_dict)
 
-    sns.violinplot(x='Algorithm', y="Mean", data=df_melted)#, palette=color_dict)
-    #sns.violinplot(x='category', y="Mean", hue='Algorithm', data=df_melted)
+    sns.violinplot(x='Algorithm', y="Mean", data=df_melted)  # , palette=color_dict)
+    # sns.violinplot(x='category', y="Mean", hue='Algorithm', data=df_melted)
     plt.title(title)
-    #plt.axhline(y=-100, color='r', linestyle='--')
-    #plt.axhline(y=475, color='r', linestyle='--')
+    # plt.axhline(y=-100, color='r', linestyle='--')
+    # plt.axhline(y=475, color='r', linestyle='--')
 
     plt.gca().yaxis.grid(True, linestyle='dashed')
     plt.ylabel('Mean rewards')
@@ -133,22 +133,21 @@ def plot_many(environment, algorithms, new_size):
         elif environment == "Acrobot":
             data[algorithm] = get_csv_performance(
                 f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
-            #data[algorithm] = get_csv_performance_2(
+            # data[algorithm] = get_csv_performance_2(
             #    f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
 
-    #title = f'{environment} - Actor-Critics'
+    # title = f'{environment} - Actor-Critics'
     title = f'{environment} - Baselines'
-    #title = f'{environment} - Final Test Scores'
-    #title = f'{environment} - n-step Q-Tsetlin-Machine'
-    #title = f'{environment} - Q-Tsetlin-Machine'
+    # title = f'{environment} - Final Test Scores'
+    # title = f'{environment} - n-step Q-Tsetlin-Machine'
+    # title = f'{environment} - Q-Tsetlin-Machine'
     # title = 'Acrobot - Q-Tsetlin-Machine'
-    #title = f'{environment} - Deep Q-Network'
+    # title = f'{environment} - Deep Q-Network'
     data, ratio = prune(data, new_size)
     plot_violin(data, title, ratio)
 
 
 if __name__ == '__main__':
-
     ################## cartpole ##############################
     ################## cartpole ##############################
     ################## cartpole ##############################
@@ -175,8 +174,6 @@ if __name__ == '__main__':
         'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2', 'name': 'n-step DQTM - Type a update'},
         'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_7', 'name': 'n-step DQTM - Type b update'},
     }"""
-
-
 
     #########¤ Acrobot ##############
     #########¤ Acrobot ##############
@@ -225,6 +222,5 @@ if __name__ == '__main__':
         'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_5', 'name': 'Tsetlin Actor-Critic - Type a update'},
         'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_13', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }"""
-
 
     plot_many('Acrobot', algorithms, new_size=-1)

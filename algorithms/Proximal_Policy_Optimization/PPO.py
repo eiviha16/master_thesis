@@ -50,7 +50,7 @@ class PPO:
     def calculate_advantage(self):
         advantage = 0
         discounted_reward = 0
-        next_value = 0#self.policy.critic(torch.tensor(self.batch.obs[i])).detach().numpy()
+        next_value = 0
 
         for i in reversed(range(len(self.batch.actions))):
             if self.batch.trunc[i]:
@@ -84,10 +84,6 @@ class PPO:
 
             if done or truncated:
                 break
-
-
-                #if len(self.batch.obs) > 500:
-                #    break
 
 
 

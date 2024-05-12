@@ -11,6 +11,7 @@ from stable_baselines3 import PPO, DQN
 import os
 from tqdm import tqdm
 
+
 class PPO_c():
     def __init__(self, config):
         self.nr_of_test_episodes = 100
@@ -32,7 +33,7 @@ class PPO_c():
 
         self.best_score = - float("inf")
         self.config = config
-        #self.n_timesteps = 100
+        # self.n_timesteps = 100
         self.n_timesteps = 200
         self.file_path = f'./results/{self.config["env_name"]}/{self.config["algorithm"]}/{self.config["run"]}'
 
@@ -86,11 +87,12 @@ class PPO_c():
 
 
 if __name__ == "__main__":
-    #config = {"env_name": "acrobot", "algorithm": "PPO", "run": "run_3"}
+    # config = {"env_name": "acrobot", "algorithm": "PPO", "run": "run_3"}
     config = {"env_name": "cartpole", "algorithm": "PPO", "run": "run_3"}
     ppo = PPO_c(config)
     ppo.learn(1000)
 
     import test_policy
+
     model = ppo.model.load(f"{ppo.file_path}/best")
     test_policy.test_policy(ppo.file_path, model, ppo.config["env_name"], sb=True)

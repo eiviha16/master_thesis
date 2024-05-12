@@ -9,16 +9,17 @@ def plot_many(names, data, title, ratio):
         x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
         plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
         plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
-                             np.array(data[key]['mean']) + np.array(data[key]['std']),
-                             alpha=0.10)
+                         np.array(data[key]['mean']) + np.array(data[key]['std']),
+                         alpha=0.10)
     plt.gca().yaxis.grid(True, linestyle='dashed')
     plt.ylabel(f'Mean rewards')
     plt.xlabel(f'Timesteps')
     plt.title(f'{title}')
     plt.legend()
-    #plt.savefig(f'rewards_comparison.png')
+    # plt.savefig(f'rewards_comparison.png')
     plt.savefig("plot", format='svg')
     plt.show()
+
 
 def get_csv_performance(file_path, clipped=False):
     data = {'mean': [], 'std': [], 'steps': []}
@@ -37,9 +38,13 @@ def get_csv_performance(file_path, clipped=False):
         data['std'] = data['std'][:50000]
         data['steps'] = data['steps'][:50000]
     return data
+
+
 def plot_test_results(file_path, text):
     data = get_csv_performance(file_path)
     plot(data, text, file_path)
+
+
 def prune(data, new_size):
     for key in data:
         for m in data[key]:
@@ -53,6 +58,8 @@ def prune(data, new_size):
                     new_data.append(data[key][m][i])
             data[key][m] = new_data
     return data, ratio
+
+
 def prune_2(data, new_size):
     intervals = {}
     for key in data:
@@ -72,39 +79,45 @@ def prune_2(data, new_size):
             data[key][m] = new_data
     ratio = 1
     return data, ratio
+
+
 def plot_many_rewards(environment, algorithms, new_size):
     data = {}
     names = {}
     for algorithm in algorithms:
-        #data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
-        #data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
+        # data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
+        # data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         if environment == 'Cartpole':
             if algorithm == "DQN" and algorithm == "TAC random":
-                #data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}', True)
-                data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
+                # data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}', True)
+                data[algorithm] = get_csv_performance(
+                    f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
             else:
-                data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
+                data[algorithm] = get_csv_performance(
+                    f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         elif environment == "Acrobot":
-            data[algorithm] = get_csv_performance(f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
+            data[algorithm] = get_csv_performance(
+                f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         names[algorithm] = algorithms[algorithm]["name"]
-    #title = f'{environment} - Q-Tsetlin-Machine'
-    #title = f'{environment} - n-step Q-Tsetlin-Machine'
-    #title = f'{environment} - Baselines'
-    #title = 'Cartpole - Actor-Critics'
-    #title = f'{environment} - Actor-Critics'
-    #title = f'{environment} - Double Q-Tsetlin-Machine - Type b update'
-    #title = f'{environment} - n-step Double Q-Tsetlin-Machine - Type b update'
-    #title = f'{environment} - n-step Q-Tsetlin-Machine'
-    #title = f'{environment} - Deep Q-Network'
-    #title = f'{environment} - n-step Deep Q-Network'
+    # title = f'{environment} - Q-Tsetlin-Machine'
+    # title = f'{environment} - n-step Q-Tsetlin-Machine'
+    # title = f'{environment} - Baselines'
+    # title = 'Cartpole - Actor-Critics'
+    # title = f'{environment} - Actor-Critics'
+    # title = f'{environment} - Double Q-Tsetlin-Machine - Type b update'
+    # title = f'{environment} - n-step Double Q-Tsetlin-Machine - Type b update'
+    # title = f'{environment} - n-step Q-Tsetlin-Machine'
+    # title = f'{environment} - Deep Q-Network'
+    # title = f'{environment} - n-step Deep Q-Network'
     title = f'{environment} - Tsetlin Actor-Critic - Type a update'
-    #title = f'{environment} - Tsetlin Proximal Policy Optimization'
-    #title = f'{environment} - Proximal Policy Optimization'
+    # title = f'{environment} - Tsetlin Proximal Policy Optimization'
+    # title = f'{environment} - Proximal Policy Optimization'
     if new_size != -1:
         data, ratio = prune(data, new_size)
     else:
         ratio = 1
     plot_many(names, data, title, ratio)
+
 
 if __name__ == "__main__":
     ################## cartpole ##############################
@@ -113,14 +126,14 @@ if __name__ == "__main__":
     ################## cartpole ##############################
     algorithms = {
         'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
-        #'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
-        #'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
+        # 'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
+        # 'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
     }
 
     algorithms = {
-    #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
+        #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
         'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_15', 'name': 'Tsetlin Actor-Critic - Type a update'},
-    #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
+        #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
@@ -177,5 +190,5 @@ if __name__ == "__main__":
         #'TAC random': {'folder': 'TAC_random', 'run': 'run_11', 'name': 'TAC random'}
     }"""
     plot_many_rewards('Cartpole', algorithms, new_size=-1)
-#'n_step_Double_TMQN': 'run_34' 498.22 - 11.22
-#'n_step_Double_TMQN': 'run_35' 500.0 - 0.0
+# 'n_step_Double_TMQN': 'run_34' 498.22 - 11.22
+# 'n_step_Double_TMQN': 'run_35' 500.0 - 0.0

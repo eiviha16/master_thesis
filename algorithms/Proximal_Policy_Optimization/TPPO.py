@@ -22,11 +22,20 @@ class TPPO:
         self.n_timesteps = config['n_timesteps']
         self.epochs = config['epochs']
 
-        self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081, 71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479, 73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852, 99459, 20927, 91507, 55393, 44598, 36422, 20380, 28222, 44119, 13397, 12157, 49798, 12677, 47053, 45083, 79132, 34672, 5696, 95648, 60218, 70285, 16362, 49616, 10329, 72358, 38428, 82398, 81071, 47401, 75675, 25204, 92350, 9117, 6007, 86674, 29872, 37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567, 27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569, 32088, 21418, 60590, 49736]
+        self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
+                                  71483, 11396, 77398, 55303, 4166, 3906, 12281, 28658, 30496, 66238, 78908, 3479,
+                                  73564, 26063, 93851, 85182, 91925, 71427, 54988, 28894, 58879, 77237, 36464, 852,
+                                  99459, 20927, 91507, 55393, 44598, 36422, 20380, 28222, 44119, 13397, 12157, 49798,
+                                  12677, 47053, 45083, 79132, 34672, 5696, 95648, 60218, 70285, 16362, 49616, 10329,
+                                  72358, 38428, 82398, 81071, 47401, 75675, 25204, 92350, 9117, 6007, 86674, 29872,
+                                  37931, 10459, 30513, 13239, 49824, 36435, 59430, 83321, 47820, 21320, 48521, 46567,
+                                  27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
+                                  32088, 21418, 60590, 49736]
         self.save = config['save']
         self.save_path = ''
         if self.save:
-            self.run_id = 'run_' + str(len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            self.run_id = 'run_' + str(
+                len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
@@ -42,13 +51,11 @@ class TPPO:
         self.threshold = config['threshold']
         self.timesteps = 0
 
-
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
     def save_config(self, config):
         if self.save:
-
             with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
                 yaml.dump(config, yaml_file, default_flow_style=False)
 
@@ -56,9 +63,10 @@ class TPPO:
         advantage = 0
         next_value = self.batch.next_value[0][0]
         for i in reversed(range(len(self.batch.actions))):
-            #if self.batch.trunc[i]:
+            # if self.batch.trunc[i]:
             #    next_value = self.policy.critic.predict(np.array(self.batch.obs[i]))[0][0]
-            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - self.batch.values[i][0][0]
+            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - \
+                 self.batch.values[i][0][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
             next_value = self.batch.values[i][0][0]
             self.batch.advantages.insert(0, advantage)
@@ -86,14 +94,13 @@ class TPPO:
             if done or truncated:
                 break
 
-
     def evaluate_actions(self):
         actions, values, log_probs = self.policy.get_action(self.batch.obs)
         return actions, values, log_probs
 
-
     def get_update_data_actor(self):
-        tm = [{'observations': [], 'target': [], 'advantages': [], 'entropy': []} for i in range(self.action_space_size)]
+        tm = [{'observations': [], 'target': [], 'advantages': [], 'entropy': []} for i in
+              range(self.action_space_size)]
         for i in range(len(self.batch.actions)):
             idx = self.batch.actions[i]
             tm[idx]['observations'].append(self.batch.obs[i])
@@ -125,6 +132,7 @@ class TPPO:
                 for val in abs_errors[key]:
                     self.abs_errors[key].append(val)
         self.abs_errors = {}
+
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
             if episode % self.config['test_freq'] == 0:
@@ -175,7 +183,8 @@ class TPPO:
                         clause_sign_save[i] = int(clause_sign[i])
                         clause_output_save[i] = int(clause_output[i])
                         feedback_to_clauses_save[i] = int(feedback_to_clauses[i])
-                    tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
+                    tms.append({'ta_state': ta_state_save, 'clause_sign': clause_sign_save,
+                                'clause_output': clause_output_save, 'feedback_to_clauses': feedback_to_clauses_save})
                 torch.save(tms, os.path.join(self.save_path, 'best'))
 
     def save_results(self, mean, std):
@@ -187,6 +196,7 @@ class TPPO:
                 if not file_exists:
                     file.write("mean,std,steps\n")
                 file.write(f"{mean},{std},{self.timesteps}\n")
+
     def make_run_dir(self):
         base_dir = '../results'
         if not os.path.exists(base_dir):
@@ -225,4 +235,5 @@ class TPPO:
             with open(os.path.join(self.save_path, folder_name), "a") as file:
                 if not file_exists:
                     file.write('mean,std,steps\n')
-                file.write(f"{np.mean(self.abs_errors['critic'])},{np.std(self.abs_errors['critic'])},{self.timesteps}\n")
+                file.write(
+                    f"{np.mean(self.abs_errors['critic'])},{np.std(self.abs_errors['critic'])},{self.timesteps}\n")

@@ -3,16 +3,18 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import torch.nn.functional as F
+
 torch.manual_seed(42)
 np.random.seed(42)
 from torch.distributions import Categorical
+
 
 class QNet(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=128):
         super(QNet, self).__init__()
         # activation
         self.activation = nn.Tanh()
-        #self.activation = nn.ReLU()
+        # self.activation = nn.ReLU()
         self.output_activation = nn.Sigmoid()
 
         # layers
@@ -40,6 +42,7 @@ class Policy(QNet):
         q_vals = self.forward(torch.tensor(np.array(input)))
         return q_vals
 
+
 class Actor(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=128):
         super(Actor, self).__init__()
@@ -60,8 +63,8 @@ class Actor(nn.Module):
         x = self.hidden_layer(x)
         x = self.activation(x)
 
-        #x = self.hidden_layer2(x)
-        #x = self.activation(x)
+        # x = self.hidden_layer2(x)
+        # x = self.activation(x)
 
         x = self.output_layer(x)
         action_prob = self.output_activation(x)
@@ -118,6 +121,8 @@ class ActorCriticPolicy:
         dist = Categorical(action_probs)
         values = self.critic(obs)
         return actions, values, dist.log_prob(torch.tensor(actions))
+
+
 class ActorPolicy:
     def __init__(self, input_size, output_size, hidden_size, lr):
         self.actor = Actor(input_size, output_size, hidden_size)

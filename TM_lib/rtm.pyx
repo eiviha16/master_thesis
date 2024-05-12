@@ -397,7 +397,7 @@ cdef class TsetlinMachine:
 			output_value = ((output_sum * (self.max_target-self.min_target))/ self.threshold) + self.min_target
 
 			###########################################
-			### Deciding the feedbck to each clause ###
+			### Deciding the feedback to each clause ###
 			###########################################
 
 			# Initialize feedback to clauses
@@ -406,7 +406,6 @@ cdef class TsetlinMachine:
 
 				# Type I feedback if target is higher than the predicted value
 
-			loss = advantage #* ratio
 
 			if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > self.max_update_p:
 				update_p = self.max_update_p
@@ -414,8 +413,7 @@ cdef class TsetlinMachine:
 				update_p = self.min_update_p
 			else:
 				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
-			#print(clip)
-			if loss > 0:
+			if advantage > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):
 					if 1.0*<float>pcg32_fast()/UINT32_MAX < update_p:
@@ -423,7 +421,7 @@ cdef class TsetlinMachine:
 
 				# Type II feedback if target is lower than the predicted value
 
-			elif loss < 0:
+			elif advantage < 0:
 				feedback = 1
 				for j in xrange(self.number_of_clauses):
 					if 1.0*<float>pcg32_fast()/UINT32_MAX < update_p:

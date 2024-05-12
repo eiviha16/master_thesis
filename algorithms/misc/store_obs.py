@@ -1,11 +1,14 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
 import os
+
+
 def save(obs, file_path):
     obs_str = [str(elem) for elem in obs.tolist()]
     obs = ','.join(obs_str)
     with open(file_path, "a") as file:
         file.write(obs + '\n')
+
 
 env = gym.make("Acrobot-v1", render_mode="human")
 
