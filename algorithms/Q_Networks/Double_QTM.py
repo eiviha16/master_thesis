@@ -142,32 +142,33 @@ class QTM:
             for i in range(len(self.online_policy.tms)):
                 self.soft_update_b(self.online_policy.tms[i], self.target_policy.tms[i])
 
-    def soft_update_a(self, target_tm, evaluation_tm):
+    def soft_update_a(self, online_tm, target_tm):
+        online_ta_state, online_clause_sign, online_clause_output, online_feedback_to_clauses = online_tm.get_params()
         target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
-        eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
-        nr_of_clauses = len(list(target_clause_sign))
+        nr_of_clauses = len(list(online_clause_sign))
         clauses_to_update = random.sample(range(nr_of_clauses), int(nr_of_clauses * self.config['clause_update_p']))
         for clause in clauses_to_update:
-            eval_clause_sign[clause] = target_clause_sign[clause]
-            eval_clause_output[clause] = target_clause_output[clause]
-            eval_feedback_to_clauses[clause] = target_feedback_to_clauses[clause]
-            for i in range(len(target_ta_state[clause])):
-                for j in range(len(target_ta_state[clause][i])):
-                    eval_ta_state[clause][i][j] = target_ta_state[clause][i][j]
+            target_clause_sign[clause] = online_clause_sign[clause]
+            target_clause_output[clause] = online_clause_output[clause]
+            target_feedback_to_clauses[clause] = online_feedback_to_clauses[clause]
+            for i in range(len(online_ta_state[clause])):
+                for j in range(len(online_ta_state[clause][i])):
+                    target_ta_state[clause][i][j] = online_ta_state[clause][i][j]
 
-        evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
-    def soft_update_b(self, target_tm, evaluation_tm):
+        target_tm.set_params(target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses)
+
+    def soft_update_b(self, online_tm, target_tm):
         if self.cur_episode % self.config['update_freq'] == 0:
+            online_ta_state, _, _, _ = online_tm.get_params()
             target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses = target_tm.get_params()
-            eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses = evaluation_tm.get_params()
-            for i in range(len(target_ta_state)):
-                for j in range(len(target_ta_state[i])):
-                    for k in range(len(target_ta_state[i][j])):
-                        if target_ta_state[i][j][k] > eval_ta_state[i][j][k]:
-                            eval_ta_state[i][j][k] += 1
-                        if target_ta_state[i][j][k] < eval_ta_state[i][j][k]:
-                            eval_ta_state[i][j][k] -= 1
-            evaluation_tm.set_params(eval_ta_state, eval_clause_sign, eval_clause_output, eval_feedback_to_clauses)
+            for i in range(len(online_ta_state)):
+                for j in range(len(online_ta_state[i])):
+                    for k in range(len(online_ta_state[i][j])):
+                        if online_ta_state[i][j][k] > target_ta_state[i][j][k]:
+                            target_ta_state[i][j][k] += 1
+                        if online_ta_state[i][j][k] < target_ta_state[i][j][k]:
+                            target_ta_state[i][j][k] -= 1
+            target_tm.set_params(target_ta_state, target_clause_sign, target_clause_output, target_feedback_to_clauses)
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
