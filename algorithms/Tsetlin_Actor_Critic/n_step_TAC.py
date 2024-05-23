@@ -16,12 +16,12 @@ class TAC:
         config['obs_space_size'] = self.obs_space_size
         self.gamma = config['gamma']
         self.policy = Policy(config)
-        self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
+        self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'], n=config['n_steps'])
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0.01
-
+        self.n_steps = config["n_steps"]
         self.sampling_iterations = config['sampling_iterations']
         self.config = config
 
@@ -80,7 +80,17 @@ class TAC:
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
                 1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
-
+    def n_step_temporal_difference(self, next_q_vals):
+        target_q_vals = []
+        for i in range(len(self.replay_buffer.sampled_rewards)):
+            target_q_val = 0
+            for j in range(len(self.replay_buffer.sampled_rewards[i])):
+                target_q_val += (self.gamma ** j) * self.replay_buffer.sampled_rewards[i][j]
+                if self.replay_buffer.sampled_dones[i][j]:
+                    break
+            target_q_val += (1 - self.replay_buffer.sampled_dones[i][j]) * (self.gamma ** j) * next_q_vals[i]
+            target_q_vals.append(target_q_val)
+        return target_q_vals
     def get_actor_update(self, actions, target_q_vals):
 
         tm = {'observations': [], 'actions': [], 'feedback': []}
@@ -126,16 +136,16 @@ class TAC:
     def train(self):
         for _ in range(self.sampling_iterations):
             self.replay_buffer.clear_cache()
-            self.replay_buffer.sample()
-            b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
+            self.replay_buffer.sample_n_seq()
+            b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs[:, -1, :]))
             next_q_vals = self.policy.target_critic.predict(
-                np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
+                np.array(self.replay_buffer.sampled_next_obs[:, -1, :]), b_actions)  # next_obs?
 
             # calculate target q vals
-            target_q_vals = self.temporal_difference(next_q_vals)
+            #target_q_vals = self.temporal_difference(next_q_vals)
+            target_q_vals = self.n_step_temporal_difference(next_q_vals)
             critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
                                                           target_q_vals)
-
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.online_critic.update(critic_update)
@@ -150,11 +160,11 @@ class TAC:
                 self.test()
             self.cur_episode = episode + 1
             self.rollout()
-            if len(self.replay_buffer.cur_obs) >= self.batch_size:
+            if self.n_steps - self.config['n_steps']>= self.batch_size:
                 self.train()
                 self.update_epsilon_greedy()
             self.soft_update()
-            if self.best_score < self.threshold and self.cur_episode == 500:
+            if self.best_score < self.threshold and self.cur_episode == 100:
                 break
 
     def test(self):

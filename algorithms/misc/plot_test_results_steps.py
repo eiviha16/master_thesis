@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
     algorithms = {
         #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_15', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_32', 'name': 'Tsetlin Actor-Critic - Type a update'},
         #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }
     """algorithms = {
@@ -189,6 +189,12 @@ if __name__ == "__main__":
         #'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
         #'TAC random': {'folder': 'TAC_random', 'run': 'run_11', 'name': 'TAC random'}
     }"""
+
+    algorithms = {
+        #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_33', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
+    }
     plot_many_rewards('Cartpole', algorithms, new_size=-1)
 # 'n_step_Double_TMQN': 'run_34' 498.22 - 11.22
 # 'n_step_Double_TMQN': 'run_35' 500.0 - 0.0

@@ -1,0 +1,52 @@
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AgAAAAAAAAA=
+actor:
+  T: 1348
+  bits_per_feature: 11
+  device: CPU
+  nr_of_clauses: 1550
+  number_of_state_bits_ta: 4
+  s: 7.970000000000006
+  seed: 42
+algorithm: TAC_a
+batch_size: 6
+buffer_size: 99500
+clause_update_p: 0.383
+critic:
+  T: 537
+  bits_per_feature: 10
+  device: CPU
+  max_update_p: 0.097
+  nr_of_clauses: 1250
+  number_of_state_bits_ta: 6
+  s: 6.440000000000005
+  seed: 42
+  y_max: 105
+  y_min: 45
+dataset_file_name: cartpole_obs_data
+env_name: Cartpole
+epsilon_decay: 0.001
+epsilon_init: 0.9
+gamma: 0.99
+n_steps: 98
+obs_space_size: 4
+sampling_iterations: 80
+save: true
+soft_update_type: soft_update_a
+test_freq: 1
+threshold: 20

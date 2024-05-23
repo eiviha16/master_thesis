@@ -152,17 +152,17 @@ if __name__ == '__main__':
     ################## cartpole ##############################
     ################## cartpole ##############################
     ################## cartpole ##############################
-    algorithms = {
+    """algorithms = {
         'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
         'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
         'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
-    }
-
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_15', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }"""
+
+    algorithms = {
+        'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_33', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        #'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
+    }
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
         'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'DQTM - Type a update'},
@@ -185,11 +185,11 @@ if __name__ == '__main__':
         'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
         'TAC random': {'folder': 'TAC_random', 'run': 'run_12', 'name': 'TAC random'}
     }"""
-    algorithms = {
+    """algorithms = {
         'TPPO': {'folder': 'TPPO', 'run': 'run_6', 'name': 'TPPO'},
         'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_25', 'name': 'Tsetlin Actor-Critic - Type a update'},
         'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_23', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }
+    }"""
 
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_8', 'name': 'QTM'},
@@ -223,4 +223,4 @@ if __name__ == '__main__':
         'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_13', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }"""
 
-    plot_many('Acrobot', algorithms, new_size=-1)
+    plot_many('Cartpole', algorithms, new_size=-1)

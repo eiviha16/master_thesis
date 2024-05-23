@@ -6,7 +6,7 @@ import random
 ################### TAC a #######################
 ################################################
 
-n_episodes_1 = 1000
+n_episodes_1 = 2500
 n_epsidoes_acro = 250
 n_episodes_2 = 5000
 test_freq_2 = 25
@@ -48,6 +48,41 @@ def cartpole_TAC_a(config):
     print(f'mean: {np.mean(np.array(agent.scores))}')
     return score
 
+def cartpole_nTAC_a(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    #from algorithms.Tsetlin_Actor_Critic.n_step_TAC import TAC
+    from algorithms.Tsetlin_Actor_Critic.TAC import TAC
+    from algorithms.policy.CTM import ActorCriticPolicy as Policy
+
+    actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
+             's': config.a_specificity, 'device': 'CPU',
+             'bits_per_feature': config.a_bits_per_feature, "seed": 42,
+             'number_of_state_bits_ta': config.a_number_of_state_bits_ta}
+    critic = {"max_update_p": config.c_max_update_p, 'nr_of_clauses': config.c_nr_of_clauses,
+              'T': int(config.c_nr_of_clauses * config.c_t), 's': config.c_specificity, 'y_max': config.c_y_max,
+              'y_min': config.c_y_min, 'device': 'CPU',
+              'bits_per_feature': config.c_bits_per_feature, "seed": 42,
+              'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
+    _config = {'algorithm': 'TAC_a', "n_steps": config.n_steps, 'soft_update_type': 'soft_update_a',
+               'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
+               'clause_update_p': config.clause_update_p, 'gamma': 0.99,
+               "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
+               'sampling_iterations': config.sampling_iterations, 'test_freq': 100, "save": False,
+               "threshold": cartpole_threshold, "dataset_file_name": "cartpole_obs_data"}
+    print(_config)
+
+    env = gym.make("CartPole-v1")
+
+    agent = TAC(env, Policy, _config)
+    agent.learn(nr_of_episodes=n_episodes_1)
+    score = np.mean(np.array(agent.scores))
+    print(np.array(agent.best_score))
+    print(f'mean: {np.mean(np.array(agent.scores))}')
+    return score
 
 def acrobot_random_TAC_a(config):
     random.seed(42)
