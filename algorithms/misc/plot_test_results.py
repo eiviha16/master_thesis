@@ -73,5 +73,5 @@ def plot_many_rewards(algorithms, new_size):
 
 
 if __name__ == "__main__":
-    algorithms = {'n_step_Double_TMQN': 'run_35'}
+    algorithms = {'n_step_Double_TMQN': 'run_33'}
     plot_many_rewards(algorithms, new_size=500)

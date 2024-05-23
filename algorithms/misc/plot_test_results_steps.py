@@ -6,14 +6,20 @@ import numpy as np
 def plot_many(names, data, title, ratio):
     plt.figure(figsize=(7, 5.5))
     for key in data:
-        x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
-        plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
-        plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
+        #x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
+        x = range(int(len(data[key]['mean'])))
+        #plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
+        plt.plot(x, data[key]['mean'], label=names[key])
+        """plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
+                         np.array(data[key]['mean']) + np.array(data[key]['std']),
+                         alpha=0.10)"""
+        plt.fill_between(x, np.array(data[key]['mean']) - np.array(data[key]['std']),
                          np.array(data[key]['mean']) + np.array(data[key]['std']),
                          alpha=0.10)
+
     plt.gca().yaxis.grid(True, linestyle='dashed')
     plt.ylabel(f'Mean rewards')
-    plt.xlabel(f'Timesteps')
+    plt.xlabel(f'Episodes')
     plt.title(f'{title}')
     plt.legend()
     # plt.savefig(f'rewards_comparison.png')
@@ -124,7 +130,7 @@ if __name__ == "__main__":
     ################## cartpole ##############################
     ################## cartpole ##############################
     ################## cartpole ##############################
-    algorithms = {
+    """algorithms = {
         'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
         # 'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
         # 'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
@@ -134,7 +140,7 @@ if __name__ == "__main__":
         #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
         'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_32', 'name': 'Tsetlin Actor-Critic - Type a update'},
         #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }
+    }"""
     """algorithms = {
         'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
         'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'DQTM - Type a update'},
