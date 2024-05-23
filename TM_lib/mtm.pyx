@@ -27,16 +27,16 @@ cimport numpy as np
 
 from libc.stdint cimport uint64_t, uint32_t, UINT32_MAX
 
-cdef uint64_t mcg_state = 0xcafef00dd15ea5e5  # Must be odd
+cdef uint64_t mcg_state = 0xcafef00dd15ea5e5
 cdef uint64_t multiplier = 6364136223846793005
 
 cpdef uint32_t pcg32_fast():
 	global mcg_state
 	cdef uint64_t x = mcg_state
-	cdef unsigned int count = <unsigned int>(x >> 61)  # 61 = 64 - 3
+	cdef unsigned int count = <unsigned int>(x >> 61)
 	mcg_state = x * multiplier
 	x ^= x >> 22
-	return <uint32_t>(x >> (22 + count))  # 22 = 32 - 3 - 7
+	return <uint32_t>(x >> (22 + count))
 
 cpdef void pcg32_seed(uint64_t seed):
 	global mcg_state
@@ -302,13 +302,13 @@ cdef class MultiClassTsetlinMachine:
 				# Type II Feedback
 				self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = -1
 
-			elif update_type == 2 and self.clause_sign[target_class,j,1] >= 0:
-				# Type II Feedback
-				self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = -1
-
-			elif update_type == 2 and self.clause_sign[target_class,j,1] < 0:
+				"""elif update_type == 2 and self.clause_sign[target_class,j,1] >= 0:
+					# Type II Feedback
+				self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = -1"""
+	
+				"""elif update_type == 2 and self.clause_sign[target_class,j,1] < 0:
 				# Type I Feedback
-				self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = 1
+				self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = 1"""
 
 		for j in xrange(self.clause_count[negative_target_class]):
 			if 1.0*<float>pcg32_fast()/UINT32_MAX > (1.0/(self.threshold*2))*(self.threshold + self.class_sum[negative_target_class]):
@@ -320,13 +320,13 @@ cdef class MultiClassTsetlinMachine:
 				# Type I Feedback
 				self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1
 
-			elif update_type == 2 and self.clause_sign[negative_target_class,j,1] >= 0:
-				# Type I Feedback
-				self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1
-
-			elif update_type == 2 and self.clause_sign[negative_target_class,j,1] < 0:
-				# Type II Feedback
-				self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = -1
+				"""elif update_type == 2 and self.clause_sign[negative_target_class,j,1] >= 0:
+					# Type I Feedback
+					self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1"""
+	
+			"""elif update_type == 2 and self.clause_sign[negative_target_class,j,1] < 0:
+					# Type II Feedback
+					self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = -1"""
 
 
 

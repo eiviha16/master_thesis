@@ -3,26 +3,22 @@ cimport numpy as np
 
 from libc.stdint cimport uint64_t, uint32_t, UINT32_MAX
 
-cdef uint64_t mcg_state = 0xcafef00dd15ea5e5  # Must be odd
+cdef uint64_t mcg_state = 0xcafef00dd15ea5e5
 cdef uint64_t multiplier = 6364136223846793005
 
 cpdef uint32_t pcg32_fast():
 	global mcg_state
 	cdef uint64_t x = mcg_state
-	cdef unsigned int count = <unsigned int>(x >> 61)  # 61 = 64 - 3
+	cdef unsigned int count = <unsigned int>(x >> 61)
 	mcg_state = x * multiplier
 	x ^= x >> 22
-	return <uint32_t>(x >> (22 + count))  # 22 = 32 - 3 - 7
+	return <uint32_t>(x >> (22 + count))
 
 cpdef void pcg32_seed(uint64_t seed):
 	global mcg_state
 	mcg_state = 2*seed + 1
 	pcg32_fast()
 
-import pandas as pd
-from pandas import ExcelWriter
-
-#np.random.seed(42)
 
 ########################################
 ### The Regression Tsetlin Machine #####

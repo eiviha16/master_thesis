@@ -9,23 +9,22 @@ torch.manual_seed(42)
 import gymnasium as gym
 from algorithms.Tsetlin_Actor_Critic.TAC import TAC
 from algorithms.policy.CTM import ActorCriticPolicy as Policy
+config = {"env_name": "Cartpole", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_a', 'epsilon_init': 1.0,
+          'epsilon_decay': 0.001, 'clause_update_p': 0.05, 'gamma': 0.99, 'buffer_size': 10000,
+          'actor': {'nr_of_clauses': 2000, 'T': 1800, 's': 3.68, 'device': 'CPU', 'bits_per_feature': 4, 'seed': 42,
+                    'number_of_state_bits_ta': 4},
+          'critic': {'max_update_p': 1.0, 'nr_of_clauses': 2000, 'T': 1713, 's': 3.47, 'y_max': 130,
+                     'y_min': 20, 'device': 'CPU', 'weighted_clauses': False, 'bits_per_feature': 4, 'seed': 42,
+                     'number_of_state_bits_ta': 4}, 'batch_size': 16, 'sampling_iterations': 6, 'test_freq': 1,
+          'save': True, 'threshold': -495, 'dataset_file_name': 'cartpole_obs_data'}
 
-config = {"env_name": "acrobot", 'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_a',
-          'epsilon_init': 0.8999999999999999, 'epsilon_decay': 0.006, 'clause_update_p': 0.749, 'gamma': 0.943,
-          'buffer_size': 9500,
-          'actor': {'nr_of_clauses': 1840, 'T': 1343, 's': 1.01, 'device': 'CPU', 'bits_per_feature': 13, 'seed': 42,
-                    'number_of_state_bits_ta': 8},
-          'critic': {'max_update_p': 0.078, 'nr_of_clauses': 1850, 'T': 1406, 's': 3.290000000000002, 'y_max': -5,
-                     'y_min': -80, 'device': 'CPU', 'bits_per_feature': 13, 'seed': 42, 'number_of_state_bits_ta': 9},
-          'batch_size': 48, 'sampling_iterations': 2, 'test_freq': 5, 'save': True, 'threshold': -495,
-          'dataset_file_name': 'acrobot_obs_data'}
 print(config)
 
-env = gym.make("Acrobot-v1")
-# env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
 
 agent = TAC(env, Policy, config)
-agent.learn(nr_of_episodes=2500)
+agent.learn(nr_of_episodes=5000)
 
 from test_policy import test_policy
 
