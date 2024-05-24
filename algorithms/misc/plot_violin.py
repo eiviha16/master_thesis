@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     algorithms = {
         'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_33', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_32', 'name': 'Tsetlin Actor-Critic - Type a update'},
         #'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }
     """algorithms = {

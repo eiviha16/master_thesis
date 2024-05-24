@@ -324,7 +324,7 @@ cdef class MultiClassTsetlinMachine:
 					# Type I Feedback
 					self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1"""
 	
-			"""elif update_type == 2 and self.clause_sign[negative_target_class,j,1] < 0:
+				"""elif update_type == 2 and self.clause_sign[negative_target_class,j,1] < 0:
 					# Type II Feedback
 					self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = -1"""
 

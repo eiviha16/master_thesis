@@ -7,7 +7,7 @@ def plot_many(names, data, title, ratio):
     plt.figure(figsize=(7, 5.5))
     for key in data:
         #x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
-        x = range(int(len(data[key]['mean'])))
+        x = np.arange(0, int(len(data[key]['mean']) * 5), 5)
         #plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
         plt.plot(x, data[key]['mean'], label=names[key])
         """plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
@@ -198,7 +198,7 @@ if __name__ == "__main__":
 
     algorithms = {
         #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_33', 'name': 'Tsetlin Actor-Critic - Type a update'},
+        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_34', 'name': 'Tsetlin Actor-Critic - Type a update'},
         #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }
     plot_many_rewards('Cartpole', algorithms, new_size=-1)
