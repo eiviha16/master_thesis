@@ -63,8 +63,8 @@ class TPPO:
         advantage = 0
         next_value = self.batch.next_value[0][0]
         for i in reversed(range(len(self.batch.actions))):
-            if self.batch.trunc[i]:
-                next_value = self.policy.critic.predict(np.array(self.batch.obs[i]))[0][0]
+            # if self.batch.trunc[i]:
+            #    next_value = self.policy.critic.predict(np.array(self.batch.obs[i]))[0][0]
             dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - \
                  self.batch.values[i][0][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])

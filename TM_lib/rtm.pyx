@@ -409,7 +409,7 @@ cdef class TsetlinMachine:
 				update_p = self.min_update_p
 			else:
 				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
-			update_p = abs(advantage) * 0.001
+			#update_p = abs(advantage) * 0.001
 			if advantage > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):
