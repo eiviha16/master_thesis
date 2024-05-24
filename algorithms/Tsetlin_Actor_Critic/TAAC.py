@@ -62,14 +62,11 @@ class TAAC:
 
     def calculate_advantage(self):
         advantage = 0
-        next_value = self.batch.next_value[0]
+        #next_value = self.batch.next_value[0]
         for i in reversed(range(len(self.batch.actions))):
-            if self.batch.trunc[i]:
-                next_value = self.policy.critic.predict(np.array(self.batch.obs[i]))[0]
-            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - \
+            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0] * int(not self.batch.dones[i]) - \
                  self.batch.values[i][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
-            next_value = self.batch.values[i][0]
             self.batch.advantages.insert(0, advantage)
 
     def normalize_advantages(self):
@@ -78,13 +75,12 @@ class TAAC:
         self.batch.advantages = norm_advantages
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=random.randint(1, 100))
+        next_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
-            action, value = self.policy.sample_action(obs)
-            obs, reward, done, truncated, _ = self.env.step(action)
-
-            self.batch.save_experience(action, 0, value, obs, reward, done, truncated, 0)
-            self.batch.next_value = self.policy.critic.predict(np.array(obs))
+            action, value = self.policy.sample_action(next_obs)
+            obs = next_obs
+            next_obs, reward, done, truncated, _ = self.env.step(action)
+            self.batch.save_experience(action, 0, value, self.policy.critic.predict(np.array(next_obs)), obs, reward, done, truncated, 0)
             self.timesteps += 1
             if len(self.batch.actions) - 1 > self.n_timesteps:
                 self.batch.convert_to_numpy()
