@@ -304,3 +304,19 @@ def start_a_nDQN():
     import wandb
     sweep_id = wandb.sweep(sweep=config_acrobot_nDQN, project="acrobot-n_step_DQN-fff")
     wandb.agent(sweep_id, function=main_a_nDQN, count=10_000)
+
+
+def main_c_TAAC():
+    wandb.init(project="cartpole-TAAC-fff")
+    score = cartpole_TAAC(wandb.config)
+    wandb.log({"score": score})
+
+
+def start_c_TAAC():
+    import wandb
+    sweep_id = wandb.sweep(sweep=config_cartpole_TAAC, project="cartpole-TAAC-fff")
+    wandb.agent(sweep_id, function=main_c_TAAC, count=10_000)
+
+#f uses just feedback for the target class
+#ff uses all the feedback
+#fff uses only positive advantage

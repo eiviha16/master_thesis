@@ -586,3 +586,30 @@ config_acrobot_nDQN = {
         "buffer_size": {"values": list(range(500, 10_000, 500))},
     }
 }
+
+
+config_cartpole_TAAC = {
+    "method": "bayes",
+    "metric": {"goal": "maximize", "name": "score"},
+    "parameters": {
+        "gamma": {"values": list(np.arange(0.98, 1.00, 0.001))},
+        "lam": {"values": list(np.arange(0.95, 1.00, 0.001))},
+        "n_timesteps": {"values": list(range(4, 2048, 4))},
+        "epochs": {"values": list(range(1, 10, 1))},
+
+        "a_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
+        "a_nr_of_clauses": {"values": list(range(1000, 2000, 50))},
+        "a_specificity": {"values": list(np.arange(1.0, 10.00, 0.01))},
+        "a_bits_per_feature": {"values": list(range(4, 9, 1))},
+        "a_number_of_state_bits_ta": {"values": list(range(3, 6, 1))},
+
+        "c_t": {"values": list(np.arange(0.01, 1.0, 0.01))},
+        "c_nr_of_clauses": {"values": list(range(800, 1500, 10))},
+        "c_specificity": {"values": list(np.arange(1.0, 10.0, 0.01))},
+        "c_bits_per_feature": {"values": list(range(4, 9, 1))},
+        "c_number_of_state_bits_ta": {"values": list(range(3, 8, 1))},
+        "c_max_update_p": {"values": list(np.arange(0.001, 1.0, 0.001))},
+        "c_y_max": {"values": list(np.arange(90, 110, 0.5))},
+        "c_y_min": {"values": list(np.arange(0.0, 1.0, 0.1))},
+    }
+}

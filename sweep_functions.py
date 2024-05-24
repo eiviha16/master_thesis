@@ -10,7 +10,7 @@ n_episodes_1 = 2500
 n_epsidoes_acro = 250
 n_episodes_2 = 5000
 test_freq_2 = 25
-cartpole_threshold = 20
+cartpole_threshold = 0
 acrobot_threshold = -495
 
 
@@ -754,3 +754,39 @@ def acrobot_nDQN(config):
     score = agent.best_scores['mean']
     print(f'mean: {np.mean(np.array(agent.scores))}')
     return score
+
+
+def cartpole_TAAC(config):
+    random.seed(42)
+    np.random.seed(42)
+    torch.manual_seed(42)
+
+    import gymnasium as gym
+    from algorithms.Tsetlin_Actor_Critic.TAAC import TAAC
+    from algorithms.policy.TAAC_policy import AdvantageActorCriticPolicy as Policy
+
+    actor = {'nr_of_clauses': config.a_nr_of_clauses, 'T': int(config.a_nr_of_clauses * config.a_t),
+             's': config.a_specificity, 'device': 'CPU',
+             'bits_per_feature': config.a_bits_per_feature, "seed": 42,
+             'number_of_state_bits_ta': config.a_number_of_state_bits_ta}
+
+    critic = {"max_update_p": config.c_max_update_p, "min_update_p": 0.0,
+              'nr_of_clauses': config.c_nr_of_clauses, 'T': int(config.c_nr_of_clauses * config.c_t),
+              's': config.c_specificity,
+              'y_max': config.c_y_max, 'y_min': config.c_y_min, 'bits_per_feature': config.c_bits_per_feature,
+              'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
+
+    _config = {'comment': 'newest', 'algorithm': 'TAAC', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
+               "actor": actor, "critic": critic, 'epochs': config.epochs,
+               'test_freq': 100, "save": False, "seed": 42, "threshold": cartpole_threshold,
+               'n_timesteps': config.n_timesteps, "dataset_file_name": "cartpole_obs_data"}
+    print(_config)
+
+    env = gym.make("CartPole-v1")
+
+    agent = TAAC(env, Policy, _config)
+    agent.learn(nr_of_episodes=2500)
+    score = np.array(agent.best_score)
+    print(f'Best score: {score}')
+    print(f'Mean: {np.mean(np.array(agent.total_scores))}')
+    return np.mean(np.array(agent.total_scores))#score

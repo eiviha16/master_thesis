@@ -152,7 +152,7 @@ class TAC:
             self.rollout()
             if len(self.replay_buffer.cur_obs) >= self.batch_size:
                 self.train()
-                self.update_epsilon_greedy()
+            self.update_epsilon_greedy()
             self.soft_update()
             if self.best_score < self.threshold and self.cur_episode == 500:
                 break
