@@ -499,15 +499,15 @@ cdef class MultiClassTsetlinMachine:
 					# Type II Feedback
 					self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = -1
 
-				"""elif advantage < 0 and self.clause_sign[target_class,j,1] >= 0:
+				elif advantage < 0 and self.clause_sign[target_class,j,1] >= 0:
 						# Type II Feedback
 					self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = -1
 
 				elif advantage < 0 and self.clause_sign[target_class,j,1] < 0:
 					# Type I Feedback
-					self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = 1"""
+					self.feedback_to_clauses[self.clause_sign[target_class,j,0]] = 1
 
-			for j in xrange(self.clause_count[negative_target_class]):
+			"""for j in xrange(self.clause_count[negative_target_class]):
 				if 1.0*<float>pcg32_fast()/UINT32_MAX > (1.0/(self.threshold*2))*(self.threshold + self.class_sum[negative_target_class]):
 					continue
 				if advantage > 0 and self.clause_sign[negative_target_class,j,1] >= 0:
@@ -517,7 +517,7 @@ cdef class MultiClassTsetlinMachine:
 					# Type I Feedback
 					self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1
 
-				"""elif advantage < 0 and self.clause_sign[negative_target_class,j,1] >= 0:
+				elif advantage < 0 and self.clause_sign[negative_target_class,j,1] >= 0:
 						# Type I Feedback
 						self.feedback_to_clauses[self.clause_sign[negative_target_class,j,0]] = 1
 
