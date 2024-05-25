@@ -62,6 +62,8 @@ class TPPO:
     def calculate_advantage(self):
         advantage = 0
         for i in reversed(range(len(self.batch.actions))):
+            if self.batch.trunc[i]:
+                advantage = 0
             dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0][0]  * int(not self.batch.dones[i]) - \
                  self.batch.values[i][0][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])

@@ -7,7 +7,7 @@ def plot_many(names, data, title, ratio):
     plt.figure(figsize=(7, 5.5))
     for key in data:
         #x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
-        x = np.arange(0, int(len(data[key]['mean']) * 5), 5)
+        x = np.arange(0, int(len(data[key]['mean']) * 10), 10)
         #plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
         plt.plot(x, data[key]['mean'], label=names[key])
         """plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
@@ -115,7 +115,7 @@ def plot_many_rewards(environment, algorithms, new_size):
     # title = f'{environment} - n-step Q-Tsetlin-Machine'
     # title = f'{environment} - Deep Q-Network'
     # title = f'{environment} - n-step Deep Q-Network'
-    title = f'{environment} - Tsetlin Actor-Critic - Type a update'
+    title = f'{environment} '
     # title = f'{environment} - Tsetlin Proximal Policy Optimization'
     # title = f'{environment} - Proximal Policy Optimization'
     if new_size != -1:

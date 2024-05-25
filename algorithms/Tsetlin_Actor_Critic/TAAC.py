@@ -64,6 +64,8 @@ class TAAC:
         advantage = 0
         #next_value = self.batch.next_value[0]
         for i in reversed(range(len(self.batch.actions))):
+            if self.batch.trunc[i]:
+                advantage = 0
             dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0] * int(not self.batch.dones[i]) - \
                  self.batch.values[i][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
