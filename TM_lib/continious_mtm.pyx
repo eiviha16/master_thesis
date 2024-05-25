@@ -55,8 +55,8 @@ cdef class MultiClassTsetlinMachine:
 	cdef float s
 	cdef int number_of_states
 
-	cdef int[:,:,:] ta_state
-	cdef int[:,:,:] saved_ta_state
+	cdef float[:,:,:] ta_state
+	cdef float[:,:,:] saved_ta_state
 
 	cdef int[:] clause_count
 	cdef int[:] saved_clause_count
@@ -92,8 +92,8 @@ cdef class MultiClassTsetlinMachine:
 		self.boost_true_positive_feedback = boost_true_positive_feedback
 
 		# The state of each Tsetlin Automaton is stored here. The automata are randomly initialized to either 'number_of_states' or 'number_of_states' + 1.
-		self.ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
-		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.int32)
+		self.ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.float32)
+		self.saved_ta_state = np.random.choice([self.number_of_states, self.number_of_states+1], size=(self.number_of_clauses, self.number_of_features, 2)).astype(dtype=np.float32)
 
 		# Data structures for keeping track of which clause refers to which class, and the sign of the clause
 		self.clause_count = np.zeros((self.number_of_classes,), dtype=np.int32)
@@ -228,7 +228,7 @@ cdef class MultiClassTsetlinMachine:
 
 		return action
 	# Translates automata state to action
-	cdef int action(self, int state):
+	cdef int action(self, float state):
 		if state <= self.number_of_states:
 			return 0
 		else:
@@ -489,11 +489,8 @@ cdef class MultiClassTsetlinMachine:
 				self.feedback_to_clauses[j] = 0
 			# Calculate feedback to clauses
 			for j in xrange(self.clause_count[target_class]):
-
 				if 1.0*<float>pcg32_fast()/UINT32_MAX > (1.0/(self.threshold*2))*(self.threshold - self.class_sum[target_class]):
 					continue
-				if advantage == 0:
-					print(advantage)
 				#print(self.clause_sign[target_class,j,1])
 				if advantage > 0 and self.clause_sign[target_class,j,1] >= 0:
 					# Type I Feedback
@@ -530,6 +527,7 @@ cdef class MultiClassTsetlinMachine:
 
 
 
+
 			#################################
 			### Train Invididual Automata ###
 			#################################
@@ -544,31 +542,31 @@ cdef class MultiClassTsetlinMachine:
 						for k in xrange(self.number_of_features):
 							if 1.0*<float>pcg32_fast()/UINT32_MAX <= 1.0/self.s:
 								if self.ta_state[j,k,0] > 1:
-									self.ta_state[j,k,0] -= 1
+									self.ta_state[j,k,0] -= advantage
 
 							if 1.0*<float>pcg32_fast()/UINT32_MAX <= 1.0/self.s:
 								if self.ta_state[j,k,1] > 1:
-									self.ta_state[j,k,1] -= 1
+									self.ta_state[j,k,1] -= advantage
 
 					elif self.clause_output[j] == 1:
 						for k in xrange(self.number_of_features):
 							if X[k] == 1:
 								if self.boost_true_positive_feedback == 1 or 1.0*<float>pcg32_fast()/UINT32_MAX <= (self.s-1)/self.s:
 									if self.ta_state[j,k,0] < self.number_of_states*2:
-										self.ta_state[j,k,0] += 1
+										self.ta_state[j,k,0] += advantage
 
 								if 1.0*<float>pcg32_fast()/UINT32_MAX <= 1.0/self.s:
 									if self.ta_state[j,k,1] > 1:
-										self.ta_state[j,k,1] -= 1
+										self.ta_state[j,k,1] -= advantage
 
 							elif X[k] == 0:
 								if self.boost_true_positive_feedback == 1 or 1.0*<float>pcg32_fast()/UINT32_MAX <= (self.s-1)/self.s:
 									if self.ta_state[j,k,1] < self.number_of_states*2:
-										self.ta_state[j,k,1] += 1
+										self.ta_state[j,k,1] += advantage
 
 								if 1.0*<float>pcg32_fast()/UINT32_MAX <= 1.0/self.s:
 									if self.ta_state[j,k,0] > 1:
-										self.ta_state[j,k,0] -= 1
+										self.ta_state[j,k,0] -= advantage
 
 				elif self.feedback_to_clauses[j] < 0:
 					#####################################################
@@ -581,10 +579,10 @@ cdef class MultiClassTsetlinMachine:
 
 							if X[k] == 0:
 								if action_include == 0 and self.ta_state[j,k,0] < self.number_of_states*2:
-									self.ta_state[j,k,0] += 1
+									self.ta_state[j,k,0] += advantage
 							elif X[k] == 1:
 								if action_include_negated == 0 and self.ta_state[j,k,1] < self.number_of_states*2:
-									self.ta_state[j,k,1] += 1
+									self.ta_state[j,k,1] += advantage
 
 		##############################################
 		### Batch Mode Training of Tsetlin Machine ###

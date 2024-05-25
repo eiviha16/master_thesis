@@ -119,7 +119,7 @@ class QTM:
         return np.array(q_vals)
 
     def train(self):
-        for _ in self.sampling_iterations:
+        for _ in range(self.sampling_iterations):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
@@ -175,7 +175,7 @@ class QTM:
         while True:
             action, _ = self.get_next_action(cur_obs)
             next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done), self.nr_of_steps)
+            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done))
             cur_obs = next_obs
             self.nr_of_steps += 1
 

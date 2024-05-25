@@ -18,8 +18,8 @@ config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_a', 'soft_update_type
           'dataset_file_name': 'acrobot_obs_data'}
 print(config)
 
-# env = gym.make("CartPole-v1")
-env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
 
 agent = QTM(env, Policy, config)
 agent.learn(nr_of_episodes=2500)

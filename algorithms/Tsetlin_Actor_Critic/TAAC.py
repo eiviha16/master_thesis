@@ -87,6 +87,7 @@ class TAAC:
             if len(self.batch.actions) - 1 > self.n_timesteps:
                 self.batch.convert_to_numpy()
                 self.calculate_advantage()
+                #self.normalize_advantages()
                 self.train()
                 self.batch.clear()
 
