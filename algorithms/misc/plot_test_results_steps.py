@@ -197,7 +197,8 @@ if __name__ == "__main__":
     }"""
 
     algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_61', 'name': 'TPPO'},
+        'TPPO': {'folder': 'TPPO', 'run': 'run_64', 'name': 'Tsetlin Proximal Policy Optimization'},
+        #'TAAC': {'folder': 'TAAC', 'run': 'run_1', 'name': 'Tsetlin Advantage Actor-Critic'},
         #'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_34', 'name': 'Tsetlin Actor-Critic - Type a update'},
         #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }

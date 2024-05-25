@@ -417,6 +417,12 @@ cdef class TsetlinMachine:
 			elif update_p < self.min_update_p:
 				update_p = self.min_update_p
 
+			################## NOTE ##################
+			# consider using entropy to further regulate the update probability.
+			# the purpose of entropy here would be to reduce the update probability as the agent becomes more certain in its actions (hopefully it does).
+			# This can help mitigate excessive updates for advantages of high magnitude as the agents policy begins to converge.
+			############################################
+
 			if advantage > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):

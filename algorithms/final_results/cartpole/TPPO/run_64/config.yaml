@@ -1,0 +1,50 @@
+action_space_size: !!python/object/apply:numpy.core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - i8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  AgAAAAAAAAA=
+actor:
+  T: 1319
+  bits_per_feature: 7
+  max_update_p: 0.081
+  min_update_p: 0.0004
+  nr_of_clauses: 1500
+  number_of_state_bits_ta: 3
+  s: 3.6800000000000024
+  y_max: 100
+  y_min: 0
+algorithm: TPPO
+critic:
+  T: 380
+  bits_per_feature: 5
+  max_update_p: 0.043
+  min_update_p: 0.0
+  nr_of_clauses: 1120
+  number_of_state_bits_ta: 6
+  s: 8.240000000000006
+  y_max: 93
+  y_min: 0.1
+dataset_file_name: cartpole_obs_data
+device: CPU
+env_name: cartpole
+epochs: 4
+gamma: 0.999
+lam: 0.986
+n_timesteps: 1432
+obs_space_size: 4
+save: true
+seed: 42
+test_freq: 10
+threshold: 0
