@@ -403,13 +403,20 @@ cdef class TsetlinMachine:
 				# Type I feedback if target is higher than the predicted value
 
 
-			if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > self.max_update_p:
+			"""if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > self.max_update_p:
 				update_p = self.max_update_p
 			elif 1.0*(abs(y-output_value))/(self.max_target - self.min_target) < self.min_update_p:
 				update_p = self.min_update_p
 			else:
-				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
-			#update_p = abs(advantage) * 0.001
+				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)"""
+
+			update_p = abs(advantage) * 0.001
+
+			if update_p > self.max_update_p:
+				update_p = self.max_update_p
+			elif update_p < self.min_update_p:
+				update_p = self.min_update_p
+
 			if advantage > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):

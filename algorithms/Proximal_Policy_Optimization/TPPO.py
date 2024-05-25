@@ -108,12 +108,10 @@ class TPPO:
         return tm
 
     def get_update_data_critic(self):
-        tm = [{'observations': [], 'target': []} for _ in range(self.action_space_size)]
+        tm = {'observations': [], 'target': []}
         for i in range(len(self.batch.actions)):
-            idx = self.batch.actions[i]
-            tm[idx]['observations'].append(self.batch.obs[i])
-            tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
-
+            tm['observations'].append(self.batch.obs[i])
+            tm['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
         return tm
 
     def train(self):
@@ -122,13 +120,8 @@ class TPPO:
             self.policy.actor.update_2(actor_update)
 
             critic_update = self.get_update_data_critic()
-            abs_errors = self.policy.critic.update(critic_update)
-            for key in abs_errors:
-                if key not in self.abs_errors:
-                    self.abs_errors[key] = []
-                for val in abs_errors[key]:
-                    self.abs_errors[key].append(val)
-        self.abs_errors = {}
+            self.policy.critic.update(critic_update)
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):

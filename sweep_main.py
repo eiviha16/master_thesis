@@ -105,7 +105,7 @@ def start_a_TAC_b():
 ################### TPPO #######################
 ################################################
 def main_c_TPPO():
-    wandb.init(project="cartpole-TPPO-f")
+    wandb.init(project="cartpole-TPPO-ff")
     score = cartpole_TPPO(wandb.config)
     wandb.log({"score": score})
 
@@ -118,7 +118,7 @@ def main_a_TPPO():
 
 def start_c_TPPO():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TPPO, project="cartpole-TPPO-f")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TPPO, project="cartpole-TPPO-ff")
     wandb.agent(sweep_id, function=main_c_TPPO, count=10_000)
 
 
@@ -307,14 +307,14 @@ def start_a_nDQN():
 
 
 def main_c_TAAC():
-    wandb.init(project="cartpole-TAAC-fff")
+    wandb.init(project="cartpole-TAAC-ffff")
     score = cartpole_TAAC(wandb.config)
     wandb.log({"score": score})
 
 
 def start_c_TAAC():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TAAC, project="cartpole-TAAC-fff")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TAAC, project="cartpole-TAAC-ffff")
     wandb.agent(sweep_id, function=main_c_TAAC, count=10_000)
 
 #f uses just feedback for the target class
