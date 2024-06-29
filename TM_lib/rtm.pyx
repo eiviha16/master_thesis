@@ -403,13 +403,26 @@ cdef class TsetlinMachine:
 				# Type I feedback if target is higher than the predicted value
 
 
-			if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > self.max_update_p:
+			"""if 1.0*(abs(y-output_value))/(self.max_target - self.min_target) > self.max_update_p:
 				update_p = self.max_update_p
 			elif 1.0*(abs(y-output_value))/(self.max_target - self.min_target) < self.min_update_p:
 				update_p = self.min_update_p
 			else:
-				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)
-			#update_p = abs(advantage) * 0.001
+				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)"""
+
+			update_p = abs(advantage) * 0.001
+
+			if update_p > self.max_update_p:
+				update_p = self.max_update_p
+			elif update_p < self.min_update_p:
+				update_p = self.min_update_p
+
+			################## NOTE ##################
+			# consider using entropy to further regulate the update probability.
+			# the purpose of entropy here would be to reduce the update probability as the agent becomes more certain in its actions (hopefully it does).
+			# This can help mitigate excessive updates for advantages of high magnitude as the agents policy begins to converge.
+			############################################
+
 			if advantage > 0:
 				feedback = 0
 				for j in xrange(self.number_of_clauses):

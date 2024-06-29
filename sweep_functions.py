@@ -294,17 +294,20 @@ def cartpole_TPPO(config):
 
     _config = {'comment': 'newest', 'algorithm': 'TPPO', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
                "actor": actor, "critic": critic, 'epochs': config.epochs,
-               'test_freq': 1, "save": False, "seed": 42, "threshold": cartpole_threshold,
-               'n_timesteps': config.n_timesteps, "dataset_file_name": "observation_data"}
+               
+               'test_freq': 100, "save": False, "seed": 42, "threshold": cartpole_threshold,
+               'n_timesteps': config.n_timesteps, "dataset_file_name": "cartpole_obs_data"}
+
     print(_config)
 
     env = gym.make("CartPole-v1")
 
     agent = TPPO(env, Policy, _config)
-    agent.learn(nr_of_episodes=n_episodes_1)
+    agent.learn(nr_of_episodes=2500)
     score = np.array(agent.best_score)
+    print(f'Best score: {score}')
     print(f'Mean: {np.mean(np.array(agent.total_scores))}')
-    return score
+    return np.mean(np.array(agent.total_scores))
 
 
 def acrobot_TPPO(config):

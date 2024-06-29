@@ -61,14 +61,12 @@ class TPPO:
 
     def calculate_advantage(self):
         advantage = 0
-        next_value = self.batch.next_value[0][0]
         for i in reversed(range(len(self.batch.actions))):
-            # if self.batch.trunc[i]:
-            #    next_value = self.policy.critic.predict(np.array(self.batch.obs[i]))[0][0]
-            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.dones[i]) - \
+            if self.batch.trunc[i]:
+                advantage = 0
+            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0][0]  * int(not self.batch.dones[i]) - \
                  self.batch.values[i][0][0]
             advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
-            next_value = self.batch.values[i][0][0]
             self.batch.advantages.insert(0, advantage)
 
     def normalize_advantages(self):
@@ -77,12 +75,13 @@ class TPPO:
         self.batch.advantages = norm_advantages
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=random.randint(1, 100))
+        next_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
-            action, value, log_prob, entropy = self.policy.get_action(obs)
-            obs, reward, done, truncated, _ = self.env.step(action[0])
+            action, value, log_prob, entropy = self.policy.get_action(next_obs)
+            obs = next_obs
+            next_obs, reward, done, truncated, _ = self.env.step(action[0])
 
-            self.batch.save_experience(action[0], log_prob[0], value, obs, reward, done, truncated, entropy)
+            self.batch.save_experience(action[0], log_prob[0], value, self.policy.critic.predict(np.array(next_obs)), obs, reward, done, truncated, entropy)
             self.batch.next_value = self.policy.critic.predict(np.array(obs))
             self.timesteps += 1
             if len(self.batch.actions) - 1 > self.n_timesteps:
@@ -111,12 +110,10 @@ class TPPO:
         return tm
 
     def get_update_data_critic(self):
-        tm = [{'observations': [], 'target': []} for _ in range(self.action_space_size)]
+        tm = {'observations': [], 'target': []}
         for i in range(len(self.batch.actions)):
-            idx = self.batch.actions[i]
-            tm[idx]['observations'].append(self.batch.obs[i])
-            tm[idx]['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
-
+            tm['observations'].append(self.batch.obs[i])
+            tm['target'].append(self.batch.advantages[i] + self.batch.values[i, 0, 0])
         return tm
 
     def train(self):
@@ -125,13 +122,8 @@ class TPPO:
             self.policy.actor.update_2(actor_update)
 
             critic_update = self.get_update_data_critic()
-            abs_errors = self.policy.critic.update(critic_update)
-            for key in abs_errors:
-                if key not in self.abs_errors:
-                    self.abs_errors[key] = []
-                for val in abs_errors[key]:
-                    self.abs_errors[key].append(val)
-        self.abs_errors = {}
+            self.policy.critic.update(critic_update)
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):

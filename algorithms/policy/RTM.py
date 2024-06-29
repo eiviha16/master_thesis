@@ -120,13 +120,9 @@ class TMS:
         keys = ['critic']
         abs_errors = {}
         # take a list for each tm that is being updated.
-        for i, tm in enumerate(self.tms):
-            if len(tm_input[i]['observations']) > 0:
-                tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
-                abs_error = tm.fit(tm_input[i]['observations'].astype(dtype=np.int32),
-                                   np.array(tm_input[i]['target']).astype(dtype=np.float32))
-                abs_errors[keys[i]] = abs_error
-        return abs_errors
+        if len(tm_input['observations']) > 0:
+            tm_input['observations'] = self.binarizer.transform(np.array(tm_input['observations']))
+            _ = self.tms[0].fit(tm_input['observations'].astype(dtype=np.int32), np.array(tm_input['target']).astype(dtype=np.float32))
 
     def update_2(self, tm_input):  # , clip):
         # take a list for each tm that is being updated.
