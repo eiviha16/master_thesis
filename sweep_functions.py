@@ -294,8 +294,10 @@ def cartpole_TPPO(config):
 
     _config = {'comment': 'newest', 'algorithm': 'TPPO', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
                "actor": actor, "critic": critic, 'epochs': config.epochs,
+               
                'test_freq': 100, "save": False, "seed": 42, "threshold": cartpole_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "cartpole_obs_data"}
+
     print(_config)
 
     env = gym.make("CartPole-v1")
@@ -329,7 +331,7 @@ def acrobot_TPPO(config):
               'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
 
     _config = {'comment': 'newest', 'algorithm': 'TPPO', 'gamma': config.gamma, 'lam': config.lam, 'device': 'CPU',
-               "actor": actor, "critic": critic, 'epochs': config.sampling_iterations,
+               "actor": actor, "critic": critic, 'epochs': config.epochs,
                'test_freq': 1, "save": False, "seed": 42, "threshold": acrobot_threshold,
                'n_timesteps': config.n_timesteps, "dataset_file_name": "acrobot_obs_data"}
     print(_config)

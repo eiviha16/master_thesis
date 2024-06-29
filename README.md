@@ -1,7 +1,6 @@
 # master_thesis
 Master thesis for AI, Reinforcment learning using Tsetlin Machines
 
-
 This repository provide 4 unique reinforcement learning algorithms.
 
 * Q-Tsetlin-Machine

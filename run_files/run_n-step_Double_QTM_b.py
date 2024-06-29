@@ -17,8 +17,8 @@ config = {"env_name": "acrobot", 'algorithm': 'n_step_Double_QTM_b', 'soft_updat
           'save': True, 'seed': 42, 'threshold': -495, 'number_of_state_bits_ta': 6, 'update_freq': 3,
           'dataset_file_name': 'acrobot_obs_data'}
 print(config)
-# env = gym.make("CartPole-v1")
-env = gym.make("Acrobot-v1")
+env = gym.make("CartPole-v1")
+#env = gym.make("Acrobot-v1")
 
 agent = QTM(env, Policy, config)
 agent.learn(nr_of_episodes=2500)
