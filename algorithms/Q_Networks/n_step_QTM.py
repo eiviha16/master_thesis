@@ -24,10 +24,10 @@ class QTM:
         self.epsilon_min = 0
 
 
-        self.sampling_iterations = config['sampling_iterations']
+        self.sample_size = config["sample_size"]
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
-
+        self.train_freq = config["train_freq"]
         self.y_max = config['y_max']
         self.y_min = config['y_min']
 
@@ -119,7 +119,7 @@ class QTM:
         return tm_inputs
 
     def train(self):
-        for _ in range(self.sampling_iterations):
+        for _ in range(self.sample_size):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample_n_seq()
 
@@ -149,6 +149,9 @@ class QTM:
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done))
             cur_obs = next_obs
             self.nr_of_steps += 1
+
+            if self.nr_of_steps >= self.sample_size and self.nr_of_steps % self.train_freq == 0:
+                self.train()
 
             if done or truncated:
                 break

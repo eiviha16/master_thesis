@@ -20,9 +20,10 @@ class TAC:
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
-        self.epsilon_min = 0.01
+        self.epsilon_min = config["epsilon_min"]
 
-        self.sampling_iterations = config['sampling_iterations']
+        self.sample_size = config['sample_size']
+        self.train_freq = config["train_freq"]
         self.config = config
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
@@ -73,6 +74,8 @@ class TAC:
             next_obs, reward, done, truncated, _ = self.env.step(action)
             self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, done)
             self.timesteps += 1
+            if self.timesteps >= self.sample_size and self.timesteps % self.train_freq == 0:
+                self.train()
             if done or truncated:
                 break
             cur_obs = next_obs
@@ -124,7 +127,7 @@ class TAC:
         return tms
 
     def train(self):
-        for _ in range(self.sampling_iterations):
+        for _ in range(self.sample_size):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
             b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
@@ -139,6 +142,7 @@ class TAC:
             actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.online_critic.update(critic_update)
+        self.soft_update()
 
     def update_epsilon_greedy(self):
         self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(
@@ -150,10 +154,8 @@ class TAC:
                 self.test()
             self.cur_episode = episode + 1
             self.rollout()
-            if len(self.replay_buffer.cur_obs) >= self.batch_size:
-                self.train()
+
             self.update_epsilon_greedy()
-            self.soft_update()
             if self.best_score < self.threshold and self.cur_episode == 500:
                 break
 

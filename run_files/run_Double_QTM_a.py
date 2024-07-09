@@ -12,8 +12,8 @@ from algorithms.policy.RTM import Policy
 
 config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_a', 'soft_update_type': 'soft_update_a',
           'nr_of_clauses': 1180, 'T': 1050, 'max_update_p': 0.178, 'min_update_p': 0, 's': 6.210000000000004,
-          'y_max': 75, 'y_min': 20, 'device': 'CPU', 'bits_per_feature': 10, 'gamma': 0.976, 'epsilon_init': 0.9,
-          'epsilon_decay': 0.007, 'buffer_size': 6500, 'batch_size': 96, 'sampling_iterations': 5, 'test_freq': 1,
+          'y_max': 75, 'y_min': 20, "train_freq": 100, 'device': 'CPU', 'bits_per_feature': 10, 'gamma': 0.976, 'epsilon_init': 0.9,
+          'epsilon_decay': 0.007, "epsilon_min": 0, 'buffer_size': 6500, 'batch_size': 1, 'sample_size': 64, 'test_freq': 1,
           'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 6, 'clause_update_p': 0.618,
           'dataset_file_name': 'acrobot_obs_data'}
 print(config)

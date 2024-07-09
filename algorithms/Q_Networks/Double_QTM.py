@@ -21,11 +21,11 @@ class QTM:
         self.init_epsilon = config['epsilon_init']
         self.epsilon = self.init_epsilon
         self.epsilon_decay = config['epsilon_decay']
-        self.epsilon_min = 0
+        self.epsilon_min = config['epsilon_min']
 
-        self.sampling_iterations = config['sampling_iterations']
+        self.sample_size = config['sample_size']
         self.buffer_size = config['buffer_size']
-        self.batch_size = config['batch_size']
+        self.batch_size = config["batch_size"]
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
@@ -64,6 +64,7 @@ class QTM:
         self.cur_episode = 0
         self.abs_errors = {}
         self.nr_of_steps = 0
+        self.train_freq = config['train_freq']
         self.threshold = config['threshold']
 
 
@@ -119,7 +120,7 @@ class QTM:
         return np.array(q_vals)
 
     def train(self):
-        for _ in range(self.sampling_iterations):
+        for _ in range(self.sample_size):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
 
@@ -133,6 +134,7 @@ class QTM:
             tm_inputs = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_actions, target_q_vals)
 
             _ = self.online_policy.update(tm_inputs)
+        self.soft_update()
 
     def soft_update(self):
         if self.config['soft_update_type'] == 'soft_update_a':
@@ -179,8 +181,12 @@ class QTM:
             cur_obs = next_obs
             self.nr_of_steps += 1
 
+            if self.nr_of_steps >= self.sample_size and self.nr_of_steps % self.train_freq == 0:
+                self.train()
+
             if done or truncated:
                 break
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -190,10 +196,7 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
-            if self.nr_of_steps >= self.batch_size:
-                self.train()
             self.update_epsilon_greedy()
-            self.soft_update()
 
     def test(self, nr_of_steps):
         self.q_vals = [0, 0]
@@ -230,7 +233,6 @@ class QTM:
     def save_model(self, best_model):
         if self.save:
             if best_model:
-
                 tms = self.online_policy.tms
                 tms_save = []
                 for tm in range(len(tms)):

@@ -24,14 +24,15 @@ class QTM:
         self.epsilon_decay = config['epsilon_decay']
         self.epsilon_min = 0
 
-        self.sampling_iterations = config['sampling_iterations']
+
+        self.sample_size = config['sample_size']
         self.buffer_size = config['buffer_size']
         self.batch_size = config['batch_size']
 
         self.y_max = config['y_max']
         self.y_min = config['y_min']
 
-        self.replay_buffer = ReplayBuffer(self.buffer_size, self.batch_size)
+        self.replay_buffer = ReplayBuffer(self.buffer_size, batch_size=1)
         self.test_freq = config['test_freq']
         self.nr_of_test_episodes = 100
         if config['save']:
@@ -58,6 +59,8 @@ class QTM:
         self.total_score = []
         self.nr_of_steps = 0
         self.threshold = config['threshold']
+        self.train_freq = config['train_freq']
+
 
 
     def announce(self):
@@ -106,7 +109,7 @@ class QTM:
         return tm_inputs
 
     def train(self):
-        for _ in range(self.sampling_iterations):
+        for _ in range(self.sample_size):
             self.replay_buffer.clear_cache()
             self.replay_buffer.sample()
             next_q_vals = self.policy.predict(np.array(self.replay_buffer.sampled_next_obs))  # next_obs?
@@ -138,6 +141,9 @@ class QTM:
             cur_obs = next_obs
             self.nr_of_steps += 1
 
+            if self.nr_of_steps >= self.sample_size and self.nr_of_steps % self.train_freq == 0:
+                self.train()
+
             if done or truncated:
                 break
 
@@ -149,8 +155,6 @@ class QTM:
             if self.best_scores['mean'] < self.threshold and self.cur_episode == 100:
                 break
             self.rollout()
-            if self.nr_of_steps >= self.batch_size:
-                self.train()
             self.update_epsilon_greedy()
 
 
