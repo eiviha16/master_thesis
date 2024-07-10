@@ -66,9 +66,9 @@ class TAAC:
         for i in reversed(range(len(self.batch.actions))):
             if self.batch.trunc[i]:
                 advantage = 0
-            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0] * int(not self.batch.dones[i]) - \
+            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0] * int(not self.batch.terminated[i]) - \
                  self.batch.values[i][0]
-            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
+            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.terminated[i])
             self.batch.advantages.insert(0, advantage)
 
     def normalize_advantages(self):

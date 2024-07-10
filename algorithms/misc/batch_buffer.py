@@ -12,7 +12,7 @@ class Batch:
         self.next_values = []
         self.obs = []
         self.rewards = []
-        self.dones = []
+        self.terminated = []
         self.advantages = []
         self.entropies = []
         self.discounted_rewards = []
@@ -24,7 +24,7 @@ class Batch:
         self.sampled_next_values = []
         self.sampled_obs = []
         self.sampled_rewards = []
-        self.sampled_dones = []
+        self.sampled_terminated = []
         self.sampled_advantages = []
         self.sampled_entropies = []
         self.sampled_discounted_rewards = []
@@ -37,7 +37,7 @@ class Batch:
         self.next_values = []
         self.obs = []
         self.rewards = []
-        self.dones = []
+        self.terminated = []
         self.advantages = []
         self.entropies = []
         self.discounted_rewards = []
@@ -50,7 +50,7 @@ class Batch:
         self.next_sampled_values = []
         self.sampled_obs = []
         self.sampled_rewards = []
-        self.sampled_dones = []
+        self.sampled_terminated = []
         self.sampled_advantages = []
         self.sampled_entropies = []
         self.sampled_discounted_rewards = []
@@ -64,7 +64,7 @@ class Batch:
             self.sampled_next_values.append(self.next_values[s])
             self.sampled_obs.append(self.obs[s])
             self.sampled_rewards.append(self.rewards[s])
-            self.sampled_dones.append(self.dones[s])
+            self.sampled_terminated.append(self.terminated[s])
             self.sampled_advantages.append(self.advantages[s])
             self.sampled_entropies.append(self.entropies[s])
             self.sampled_trunc.append(self.trunc[s])
@@ -77,7 +77,7 @@ class Batch:
         self.sampled_next_values = np.array(self.sampled_next_values)
         self.sampled_obs = np.array(self.sampled_obs)
         self.sampled_rewards = np.array(self.sampled_rewards)
-        self.sampled_dones = np.array(self.sampled_dones)
+        self.sampled_terminated = np.array(self.sampled_terminated)
         self.sampled_advantages = np.array(self.sampled_advantages)
         self.sampled_entropies = np.array(self.sampled_entropies)
         self.sampled_trunc = np.array(self.trunc)
@@ -91,13 +91,13 @@ class Batch:
         self.sampled_next_values = []
         self.sampled_obs = []
         self.sampled_rewards = []
-        self.sampled_dones = []
+        self.sampled_terminated = []
         self.sampled_advantages = []
         self.sampled_entropies = []
         self.sampled_discounted_rewards = []
         self.trunc = []
 
-        if len(self.dones) > self.batch_size:
+        if len(self.terminated) > self.batch_size:
             sample = random.sample(range(len(self.rewards)), self.batch_size)
             for i, s in enumerate(sample):
                 self.sampled_actions.append(self.actions[s])
@@ -106,7 +106,7 @@ class Batch:
                 self.sampled_next_values.append(self.next_values[s])
                 self.sampled_obs.append(self.obs[s])
                 self.sampled_rewards.append(self.rewards[s])
-                self.sampled_dones.append(self.dones[s])
+                self.sampled_terminated.append(self.terminated[s])
                 self.sampled_advantages.append(self.advantages[s])
                 self.sampled_entropies.append(self.entropies[s])
                 self.sampled_discounted_rewards.append(self.discounted_rewards[s])
@@ -118,7 +118,7 @@ class Batch:
             self.sampled_next_values = np.array(self.sampled_next_values)
             self.sampled_obs = np.array(self.sampled_obs)
             self.sampled_rewards = np.array(self.sampled_rewards)
-            self.sampled_dones = np.array(self.sampled_dones)
+            self.sampled_terminated = np.array(self.sampled_terminated)
             self.sampled_advantages = np.array(self.sampled_advantages)
             self.sampled_entropies = np.array(self.sampled_entropies)
             self.sampled_discounted_rewards = np.array(self.sampled_discounted_rewards)
@@ -132,13 +132,13 @@ class Batch:
             self.sampled_next_values = self.next_values
             self.sampled_obs = self.obs
             self.sampled_rewards = self.rewards
-            self.sampled_dones = self.dones
+            self.sampled_terminated = self.terminated
             self.sampled_advantages = self.advantages
             self.sampled_entropies = self.entropies
             self.sampled_discounted_rewards = self.discounted_rewards
             self.sampled_trunc = self.trunc
 
-    def save_experience(self, action, action_log_prob, value, next_value, obs, reward, done, trunc=0, entropy=0):
+    def save_experience(self, action, action_log_prob, value, next_value, obs, reward, terminated, trunc, entropy):
         self.actions.append(action)
         self.action_log_prob.append(action_log_prob)
         self.values.append(value)
@@ -147,7 +147,7 @@ class Batch:
         # self.values.append(value.detach().numpy())
         self.obs.append(obs)
         self.rewards.append(reward)
-        self.dones.append(done)
+        self.terminated.append(terminated)
         # self.dones.append(int(done))
         self.entropies.append(entropy)
         self.trunc.append(trunc)
@@ -159,7 +159,7 @@ class Batch:
         self.next_values = np.array(self.next_values)
         self.obs = np.array(self.obs)
         self.rewards = np.array(self.rewards)
-        self.dones = np.array(self.dones)
+        self.terminated = np.array(self.terminated)
         self.entropies = np.array(self.entropies)
         self.trunc = np.array(self.trunc)
 

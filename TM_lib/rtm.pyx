@@ -410,7 +410,7 @@ cdef class TsetlinMachine:
 			else:
 				update_p = 1.0*(abs(y-output_value))/(self.max_target - self.min_target)"""
 
-			update_p = abs(advantage) * 0.001
+			update_p = entropy * abs(advantage) * 0.001
 
 			if update_p > self.max_update_p:
 				update_p = self.max_update_p

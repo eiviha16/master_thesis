@@ -64,9 +64,9 @@ class TPPO:
         for i in reversed(range(len(self.batch.actions))):
             if self.batch.trunc[i]:
                 advantage = 0
-            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0][0]  * int(not self.batch.dones[i]) - \
+            dt = self.batch.rewards[i] + self.gamma * self.batch.next_values[i][0][0] * int(not self.batch.terminated[i]) - \
                  self.batch.values[i][0][0]
-            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
+            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.terminated[i])
             self.batch.advantages.insert(0, advantage)
 
     def normalize_advantages(self):
@@ -79,9 +79,9 @@ class TPPO:
         while True:
             action, value, log_prob, entropy = self.policy.get_action(next_obs)
             obs = next_obs
-            next_obs, reward, done, truncated, _ = self.env.step(action[0])
+            next_obs, reward, terminated, truncated, _ = self.env.step(action[0])
 
-            self.batch.save_experience(action[0], log_prob[0], value, self.policy.critic.predict(np.array(next_obs)), obs, reward, done, truncated, entropy)
+            self.batch.save_experience(action[0], log_prob[0], value, self.policy.critic.predict(np.array(next_obs)), obs, reward, terminated, truncated, entropy)
             self.batch.next_value = self.policy.critic.predict(np.array(obs))
             self.timesteps += 1
             if len(self.batch.actions) - 1 > self.n_timesteps:
@@ -90,7 +90,7 @@ class TPPO:
                 self.train()
                 self.batch.clear()
 
-            if done or truncated:
+            if terminated or truncated:
                 break
 
     def evaluate_actions(self):
@@ -105,7 +105,8 @@ class TPPO:
             tm[idx]['observations'].append(self.batch.obs[i])
             tm[idx]['target'].append(self.batch.action_log_prob[i][idx])
             tm[idx]['advantages'].append(self.batch.advantages[i])
-            tm[idx]['entropy'].append(self.batch.entropies[i][idx])
+            tm[idx]['entropy'].append(self.batch.entropies[i])
+        print(self.batch.entropies[0])
 
         return tm
 

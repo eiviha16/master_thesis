@@ -165,7 +165,9 @@ class ActorCriticPolicy:
         normalized_action_prob = action_probs / np.sum(action_probs, axis=-1, keepdims=True)
         actions = np.apply_along_axis(lambda x: np.random.choice(range(self.config['action_space_size']), p=x), axis=-1,
                                       arr=normalized_action_prob)
-        entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
+        #entropy = [-(p * np.log2(p) + (1 - p) * np.log2(1 - p)) for p in normalized_action_prob][0]
+        e = [-p * np.log2(p) for p in normalized_action_prob[0] if p > 0]
+        entropy = sum(e)
         values = self.critic.predict(obs)
         return actions, values, action_probs, entropy
 

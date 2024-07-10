@@ -55,8 +55,8 @@ class PPO:
         for i in reversed(range(len(self.batch.actions))):
             if self.batch.trunc[i]:
                 next_value = self.policy.critic(torch.tensor(self.batch.obs[i])).detach().numpy()
-            dt = self.batch.rewards[i] + self.gamma * next_value  * int(not self.batch.dones[i]) - self.batch.values[i]
-            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.dones[i])
+            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.terminated[i]) - self.batch.values[i]
+            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.terminated[i])
             next_value = self.batch.values[i]
             self.batch.advantages.insert(0, advantage)
             discounted_reward = self.batch.rewards[i] + self.gamma * discounted_reward
