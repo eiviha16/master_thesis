@@ -11,19 +11,19 @@ class ReplayBuffer:
         self.cur_obs = []  # 0 for i in range(buffer_size)]
         self.next_obs = []  # 0 for i in range(buffer_size)]
         self.rewards = []  # 0 for i in range(buffer_size)]
-        self.dones = []  # 0 for i in range(buffer_size)]
+        self.terminated = []  # 0 for i in range(buffer_size)]
 
         self._actions = [[], []]  # 0 for i in range(buffer_size)]
         self._cur_obs = [[], []]  # 0 for i in range(buffer_size)]
         self._next_obs = [[], []]  # 0 for i in range(buffer_size)]
         self._rewards = [[], []]  # 0 for i in range(buffer_size)]
-        self._dones = [[], []]  # 0 for i in range(buffer_size)]
+        self._terminated = [[], []]  # 0 for i in range(buffer_size)]
 
         self.sampled_actions = []  # 0 for i in range(batch_size)]
         self.sampled_cur_obs = []  # 0 for i in range(batch_size)]
         self.sampled_next_obs = []  # 0 for i in range(batch_size)]
         self.sampled_rewards = []  # 0 for i in range(batch_size)]
-        self.sampled_dones = []  # 0 for i in range(batch_size)]
+        self.sampled_terminated = []  # 0 for i in range(batch_size)]
 
         self.indices = []  # i for i in range(buffer_size)]
         self.n = n
@@ -33,7 +33,7 @@ class ReplayBuffer:
         self.sampled_cur_obs = []
         self.sampled_next_obs = []
         self.sampled_rewards = []
-        self.sampled_dones = []
+        self.sampled_terminated = []
 
     def sample(self):
         sample = random.sample(range(len(self.rewards)), self.batch_size)
@@ -42,7 +42,7 @@ class ReplayBuffer:
             self.sampled_cur_obs.append(self.cur_obs[s])
             self.sampled_next_obs.append(self.next_obs[s])
             self.sampled_rewards.append(self.rewards[s])
-            self.sampled_dones.append(self.dones[s])
+            self.sampled_terminated.append(self.terminated[s])
 
     def sample_n_seq(self):
         sample = random.sample(range(len(self.rewards) - self.n), self.batch_size)
@@ -51,21 +51,21 @@ class ReplayBuffer:
             self.sampled_cur_obs.append(self.cur_obs[s: s + self.n])
             self.sampled_next_obs.append(self.next_obs[s: s + self.n])
             self.sampled_rewards.append(self.rewards[s: s + self.n])
-            self.sampled_dones.append(self.dones[s: s + self.n])
+            self.sampled_terminated.append(self.terminated[s: s + self.n])
 
-    def save_experience(self, action, cur_obs, next_obs, reward, done):
+    def save_experience(self, action, cur_obs, next_obs, reward, terminated):
         if self.buffer_size <= len(self.rewards):
             self.actions.pop(0)
             self.cur_obs.pop(0)
             self.next_obs.pop(0)
             self.rewards.pop(0)
-            self.dones.pop(0)
+            self.terminated.pop(0)
 
         self.actions.append(action)
         self.cur_obs.append(cur_obs)
         self.next_obs.append(next_obs)
         self.rewards.append(reward)
-        self.dones.append(done)
+        self.terminated.append(terminated)
 
 
 if __name__ == '__main__':

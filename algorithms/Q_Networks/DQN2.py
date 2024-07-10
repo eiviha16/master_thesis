@@ -68,7 +68,7 @@ class DQN:
 
     def temporal_difference(self, next_q_vals):
         return torch.tensor(self.replay_buffer.sampled_rewards) + (
-                1 - torch.tensor(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+                1 - torch.tensor(self.replay_buffer.sampled_terminated)) * self.gamma * next_q_vals
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.epsilon:

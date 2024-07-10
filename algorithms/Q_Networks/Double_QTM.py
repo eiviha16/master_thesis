@@ -98,7 +98,7 @@ class QTM:
 
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
-                1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+                1 - np.array(self.replay_buffer.sampled_terminated)) * self.gamma * next_q_vals
 
     def update_epsilon_greedy(self):
         self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(-self.cur_episode * self.epsilon_decay)

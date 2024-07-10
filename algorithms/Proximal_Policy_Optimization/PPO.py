@@ -68,12 +68,14 @@ class PPO:
         self.batch.advantages = norm_advantages
 
     def rollout(self):
-        obs, _ = self.env.reset(seed=random.randint(1, 100))
+        next_obs, _ = self.env.reset(seed=random.randint(1, 100))
 
         while True:
-            action, value, log_prob = self.policy.get_action(obs)
-            obs, reward, terminated, truncated, _ = self.env.step(action.detach().numpy())
-            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), obs, reward, terminated, truncated)
+            action, value, log_prob = self.policy.get_action(next_obs)
+            obs = next_obs
+            next_obs, reward, terminated, truncated, _ = self.env.step(action.detach().numpy())
+            _, next_value, _ =  self.policy.get_action(next_obs)
+            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), next_value.detach().numpy(), obs, reward, terminated, truncated, 0)
             self.batch.next_value = self.policy.critic(torch.tensor(obs))
             if len(self.batch.obs) > self.config['n_steps']:
                 self.batch.convert_to_numpy()

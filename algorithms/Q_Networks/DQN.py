@@ -111,7 +111,7 @@ class DQN:
             action, _ = self.get_next_action(cur_obs)
             action = action.detach().numpy()
             next_obs, reward, terminated, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(terminated), self.nr_of_steps)
+            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(terminated))
             cur_obs = next_obs
             self.nr_of_steps += 1
             if terminated or truncated:
