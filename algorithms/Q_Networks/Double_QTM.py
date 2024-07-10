@@ -176,15 +176,15 @@ class QTM:
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
             action, _ = self.get_next_action(cur_obs)
-            next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done))
+            next_obs, reward, terminated, truncated, _ = self.env.step(action)
+            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(terminated))
             cur_obs = next_obs
             self.nr_of_steps += 1
 
             if self.nr_of_steps >= self.sample_size and self.nr_of_steps % self.train_freq == 0:
                 self.train()
 
-            if done or truncated:
+            if terminated or truncated:
                 break
 
 
@@ -213,9 +213,9 @@ class QTM:
                 q_vals = self.online_policy.predict(obs)
                 action = np.argmax(q_vals)
                 self.nr_actions += 1
-                obs, reward, done, truncated, _ = self.env.step(action)
+                obs, reward, terminated, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
 
         mean = np.mean(episode_rewards)

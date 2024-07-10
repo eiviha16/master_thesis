@@ -70,25 +70,25 @@ class TAC:
 
         while True:
             action, actions = self.get_next_action(cur_obs)
-            next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, done)
+            next_obs, reward, terminated, truncated, _ = self.env.step(action)
+            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, terminated)
             self.timesteps += 1
-            if done or truncated:
+            if terminated or truncated:
                 break
             cur_obs = next_obs
 
     def temporal_difference(self, next_q_vals):
         return np.array(self.replay_buffer.sampled_rewards) + (
-                1 - np.array(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+                1 - np.array(self.replay_buffer.sampled_terminated)) * self.gamma * next_q_vals
     def n_step_temporal_difference(self, next_q_vals):
         target_q_vals = []
         for i in range(len(self.replay_buffer.sampled_rewards)):
             target_q_val = 0
             for j in range(len(self.replay_buffer.sampled_rewards[i])):
                 target_q_val += (self.gamma ** j) * self.replay_buffer.sampled_rewards[i][j]
-                if self.replay_buffer.sampled_dones[i][j]:
+                if self.replay_buffer.sampled_terminated[i][j]:
                     break
-            target_q_val += (1 - self.replay_buffer.sampled_dones[i][j]) * (self.gamma ** j) * next_q_vals[i]
+            target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.gamma ** j) * next_q_vals[i]
             target_q_vals.append(target_q_val)
         return target_q_vals
     def get_actor_update(self, actions, target_q_vals):
@@ -173,9 +173,9 @@ class TAC:
             obs, _ = self.env.reset(seed=seed)
             while True:
                 action, actions = self.policy.get_best_action(obs)
-                obs, reward, done, truncated, _ = self.env.step(action)
+                obs, reward, terminated, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
 
         mean = np.mean(episode_rewards)

@@ -141,9 +141,9 @@ class TPPO:
             obs, _ = self.env.reset(seed=seed)
             while True:
                 action, probs = self.policy.get_best_action(obs)
-                obs, reward, done, truncated, _ = self.env.step(action[0])
+                obs, reward, terminated, truncated, _ = self.env.step(action[0])
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
                 if episode == 1:
                     self.save_probs(probs)

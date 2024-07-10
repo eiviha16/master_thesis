@@ -72,8 +72,8 @@ class PPO:
 
         while True:
             action, value, log_prob = self.policy.get_action(obs)
-            obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
-            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), obs, reward, done, truncated)
+            obs, reward, terminated, truncated, _ = self.env.step(action.detach().numpy())
+            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), obs, reward, terminated, truncated)
             self.batch.next_value = self.policy.critic(torch.tensor(obs))
             if len(self.batch.obs) > self.config['n_steps']:
                 self.batch.convert_to_numpy()
@@ -82,7 +82,7 @@ class PPO:
                 self.train()
                 self.batch.clear()
 
-            if done or truncated:
+            if terminated or truncated:
                 break
 
 
@@ -134,9 +134,9 @@ class PPO:
                 obs, _ = self.env.reset(seed=seed)
                 while True:
                     action, probs = self.policy.get_best_action(obs)
-                    obs, reward, done, truncated, _ = self.env.step(action.detach().numpy())
+                    obs, reward, terminated, truncated, _ = self.env.step(action.detach().numpy())
                     episode_rewards[episode] += reward
-                    if done or truncated:
+                    if terminated or truncated:
                         break
 
             mean = np.mean(episode_rewards)

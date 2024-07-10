@@ -72,7 +72,7 @@ class DQN:
 
     def temporal_difference(self, next_q_vals):
         return torch.tensor(self.replay_buffer.sampled_rewards) + (
-                1 - torch.tensor(self.replay_buffer.sampled_dones)) * self.gamma * next_q_vals
+                1 - torch.tensor(self.replay_buffer.sampled_terminated)) * self.gamma * next_q_vals
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.epsilon:
@@ -99,9 +99,9 @@ class DQN:
             target_q_val = 0
             for j in range(len(self.replay_buffer.sampled_rewards[i])):
                 target_q_val += (self.gamma ** j) * self.replay_buffer.sampled_rewards[i][j]
-                if self.replay_buffer.sampled_dones[i][j]:
+                if self.replay_buffer.sampled_terminated[i][j]:
                     break
-            target_q_val += (1 - self.replay_buffer.sampled_dones[i][j]) * (self.gamma ** j) * next_q_vals[i]
+            target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.gamma ** j) * next_q_vals[i]
             target_q_vals.append(target_q_val)
         return torch.stack(target_q_vals)
 
@@ -128,11 +128,11 @@ class DQN:
         while True:
             action, _ = self.get_next_action(cur_obs)
             action = action.numpy()
-            next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(done))
+            next_obs, reward, terminated, truncated, _ = self.env.step(action)
+            self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(terminated))
             cur_obs = next_obs
             self.nr_of_steps += 1
-            if done or truncated:
+            if terminated or truncated:
                 break
             if self.nr_of_steps > 1_000 and self.nr_of_steps - self.config['n_steps'] >= self.batch_size:
                 self.train()
@@ -156,9 +156,9 @@ class DQN:
             while True:
                 q_vals = self.policy.predict(obs)
                 action = torch.argmax(q_vals)
-                obs, reward, done, truncated, _ = self.env.step(action.numpy())
+                obs, reward, terminated, truncated, _ = self.env.step(action.numpy())
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
 
         mean = np.mean(episode_rewards)

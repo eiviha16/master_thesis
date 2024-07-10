@@ -69,10 +69,10 @@ class TAC:
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
         while True:
             action, actions = self.get_next_action(cur_obs)
-            next_obs, reward, done, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, done)
+            next_obs, reward, terminated, truncated, _ = self.env.step(action)
+            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, terminated)
             self.timesteps += 1
-            if done or truncated:
+            if terminated or truncated:
                 break
             cur_obs = next_obs
 
@@ -141,9 +141,9 @@ class TAC:
             obs, _ = self.env.reset(seed=seed)
             while True:
                 action, actions = self.policy.get_best_action(obs)
-                obs, reward, done, truncated, _ = self.env.step(action)
+                obs, reward, terminated, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
 
         mean = np.mean(episode_rewards)

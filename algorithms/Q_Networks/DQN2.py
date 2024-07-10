@@ -140,13 +140,13 @@ class DQN:
                 self.q_values[q_val] = []
             obs, _ = self.env.reset(seed=self.test_random_seeds[episode])
             while True:
-                action, q_vals = self.get_next_action(obs)
+                q_vals = self.policy.predict(obs)
+                action = torch.argmax(q_vals)
                 action = action.detach().numpy()
-                """q_vals = self.policy.predict(obs)
-                action = torch.argmax(q_vals)"""
-                obs, reward, done, truncated, _ = self.env.step(action)
+
+                obs, reward, terminated, truncated, _ = self.env.step(action)
                 episode_rewards[episode] += reward
-                if done or truncated:
+                if terminated or truncated:
                     break
 
         mean = np.mean(episode_rewards)
