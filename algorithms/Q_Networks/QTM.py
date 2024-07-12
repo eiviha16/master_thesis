@@ -118,7 +118,7 @@ class QTM:
             cur_obs = next_obs
             self.nr_of_steps += 1
 
-            if self.nr_of_steps >= self.config["sample_size"] and self.nr_of_steps % self.config["train_freq"] == 0:
+            if self.nr_of_steps >= self.config["sample_size"] + self.config["n_steps"] and self.nr_of_steps % self.config["train_freq"] == 0:
                 if self.config['n_steps'] > 1:
                     self.train_n_step()
                 else:

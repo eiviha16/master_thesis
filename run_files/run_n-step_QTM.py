@@ -10,11 +10,11 @@ import gymnasium as gym
 from algorithms.Q_Networks.QTM import SingleQTM as QTM
 from algorithms.policy.RTM import Policy
 
-config = {"env_name": "acrobot", 'algorithm': 'n_step_QTM', 'n_steps': 30, 'nr_of_clauses': 1700, 'T': 1258,
-          'max_update_p': 0.106, 'min_update_p': 0, 's': 2.270000000000002, 'y_max': -10, 'y_min': -70, 'device': 'CPU',
-          'bits_per_feature': 12, 'gamma': 0.983, 'epsilon_init': 0.7, 'epsilon_decay': 0.009000000000000001, "epsilon_min": 0, "train_freq": 100,
-          'buffer_size': 5000, 'threshold': -495, 'batch_size': 1, 'sample_size': 64, 'test_freq': 5,
-          'save': True, 'seed': 42, 'number_of_state_bits_ta': 8, 'dataset_file_name': 'acrobot_obs_data'}
+config = {"env_name": "cartpole", 'algorithm': 'n_step_QTM', 'n_steps': 30, 'nr_of_clauses': 1200, 'T': 1058,
+          'max_update_p': 0.106, 'min_update_p': 0, 's': 2.270000000000002, 'y_max': 100, 'y_min': 20, 'device': 'CPU',
+          'bits_per_feature': 5, 'gamma': 0.983, 'epsilon_init': 0.9, 'epsilon_decay': 0.001, "epsilon_min": 0.01, "train_freq": 100,
+          'buffer_size': 100_000, 'threshold': -200, 'sample_size': 64, 'test_freq': 5,
+          'save': True, 'seed': 42, 'number_of_state_bits_ta': 5, 'dataset_file_name': 'cartpole_obs_data'}
 print(config)
 
 env = gym.make("CartPole-v1")
