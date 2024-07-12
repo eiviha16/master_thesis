@@ -131,7 +131,7 @@ class TMS:
                 tm_input[i]['observations'] = self.binarizer.transform(np.array(tm_input[i]['observations']))
                 tm.fit_2(
                     tm_input[i]['observations'].astype(dtype=np.int32),
-                    np.array(tm_input[i]['target']).astype(dtype=np.float32),
+                    #np.array(tm_input[i]['target']).astype(dtype=np.float32),
                     np.array(tm_input[i]['advantages']).astype(dtype=np.float32),
                     np.array(tm_input[i]['entropy']).astype(dtype=np.float32)
                     # clip
@@ -169,9 +169,9 @@ class ActorCriticPolicy:
         e = [-p * np.log2(p) for p in normalized_action_prob[0] if p > 0]
         entropy = sum(e)
         values = self.critic.predict(obs)
-        return actions, values, action_probs, entropy
+        return actions, values, entropy
 
     def get_best_action(self, obs):
         action_probs = self.actor.predict(obs)
         actions = np.argmax(action_probs, axis=-1)
-        return actions, action_probs
+        return actions

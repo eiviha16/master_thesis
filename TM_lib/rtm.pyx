@@ -368,7 +368,7 @@ cdef class TsetlinMachine:
 
 	def upsize_memory(self, new_number_of_states):
 		self.number_of_states = new_number_of_states
-	cpdef void update_2(self, int[:] X, float y, float advantage, float entropy):
+	cpdef void update_2(self, int[:] X, float advantage, float entropy):
 			cdef int i, j
 			cdef int action_include, action_include_negated
 			cdef float output_sum
@@ -496,7 +496,7 @@ cdef class TsetlinMachine:
 		### Batch Mode Training of Regression Tsetlin Machine ###
 		#########################################################
 
-	def fit_2(self, int[:,:] X, float[:] y, float[:] advantages, float[:] entropies):
+	def fit_2(self, int[:,:] X, float[:] advantages, float[:] entropies):
 		cdef int j, l, epoch
 		cdef int example_id
 		cdef float target_class
@@ -506,7 +506,7 @@ cdef class TsetlinMachine:
 		cdef float entropy
 		cdef int epochs = 1
 
-		number_of_examples = len(y)
+		number_of_examples = len(X)
 
 		Xi = np.zeros((self.number_of_features,), dtype=np.int32)
 		random_index = np.arange(number_of_examples)
@@ -516,11 +516,11 @@ cdef class TsetlinMachine:
 
 			for l in xrange(number_of_examples):
 				example_id = random_index[l]
-				target_class = y[example_id]
+				#target_class = y[example_id]
 				advantage = advantages[example_id]
 				entropy = entropies[example_id]
 				for j in xrange(self.number_of_features):
 					Xi[j] = X[example_id,j]
-				self.update_2(Xi, target_class, advantage, entropy)
+				self.update_2(Xi, advantage, entropy)
 
 		return
