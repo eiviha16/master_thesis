@@ -7,7 +7,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Q_Networks.n_step_Double_QTM import QTM
+from algorithms.Q_Networks.QTM import DoubleQTM as QTM
 from algorithms.policy.RTM import Policy
 
 config = {"env_name": "cartpole", 'algorithm': 'n_step_Double_QTM_a', 'soft_update_type': 'soft_update_a',

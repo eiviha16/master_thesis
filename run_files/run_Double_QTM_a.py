@@ -7,7 +7,7 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 import gymnasium as gym
-from algorithms.Q_Networks.Double_QTM import QTM
+from algorithms.Q_Networks.QTM import DoubleQTM as QTM
 from algorithms.policy.RTM import Policy
 
 config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_a', 'soft_update_type': 'soft_update_a',
@@ -15,7 +15,7 @@ config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_a', 'soft_update_type
           'y_max': 75, 'y_min': 20, "train_freq": 100, 'device': 'CPU', 'bits_per_feature': 10, 'gamma': 0.976,
           'epsilon_init': 0.9,
           'epsilon_decay': 0.007, "epsilon_min": 0, 'buffer_size': 6500, 'batch_size': 1, 'sample_size': 64,
-          'test_freq': 1,
+          'test_freq': 1, "n_steps": -1,
           'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 6, 'clause_update_p': 0.618,
           'dataset_file_name': 'acrobot_obs_data'}
 print(config)

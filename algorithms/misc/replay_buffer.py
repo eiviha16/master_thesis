@@ -3,7 +3,7 @@ import random
 
 
 class ReplayBuffer:
-    def __init__(self, buffer_size, batch_size, n=5):
+    def __init__(self, buffer_size, batch_size, n=-1):
         self.batch_size = batch_size
         self.buffer_size = buffer_size
 
@@ -36,6 +36,7 @@ class ReplayBuffer:
         self.sampled_terminated = []
 
     def sample(self):
+        self.clear_cache()
         sample = random.sample(range(len(self.rewards)), self.batch_size)
         for i, s in enumerate(sample):
             self.sampled_actions.append(self.actions[s])
@@ -45,6 +46,7 @@ class ReplayBuffer:
             self.sampled_terminated.append(self.terminated[s])
 
     def sample_n_seq(self):
+        self.clear_cache()
         sample = random.sample(range(len(self.rewards) - self.n), self.batch_size)
         for i, s in enumerate(sample):
             self.sampled_actions.append(self.actions[s: s + self.n])

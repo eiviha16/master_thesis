@@ -681,7 +681,7 @@ def cartpole_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Networks.QTM import QTM
+    from algorithms.Q_Networks._QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -712,7 +712,7 @@ def acrobot_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Networks.QTM import QTM
+    from algorithms.Q_Networks._QTM import QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
