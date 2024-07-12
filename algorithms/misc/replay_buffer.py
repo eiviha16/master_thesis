@@ -12,6 +12,7 @@ class ReplayBuffer:
         self.next_obs = []  # 0 for i in range(buffer_size)]
         self.rewards = []  # 0 for i in range(buffer_size)]
         self.terminated = []  # 0 for i in range(buffer_size)]
+        self.trunc = []
 
         self._actions = [[], []]  # 0 for i in range(buffer_size)]
         self._cur_obs = [[], []]  # 0 for i in range(buffer_size)]
@@ -24,6 +25,7 @@ class ReplayBuffer:
         self.sampled_next_obs = []  # 0 for i in range(batch_size)]
         self.sampled_rewards = []  # 0 for i in range(batch_size)]
         self.sampled_terminated = []  # 0 for i in range(batch_size)]
+        self.sampled_trunc = []
 
         self.indices = []  # i for i in range(buffer_size)]
         self.n = n
@@ -34,6 +36,8 @@ class ReplayBuffer:
         self.sampled_next_obs = []
         self.sampled_rewards = []
         self.sampled_terminated = []
+        self.sampled_trunc = []
+
 
     def sample(self):
         self.clear_cache()
@@ -44,6 +48,7 @@ class ReplayBuffer:
             self.sampled_next_obs.append(self.next_obs[s])
             self.sampled_rewards.append(self.rewards[s])
             self.sampled_terminated.append(self.terminated[s])
+            self.sampled_trunc.append(self.trunc[s])
 
     def sample_n_seq(self):
         self.clear_cache()
@@ -54,20 +59,23 @@ class ReplayBuffer:
             self.sampled_next_obs.append(self.next_obs[s: s + self.n])
             self.sampled_rewards.append(self.rewards[s: s + self.n])
             self.sampled_terminated.append(self.terminated[s: s + self.n])
+            self.sampled_trunc.append(self.trunc[s: s+self.n])
 
-    def save_experience(self, action, cur_obs, next_obs, reward, terminated):
+    def save_experience(self, action, cur_obs, next_obs, reward, terminated, trunc):
         if self.buffer_size <= len(self.rewards):
             self.actions.pop(0)
             self.cur_obs.pop(0)
             self.next_obs.pop(0)
             self.rewards.pop(0)
             self.terminated.pop(0)
+            self.trunc.pop(0)
 
         self.actions.append(action)
         self.cur_obs.append(cur_obs)
         self.next_obs.append(next_obs)
         self.rewards.append(reward)
         self.terminated.append(terminated)
+        self.trunc.append(trunc)
 
 
 if __name__ == '__main__':

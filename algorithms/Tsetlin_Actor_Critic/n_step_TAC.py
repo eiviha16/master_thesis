@@ -86,7 +86,7 @@ class TAC:
             target_q_val = 0
             for j in range(len(self.replay_buffer.sampled_rewards[i])):
                 target_q_val += (self.gamma ** j) * self.replay_buffer.sampled_rewards[i][j]
-                if self.replay_buffer.sampled_terminated[i][j]:
+                if self.replay_buffer.sampled_terminated[i][j] or self.replay_buffer.trunc[i][j]:
                     break
             target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.gamma ** j) * next_q_vals[i]
             target_q_vals.append(target_q_val)

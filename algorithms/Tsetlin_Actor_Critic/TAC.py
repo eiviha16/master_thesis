@@ -14,16 +14,9 @@ class TAC:
         self.obs_space_size = env.observation_space.shape[0]
         config['action_space_size'] = self.action_space_size
         config['obs_space_size'] = self.obs_space_size
-        self.gamma = config['gamma']
         self.policy = Policy(config)
-        self.replay_buffer = ReplayBuffer(config['buffer_size'], config['batch_size'])
-        self.init_epsilon = config['epsilon_init']
-        self.epsilon = self.init_epsilon
-        self.epsilon_decay = config['epsilon_decay']
-        self.epsilon_min = config["epsilon_min"]
-
-        self.sample_size = config['sample_size']
-        self.train_freq = config["train_freq"]
+        self.replay_buffer = ReplayBuffer(config['buffer_size'], config['sample_size'], config['n_steps'])
+        self.epsilon = config["epsilon_init"]
         self.config = config
 
         self.test_random_seeds = [83811, 14593, 3279, 97197, 36049, 32099, 29257, 18290, 96531, 13435, 88697, 97081,
@@ -36,70 +29,81 @@ class TAC:
                                   27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
                                   32088, 21418, 60590, 49736]
 
-        self.test_seeds = np.random
-        self.save = config['save']
-        self.save_path = ''
+        self.best_score = float('-inf')
+        self.cur_episode = 0
+        self.total_score = []
+        self.scores = []
 
-        if self.save:
+        self.timesteps = 0
+
+        self.save_path = ''
+        if config["save"]:
             self.run_id = 'run_' + str(
                 len([i for i in os.listdir(f'../results/{config["env_name"]}/{config["algorithm"]}')]) + 1)
+            self.make_run_dir()
+            self.save_config(config)
         else:
             print('Warning SAVING is OFF!')
             self.run_id = "unidentified_run"
-        if self.save:
-            self.make_run_dir()
-            self.save_config(config)
-        self.best_score = float('-inf')
+
         self.announce()
-        self.cur_episode = 0
-        self.total_score = []
-        self.batch_size = config['batch_size']
-        self.threshold = config['threshold']
-        self.scores = []
-        self.timesteps = 0
 
     def announce(self):
         print(f'{self.run_id} has been initialized!')
 
     def save_config(self, config):
-        if self.save:
+        if self.config["save"]:
             with open(f'{self.save_path}/config.yaml', "w") as yaml_file:
                 yaml.dump(config, yaml_file, default_flow_style=False)
 
     def rollout(self):
         cur_obs, _ = self.env.reset(seed=random.randint(1, 100))
-
         while True:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, terminated, truncated, _ = self.env.step(action)
-            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, terminated)
+            self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, terminated, truncated)
             self.timesteps += 1
-            if self.timesteps >= self.sample_size and self.timesteps % self.train_freq == 0:
-                self.train()
+            if self.timesteps >= self.config["sample_size"] + self.config["n_steps"] and self.timesteps % self.config["train_freq"] == 0:
+                if self.config['n_steps'] > 1:
+                    self.train_n_step()
+                else:
+                    self.train()
             if terminated or truncated:
                 break
             cur_obs = next_obs
 
-    def temporal_difference(self, next_q_vals):
-        return np.array(self.replay_buffer.sampled_rewards) + (
-                1 - np.array(self.replay_buffer.sampled_terminated)) * self.gamma * next_q_vals
 
-    def get_actor_update(self, actions, target_q_vals):
+    def temporal_difference(self, i, next_q_vals):
+        return self.replay_buffer.sampled_rewards[i] + (
+                1 - self.replay_buffer.sampled_terminated[i]) * self.config["gamma"] * next_q_vals
+
+    def n_step_temporal_difference(self, i, next_q_vals):
+        target_q_vals = []
+        target_q_val = 0
+        for j in range(len(self.replay_buffer.sampled_rewards[i])):
+            target_q_val += (self.config["gamma"] ** j) * self.replay_buffer.sampled_rewards[i][j]
+            if self.replay_buffer.sampled_terminated[i][j] or self.replay_buffer.sampled_trunc[i][j]:
+                break
+            target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.config["gamma"] ** j) * \
+                            next_q_vals[0]
+        target_q_vals.append(target_q_val)
+        return target_q_vals
+
+    def get_actor_update(self, action, cur_obs, target_q_vals):
 
         tm = {'observations': [], 'actions': [], 'feedback': []}
-        q_vals = self.policy.online_critic.predict(np.array(self.replay_buffer.sampled_cur_obs), actions)
+        q_vals = self.policy.online_critic.predict(np.array(cur_obs), np.array([action]))
 
-        for index, action in enumerate(np.argmax(actions, axis=1)):
-            if q_vals[index] < target_q_vals[index]:
-                feedback = 1
-                tm['feedback'].append(feedback)
-                tm['actions'].append(action)
-                tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
-            elif q_vals[index] > target_q_vals[index]:
-                feedback = 2
-                tm['feedback'].append(feedback)
-                tm['actions'].append(action)
-                tm['observations'].append(self.replay_buffer.sampled_cur_obs[index])
+        if q_vals < target_q_vals:
+            feedback = 1
+            tm['feedback'].append(feedback)
+            tm['actions'].append(np.argmax(action))
+            tm['observations'].append(cur_obs)
+        elif q_vals > target_q_vals:
+            feedback = 2
+            tm['feedback'].append(feedback)
+            tm['actions'].append(np.argmax(action))
+            tm['observations'].append(cur_obs)
         return tm
 
     def get_q_val_for_action(self, actions, q_values):
@@ -110,43 +114,53 @@ class TAC:
 
     def get_next_action(self, cur_obs):
         if np.random.random() < self.epsilon:
-            actions = np.array([0 for i in range(self.action_space_size)])
+            actions = np.array([0 for _ in range(self.action_space_size)])
             actions[np.random.randint(0, self.action_space_size)] = 1
             action = np.argmax(actions)
         else:
             action, actions = self.policy.get_action(cur_obs)
         return action, actions
 
-    def get_q_val_and_obs_for_tm(self, actions, target_q_vals):
-
+    def get_q_val_and_obs_for_tm(self, cur_obs, action, target_q_vals):
         tms = {'observations': [], 'actions': [], 'target': []}
-        tms['observations'] = self.replay_buffer.sampled_cur_obs
-        tms['actions'] = actions
-        tms['target'] = target_q_vals
+        tms['observations'].append(cur_obs)
+        tms['actions'].append(np.argmax(action))
+        tms['target'].append(target_q_vals)
 
         return tms
 
     def train(self):
-        for _ in range(self.sample_size):
-            self.replay_buffer.clear_cache()
-            self.replay_buffer.sample()
-            b_actions = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs))
+        self.replay_buffer.sample()
+        for i in range(self.config["sample_size"]):
+            action = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs[i]))
             next_q_vals = self.policy.target_critic.predict(
-                np.array(self.replay_buffer.sampled_next_obs), b_actions)  # next_obs?
+                np.array(self.replay_buffer.sampled_next_obs[i]), action)
 
-            # calculate target q vals
-            target_q_vals = self.temporal_difference(next_q_vals)
-            critic_update = self.get_q_val_and_obs_for_tm(np.argmax(self.replay_buffer.sampled_actions, axis=1),
-                                                          target_q_vals)
+            target_q_vals = self.temporal_difference(i, next_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_cur_obs[i], self.replay_buffer.sampled_actions[i], target_q_vals[0])
+            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions[i], self.replay_buffer.sampled_cur_obs[i], target_q_vals)
+            self.policy.actor.update(actor_tm_feedback)
+            self.policy.online_critic.update(critic_update)
+        self.soft_update()
 
-            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions, target_q_vals)
+    def train_n_step(self):
+        self.replay_buffer.sample_n_seq()
+        for i in range(self.config["sample_size"]):
+            action = self.policy.actor.predict(np.array(self.replay_buffer.sampled_next_obs[i][-1]))
+            next_q_vals = self.policy.target_critic.predict(
+                np.array(self.replay_buffer.sampled_next_obs[i][-1]), action)
+
+            target_q_vals = self.n_step_temporal_difference(i, next_q_vals)
+            critic_update = self.get_q_val_and_obs_for_tm(self.replay_buffer.sampled_cur_obs[i][0], self.replay_buffer.sampled_actions[i][0], target_q_vals[0])
+
+            actor_tm_feedback = self.get_actor_update(self.replay_buffer.sampled_actions[i][0], self.replay_buffer.sampled_cur_obs[i][0], target_q_vals)
             self.policy.actor.update(actor_tm_feedback)
             self.policy.online_critic.update(critic_update)
         self.soft_update()
 
     def update_epsilon_greedy(self):
-        self.epsilon = self.epsilon_min + (self.init_epsilon - self.epsilon_min) * np.exp(
-            -self.cur_episode * self.epsilon_decay)
+        self.epsilon = self.config["epsilon_min"] + (self.config["epsilon_init"] - self.config["epsilon_min"]) * np.exp(
+            -self.cur_episode * self.config["epsilon_decay"])
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -156,7 +170,7 @@ class TAC:
             self.rollout()
 
             self.update_epsilon_greedy()
-            if self.best_score < self.threshold and self.cur_episode == 500:
+            if self.best_score < self.config["threshold"] and self.cur_episode == 500:
                 break
 
     def test(self):
@@ -175,38 +189,36 @@ class TAC:
         self.save_results(mean, std)
         self.total_score.append(mean)
         if mean > self.best_score:
-            self.save_model(True)
+            self.save_model()
             self.best_score = mean
             print(f'New best mean: {mean}!')
         self.scores.append(mean)
 
-    def save_model(self, best_model):
+    def save_model(self):
+        if self.config["save"]:
+            tms = []
+            ta_state, clause_sign, clause_count = self.policy.actor.tm.get_params()
+            ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
+            clause_sign_save = np.zeros((len(clause_sign), len(clause_sign[0]), len(clause_sign[0][0])),
+                                        dtype=np.int32)
+            clause_count_save = np.zeros((len(clause_count)), dtype=np.int32)
 
-        if self.save:
-            if best_model:
-                tms = []
-                ta_state, clause_sign, clause_count = self.policy.actor.tm.get_params()
-                ta_state_save = np.zeros((len(ta_state), len(ta_state[0]), len(ta_state[0][0])), dtype=np.int32)
-                clause_sign_save = np.zeros((len(clause_sign), len(clause_sign[0]), len(clause_sign[0][0])),
-                                            dtype=np.int32)
-                clause_count_save = np.zeros((len(clause_count)), dtype=np.int32)
-
-                for i in range(len(ta_state)):
-                    for j in range(len(ta_state[i])):
-                        for k in range(len(ta_state[i][j])):
-                            ta_state_save[i][j][k] = int(ta_state[i][j][k])
-                for i in range(len(clause_sign)):
-                    for j in range(len(clause_sign[i])):
-                        for k in range(len(clause_sign[i][j])):
-                            clause_sign_save[i][j][k] = int(clause_sign[i][j][k])
-                for i in range(len(clause_count)):
-                    clause_count_save[i] = int(clause_count[i])
-                tms.append(
-                    {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
-                torch.save(tms, os.path.join(self.save_path, 'best'))
+            for i in range(len(ta_state)):
+                for j in range(len(ta_state[i])):
+                    for k in range(len(ta_state[i][j])):
+                        ta_state_save[i][j][k] = int(ta_state[i][j][k])
+            for i in range(len(clause_sign)):
+                for j in range(len(clause_sign[i])):
+                    for k in range(len(clause_sign[i][j])):
+                        clause_sign_save[i][j][k] = int(clause_sign[i][j][k])
+            for i in range(len(clause_count)):
+                clause_count_save[i] = int(clause_count[i])
+            tms.append(
+                {'ta_state': ta_state_save, 'clause_sign': clause_sign_save, 'clause_count': clause_count_save})
+            torch.save(tms, os.path.join(self.save_path, 'best'))
 
     def save_results(self, mean, std):
-        if self.save:
+        if self.config["save"]:
             file_name = 'test_results.csv'
             file_exists = os.path.exists(os.path.join(self.save_path, file_name))
 
