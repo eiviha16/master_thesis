@@ -94,7 +94,7 @@ class QTM:
 
     def update_epsilon_greedy(self):
         self.epsilon = self.config["epsilon_min"] + (self.config["epsilon_init"] - self.config["epsilon_min"]) * np.exp(
-            -self.cur_episode * self.config["epsilon_decay"])
+            -self.nr_of_steps * self.config["epsilon_decay"])
 
     def get_q_val_and_obs_for_tm(self, action, target_q_vals, cur_obs):
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
@@ -123,6 +123,7 @@ class QTM:
                     self.train_n_step()
                 else:
                     self.train()
+            self.update_epsilon_greedy()
 
             if terminated or truncated:
                 break
@@ -135,7 +136,7 @@ class QTM:
             # if self.best_score < self.config["threshold"] and self.cur_episode == 100:
             #    break
             self.rollout()
-            self.update_epsilon_greedy()
+
 
     def test(self, nr_of_steps):
         episode_rewards = np.array([0 for _ in range(self.nr_of_test_episodes)])
