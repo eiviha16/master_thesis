@@ -216,8 +216,8 @@ class SingleQTM(QTM):
             _ = self.online_policy.update(tm_inputs)
 
     def train(self):
-        self.replay_buffer.sample()
         for i in range(self.config["sampling_iterations"]):
+            self.replay_buffer.sample()
             next_q_vals = self.online_policy.predict(np.array(self.replay_buffer.sampled_next_obs))
             next_q_vals = np.max(next_q_vals, axis=1)
             target_q_vals = self.temporal_difference(next_q_vals)
@@ -257,7 +257,7 @@ class DoubleQTM(QTM):
             next_q_vals = self.target_policy.predict(np.array(self.replay_buffer.sampled_next_obs))
             next_q_vals = self.get_q_val_for_action(actions, next_q_vals)
 
-            target_q_vals = self.temporal_difference(next_q_vals[0])
+            target_q_vals = self.temporal_difference(next_q_vals)
 
             tm_inputs = self.get_q_val_and_obs_for_tm([self.replay_buffer.sampled_actions], target_q_vals,
                                                       [self.replay_buffer.sampled_cur_obs])
