@@ -10,11 +10,19 @@ import gymnasium as gym
 from algorithms.Q_Networks.QTM_classic import SingleQTM as QTM
 from algorithms.policy.RTM import Policy
 
-config = {'env_name': 'Cartpole', 'algorithm': 'QTM', 'nr_of_clauses': 1240, 'T': 1165, 'max_update_p': 0.186,
-          'min_update_p': 0, 's': 1.3700000000000003, 'y_max': 100, 'y_min': 40, 'device': 'CPU', 'bits_per_feature': 6, "n_steps": -1,
-          'gamma': 0.977, 'epsilon_init': 0.7, 'epsilon_decay': 0.006, "epsilon_min": 0, 'buffer_size': 100_000, 'threshold': 100,
-          "sampling_iterations": 2, 'sample_size': 64, 'test_freq': 5, 'save': False, 'seed': 42,
+"""config = {'env_name': 'Cartpole', 'algorithm': 'QTM', 'nr_of_clauses': 1240, 'T': 1165, 'max_update_p': 0.186,
+          'min_update_p': 0, 's': 1.3700000000000003, 'y_max': 100, 'y_min': 40, 'device': 'CPU', 'bits_per_feature': 6, "n_steps": 20,
+          'gamma': 0.977, 'epsilon_init': 0.7, 'epsilon_decay': 0.006, "epsilon_min": 0, 'buffer_size': 10_000, 'threshold': 100,
+          "sampling_iterations": 2, 'sample_size': 64, 'test_freq': 25, 'save': True, 'seed': 42,
           'number_of_state_bits_ta': 8, 'dataset_file_name': 'cartpole_obs_data'}
+"""
+config = {'env_name': 'Cartpole', 'algorithm': 'QTM', 'nr_of_clauses': 960, 'T': 451, 'max_update_p': 0.5,
+          'min_update_p': 0, 's': 5.75, 'y_max': 100, 'y_min': 20, 'device': 'CPU', 'bits_per_feature': 5, "n_steps": 20,
+          'gamma': 0.991, 'epsilon_init': 0.8, 'epsilon_decay': 0.009, "epsilon_min": 0, 'buffer_size': 10_000,
+          'threshold': 100,
+          "sampling_iterations": 3, 'sample_size': 64, 'test_freq': 25, 'save': True, 'seed': 42,
+          'number_of_state_bits_ta': 3, 'dataset_file_name': 'cartpole_obs_data'}
+
 print(config)
 
 env = gym.make("CartPole-v1")

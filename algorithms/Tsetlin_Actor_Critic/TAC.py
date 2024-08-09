@@ -33,8 +33,7 @@ class TAC:
         self.cur_episode = 0
         self.total_score = []
         self.scores = []
-
-        self.timesteps = 0
+        self.total_timesteps = 0
 
         self.save_path = ''
         if config["save"]:
@@ -62,8 +61,8 @@ class TAC:
             action, actions = self.get_next_action(cur_obs)
             next_obs, reward, terminated, truncated, _ = self.env.step(action)
             self.replay_buffer.save_experience(actions, cur_obs, next_obs, reward, terminated, truncated)
-            self.timesteps += 1
-            if self.timesteps >= self.config["sample_size"] + self.config["n_steps"] and self.timesteps % self.config["train_freq"] == 0:
+            self.total_timesteps += 1
+            if self.total_timesteps >= self.config["sample_size"] + self.config["n_steps"] and self.total_timesteps % self.config["train_freq"] == 0:
                 if self.config['n_steps'] > 1:
                     self.train_n_step()
                 else:
@@ -225,7 +224,7 @@ class TAC:
             with open(os.path.join(self.save_path, file_name), "a") as file:
                 if not file_exists:
                     file.write("mean,std,steps\n")
-                file.write(f"{mean},{std},{self.timesteps}\n")
+                file.write(f"{mean},{std},{self.total_timesteps}\n")
 
     def soft_update(self):
         if self.config['soft_update_type'] == 'soft_update_a':

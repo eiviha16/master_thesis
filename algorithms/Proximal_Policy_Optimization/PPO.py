@@ -49,18 +49,14 @@ class PPO:
 
     def calculate_advantage(self):
         advantage = 0
-        discounted_reward = 0
-        next_value = 0
-
         for i in reversed(range(len(self.batch.actions))):
             if self.batch.trunc[i]:
-                next_value = self.policy.critic(torch.tensor(self.batch.obs[i])).detach().numpy()
-            dt = self.batch.rewards[i] + self.gamma * next_value * int(not self.batch.terminated[i]) - self.batch.values[i]
-            advantage = dt + self.gamma * self.lam * advantage * int(not self.batch.terminated[i])
-            next_value = self.batch.values[i]
+                advantage = 0
+            dt = self.batch.rewards[i] + self.config["gamma"] * self.batch.next_values[i][0][0] * int(
+                not self.batch.terminated[i]) - \
+                 self.batch.values[i][0][0]
+            advantage = dt + self.config["gamma"] * self.config["lam"] * advantage * int(not self.batch.terminated[i])
             self.batch.advantages.insert(0, advantage)
-            discounted_reward = self.batch.rewards[i] + self.gamma * discounted_reward
-            self.batch.discounted_rewards.insert(0, discounted_reward)
 
     def normalize_advantages(self):
         advantages = np.array(self.batch.advantages)
@@ -75,7 +71,8 @@ class PPO:
             obs = next_obs
             next_obs, reward, terminated, truncated, _ = self.env.step(action.detach().numpy())
             _, next_value, _ =  self.policy.get_action(next_obs)
-            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), next_value.detach().numpy(), obs, reward, terminated, truncated, 0)
+
+            self.batch.save_experience(action.detach(), log_prob.detach().numpy(), value.detach().numpy(), next_value.detach().numpy(), obs, reward, terminated, truncated)
             self.batch.next_value = self.policy.critic(torch.tensor(obs))
             if len(self.batch.obs) > self.config['n_steps']:
                 self.batch.convert_to_numpy()
@@ -164,20 +161,6 @@ class PPO:
                 if not file_exists:
                     file.write("mean,std\n")
                 file.write(f"{mean},{std}\n")
-    def save_probs(self, probs):
-        if self.save:
-
-            folder_name = 'action_probabilities'
-            file_name = f'{self.cur_episode}.csv'
-            if not os.path.exists(os.path.join(self.save_path, folder_name)):
-                os.makedirs(os.path.join(self.save_path, folder_name))
-            file_exists = os.path.exists(os.path.join(self.save_path, folder_name, file_name))
-            with open(os.path.join(self.save_path, folder_name, file_name), "a") as file:
-                if not file_exists:
-                    file.write(f"{'actor_' + str(i) for i in range(len(probs))}\n")
-                #file.write(f"{q_vals[0]},{q_vals[1]}\n")
-                file.write(f"{','.join(map(str, probs.detach().tolist()))}\n")
-
 
     def make_run_dir(self):
         base_dir = '../results'

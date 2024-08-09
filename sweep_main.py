@@ -2,7 +2,7 @@ import wandb
 from sweep_configs import *
 from sweep_functions import *
 
-wandb.login(key="74a10e58809253b0e1f243f34bb17d8f34c21e59")
+wandb.login(key="d874c66b52bd48ff2a70e0b48841902ffbdba951")
 
 
 def main_c_random_TAC_a():
@@ -35,26 +35,26 @@ def start_a_random_TAC_a():
 ################################################
 
 def main_c_TAC_a():
-    wandb.init(project="cartpole-TAC_a-ff")
+    wandb.init(project="cartpole-TAC_a")
     score = cartpole_TAC_a(wandb.config)
     wandb.log({"score": score})
 
 
 def main_a_TAC_a():
-    wandb.init(project="acrobot-TAC_a-ff")
+    wandb.init(project="acrobot-TAC_a")
     score = acrobot_TAC_a(wandb.config)
     wandb.log({"score": score})
 
 
 def start_c_TAC_a():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_a, project="cartpole-TAC_a-ff")
+    sweep_id = wandb.sweep(sweep=config_cartpole_TAC_a, project="cartpole-TAC_a_2")
     wandb.agent(sweep_id, function=main_c_TAC_a, count=10_000)
 
 
 def start_a_TAC_a():
     import wandb
-    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_a, project="acrobot-TAC_a-ff")
+    sweep_id = wandb.sweep(sweep=config_acrobot_TAC_a, project="acrobot-TAC_a_2")
     wandb.agent(sweep_id, function=main_a_TAC_a, count=10_000)
 
 

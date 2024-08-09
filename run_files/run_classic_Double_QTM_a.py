@@ -10,14 +10,13 @@ import gymnasium as gym
 from algorithms.Q_Networks.QTM_classic import DoubleQTM as QTM
 from algorithms.policy.RTM import Policy
 
-config = {'env_name': "cartpole", 'algorithm': 'Double_QTM_a', 'soft_update_type': 'soft_update_a',
-          'nr_of_clauses': 1180, 'T': 1050, 'max_update_p': 0.178, 'min_update_p': 0, 's': 6.210000000000004,
-          'y_max': 75, 'y_min': 20,  'device': 'CPU', 'bits_per_feature': 10, 'gamma': 0.976,
-          'epsilon_init': 0.9, "sampling_iterations": 2,
-          'epsilon_decay': 0.007, "epsilon_min": 0, 'buffer_size': 6500, 'sample_size': 64,
-          'test_freq': -1, "n_steps": 10,
-          'save': True, 'seed': 42, 'threshold': 20, 'number_of_state_bits_ta': 6, 'clause_update_p': 0.618,
-          'dataset_file_name': 'acrobot_obs_data'}
+config = {'env_name': 'Cartpole', 'algorithm': 'QTM', 'nr_of_clauses': 960, 'T': 451, 'max_update_p': 0.5, 'soft_update_type': 'soft_update_a', 'clause_update_p': 1.00,
+          'min_update_p': 0, 's': 5.75, 'y_max': 100, 'y_min': 20, 'device': 'CPU', 'bits_per_feature': 5, "n_steps": 20,
+          'gamma': 0.991, 'epsilon_init': 0.8, 'epsilon_decay': 0.009, "epsilon_min": 0, 'buffer_size': 10_000,
+          'threshold': 100,
+          "sampling_iterations": 3, 'sample_size': 64, 'test_freq': 25, 'save': True, 'seed': 42,
+          'number_of_state_bits_ta': 3, 'dataset_file_name': 'cartpole_obs_data'}
+
 print(config)
 
 env = gym.make("CartPole-v1")

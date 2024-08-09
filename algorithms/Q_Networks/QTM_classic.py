@@ -86,7 +86,7 @@ class QTM:
             target_q_val = 0
             for j in range(len(self.replay_buffer.sampled_rewards[i])):
                 target_q_val += (self.config["gamma"] ** j) * self.replay_buffer.sampled_rewards[i][j]
-                if self.replay_buffer.sampled_terminated[j] or self.replay_buffer.sampled_trunc[i][j]:
+                if self.replay_buffer.sampled_terminated[i][j] or self.replay_buffer.sampled_trunc[i][j]:
                     break
             target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.config["gamma"] ** j) * \
                             next_q_vals[i]

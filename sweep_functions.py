@@ -8,8 +8,8 @@ import random
 
 n_episodes_1 = 2500
 n_epsidoes_acro = 250
-n_episodes_2 = 5000
-test_freq_2 = 25
+n_episodes_2 = 2500
+test_freq_2 = 100
 cartpole_threshold = 0
 acrobot_threshold = -495
 
@@ -33,18 +33,18 @@ def cartpole_TAC_a(config):
               'bits_per_feature': config.c_bits_per_feature, "seed": 42,
               'number_of_state_bits_ta': config.c_number_of_state_bits_ta}
     _config = {'algorithm': 'TAC_a', 'soft_update_type': 'soft_update_a',
-               'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay,
+               'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, "epsilon_min": 0,
                'clause_update_p': config.clause_update_p, 'gamma': config.gamma,
-               "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic, 'batch_size': config.batch_size,
-               'sampling_iterations': config.sampling_iterations, 'test_freq': 1, "save": False,
-               "threshold": cartpole_threshold, "dataset_file_name": "observation_data"}
+               "buffer_size": config.buffer_size, 'actor': actor, 'critic': critic,
+               'sample_size': config.sample_size, 'test_freq': 100, "save": False, "n_steps": -1, "train_freq": config.train_freq,
+               "threshold": cartpole_threshold, "dataset_file_name": "cartpole_obs_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")
 
     agent = TAC(env, Policy, _config)
     agent.learn(nr_of_episodes=n_episodes_1)
-    score = np.array(agent.best_score)
+    score = np.mean(np.array(agent.scores))
     print(f'mean: {np.mean(np.array(agent.scores))}')
     return score
 
@@ -354,7 +354,7 @@ def cartpole_n_step_DQTM_a(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Networks.n_step_Double_QTM import QTM
+    from algorithms.Q_Networks.QTM import DoubleQTM as QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -362,13 +362,12 @@ def cartpole_n_step_DQTM_a(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma,
-        'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
-        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2,
+        'gamma': config.gamma, "train_freq": config.train_freq,
+        'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, "epsilon_min": config.epsilon_min, 'buffer_size': config.buffer_size,
+        'batch_size': config.batch_size, 'sample_size': config.sample_size, 'test_freq': test_freq_2,
         "save": False, "seed": 42, "threshold": cartpole_threshold,
         'number_of_state_bits_ta': config.number_of_state_bits_ta, 'clause_update_p': config.clause_update_p,
-        'update_freq': -1,
-        "dataset_file_name": "observation_data"}
+        "dataset_file_name": "cartpole_obs_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")
@@ -615,7 +614,7 @@ def cartpole_n_step_QTM(config):
     torch.manual_seed(42)
 
     import gymnasium as gym
-    from algorithms.Q_Networks.n_step_QTM import QTM
+    from algorithms.Q_Networks.QTM import SingleQTM as QTM
     from algorithms.policy.RTM import Policy
 
     _config = {
@@ -623,13 +622,13 @@ def cartpole_n_step_QTM(config):
         'nr_of_clauses': config.nr_of_clauses, 'T': int(config.t * config.nr_of_clauses),
         "max_update_p": config.max_update_p, "min_update_p": 0.0, 's': config.specificity, 'y_max': config.y_max,
         'y_min': config.y_min, 'device': 'CPU', 'bits_per_feature': config.bits_per_feature,
-        'gamma': config.gamma,
-        'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, 'buffer_size': config.buffer_size,
+        'gamma': config.gamma, "train_freq": config.train_freq,
+        'epsilon_init': config.epsilon_init, 'epsilon_decay': config.epsilon_decay, "epsilon_min": config.epsilon_min, 'buffer_size': config.buffer_size,
         "threshold": cartpole_threshold,
-        'batch_size': config.batch_size, 'sampling_iterations': config.sampling_iterations, 'test_freq': test_freq_2,
+        'sample_size': config.sample_size, 'test_freq': test_freq_2,
         "save": False, "seed": 42,
         'number_of_state_bits_ta': config.number_of_state_bits_ta,
-        "dataset_file_name": "observation_data"}
+        "dataset_file_name": "cartpole_obs_data"}
     print(_config)
 
     env = gym.make("CartPole-v1")

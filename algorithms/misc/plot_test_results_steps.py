@@ -8,7 +8,6 @@ def plot_many(names, data, title, ratio):
     for key in data:
         #x = np.arange(0, int((len(data[key]['mean'])) * ratio), step=ratio)
         x = np.arange(0, int(len(data[key]['mean']) * 50), 50)
-        #plt.plot(np.array(data[key]['steps']), data[key]['mean'], label=names[key])
         plt.plot(x, data[key]['mean'], label=names[key])
         """plt.fill_between(np.array(data[key]['steps']), np.array(data[key]['mean']) - np.array(data[key]['std']),
                          np.array(data[key]['mean']) + np.array(data[key]['std']),
@@ -22,7 +21,6 @@ def plot_many(names, data, title, ratio):
     plt.xlabel(f'Episodes')
     plt.title(f'{title}')
     plt.legend()
-    # plt.savefig(f'rewards_comparison.png')
     plt.savefig("plot", format='svg')
     plt.show()
 
@@ -91,11 +89,8 @@ def plot_many_rewards(environment, algorithms, new_size):
     data = {}
     names = {}
     for algorithm in algorithms:
-        # data[algorithm] = get_csv_performance(f'../../results/{algorithm}/{algorithms[algorithm]}')
-        # data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         if environment == 'Cartpole':
             if algorithm == "DQN" and algorithm == "TAC random":
-                # data[algorithm] = get_csv_performance(f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}', True)
                 data[algorithm] = get_csv_performance(
                     f'../final_results/cartpole/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
             else:
@@ -105,19 +100,8 @@ def plot_many_rewards(environment, algorithms, new_size):
             data[algorithm] = get_csv_performance(
                 f'../final_results/acrobot/{algorithms[algorithm]["folder"]}/{algorithms[algorithm]["run"]}')
         names[algorithm] = algorithms[algorithm]["name"]
-    # title = f'{environment} - Q-Tsetlin-Machine'
-    # title = f'{environment} - n-step Q-Tsetlin-Machine'
-    # title = f'{environment} - Baselines'
-    # title = 'Cartpole - Actor-Critics'
-    # title = f'{environment} - Actor-Critics'
-    # title = f'{environment} - Double Q-Tsetlin-Machine - Type b update'
-    # title = f'{environment} - n-step Double Q-Tsetlin-Machine - Type b update'
-    # title = f'{environment} - n-step Q-Tsetlin-Machine'
-    # title = f'{environment} - Deep Q-Network'
-    # title = f'{environment} - n-step Deep Q-Network'
     title = f'{environment}'
-    # title = f'{environment} - Tsetlin Proximal Policy Optimization'
-    # title = f'{environment} - Proximal Policy Optimization'
+
     if new_size != -1:
         data, ratio = prune(data, new_size)
     else:
@@ -126,85 +110,12 @@ def plot_many_rewards(environment, algorithms, new_size):
 
 
 if __name__ == "__main__":
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    ################## cartpole ##############################
-    """algorithms = {
-        'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
-        # 'PPO': {'folder': 'PPO', 'run': 'run_3_final', 'name': 'PPO'},
-        # 'TAC random': {'folder': 'TAC_random', 'run': 'run_2', 'name': 'TAC random'}
-    }
-
-    algorithms = {
-        #    'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_32', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
-    """algorithms = {
-        'QTM': {'folder': 'QTM', 'run': 'run_2', 'name': 'QTM'},
-        'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'DQTM - Type a update'},
-        'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_2', 'name': 'DQTM - Type b update'},
-    }"""
-
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_2', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_2', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_7', 'name': 'n-step DQTM - Type b update'},
-    }"""
-    #########¤ Acrobot ##############
-    #########¤ Acrobot ##############
-    #########¤ Acrobot ##############
-    #########¤ Acrobot ##############
-    #########¤ Acrobot ##############
-    """algorithms = {
-        'n-step DQN': {'folder': 'n_step_DQN', 'run': 'run_66', 'name': 'n-step DQN'},#20
-        'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
-        'TAC random': {'folder': 'TAC_random', 'run': 'run_12', 'name': 'TAC random'}
-    }"""
-    """algorithms = {
-        'TPPO': {'folder': 'TPPO', 'run': 'run_6', 'name': 'TPPO'},
-        'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_5', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_13', 'name': 'Tsetlin Actor-Critic - Type b update'},
-    }"""
-
-    """algorithms = {
-        'QTM': {'folder': 'QTM', 'run': 'run_8', 'name': 'QTM'},
-        'DQTM \n Update type a': {'folder': 'Double_QTM_a', 'run': 'run_14', 'name': 'DQTM - Type a update'},
-        'DQTM \n Update type b': {'folder': 'Double_QTM_b', 'run': 'run_1b', 'name': 'DQTM - Type b update'},
-    }"""
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_1', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_4', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4', 'name': 'n-step DQTM - Type b update'},
-    }"""
-    """algorithms = {
-        'n-step QTM': {'folder': 'n_step_QTM', 'run': 'run_1', 'name': 'n-step QTM'},
-        'n-step DQTM \n Update type a': {'folder': 'n_step_Double_QTM_a', 'run': 'run_3', 'name': 'n-step DQTM - Type a update'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4', 'name': 'n-step DQTM - Type b update'},
-    }"""
-    """algorithms = {
-        #'DQN': {'folder': 'DQN', 'run': 'run_10', 'name': 'DQN'},
-        'n-step DQTM \n Update type b': {'folder': 'n_step_Double_QTM_b', 'run': 'run_4',
-                                         'name': 'n-step DQTM - Type b update'},
-
-    }"""
-
-    """algorithms = {
-        'n-step DQN': {'folder': 'n_step_DQN', 'run': 'run_66', 'name': 'n-step DQN'},#20
-        #'PPO': {'folder': 'PPO', 'run': 'run_2', 'name': 'PPO'},
-        #'TAC random': {'folder': 'TAC_random', 'run': 'run_11', 'name': 'TAC random'}
-    }"""
 
     algorithms = {
         'DQN': {'folder': 'DQN', 'run': 'run_91', 'name': 'DQN'},
         'DQTM': {'folder': 'Double_QTM_a', 'run': 'run_4', 'name': 'Double QTM'},
         'TAC': {'folder': 'TAC_a', 'run': 'run_15', 'name': 'TAC'},
         'TPPO': {'folder': 'TPPO', 'run': 'run_11', 'name': 'TPPO'},
-
-        #'TAC \n Update type a': {'folder': 'TAC_a', 'run': 'run_34', 'name': 'Tsetlin Actor-Critic - Type a update'},
-        #    'TAC \n Update type b': {'folder': 'TAC_b', 'run': 'run_9', 'name': 'Tsetlin Actor-Critic - Type b update'},
     }
     plot_many_rewards('Cartpole', algorithms, new_size=100)
-# 'n_step_Double_TMQN': 'run_34' 498.22 - 11.22
-# 'n_step_Double_TMQN': 'run_35' 500.0 - 0.0
+

@@ -116,8 +116,10 @@ class DQN:
             self.nr_of_steps += 1
             if terminated or truncated:
                 break
-            if self.nr_of_steps > 1_000 and self.nr_of_steps >= self.batch_size:
+            if self.nr_of_steps > self.config["sample_size"] and self.nr_of_steps >= self.batch_size:
                 self.train()
+            self.update_epsilon_greedy()
+
 
     def learn(self, nr_of_episodes):
         for episode in tqdm(range(nr_of_episodes)):
@@ -125,7 +127,6 @@ class DQN:
             if episode % self.test_freq == 0:
                 self.test(self.nr_of_steps)
             self.rollout()
-            self.update_epsilon_greedy()
 
 
     def test(self, nr_of_steps):

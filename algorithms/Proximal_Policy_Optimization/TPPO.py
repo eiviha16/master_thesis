@@ -31,7 +31,7 @@ class TPPO:
         self.best_score = float('-inf')
         self.total_scores = []
         self.cur_episode = 0
-        self.timesteps = 0
+        self.total_timesteps = 0
 
         self.save_path = ''
         if config["save"]:
@@ -79,7 +79,7 @@ class TPPO:
             self.batch.save_experience(action[0], value, self.policy.critic.predict(np.array(next_obs)),
                                        obs, reward, terminated, truncated, entropy)
             self.batch.next_value = self.policy.critic.predict(np.array(obs))
-            self.timesteps += 1
+            self.total_timesteps += 1
             if len(self.batch.actions) - 1 > self.config["n_timesteps"]:
                 self.batch.convert_to_numpy()
                 self.calculate_advantage()
@@ -173,7 +173,7 @@ class TPPO:
             with open(os.path.join(self.save_path, file_name), "a") as file:
                 if not file_exists:
                     file.write("mean,std,steps\n")
-                file.write(f"{mean},{std},{self.timesteps}\n")
+                file.write(f"{mean},{std},{self.total_timesteps}\n")
 
     def make_run_dir(self):
         base_dir = '../results'

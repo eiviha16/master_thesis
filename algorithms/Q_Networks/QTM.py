@@ -41,7 +41,7 @@ class QTM:
                                   27461, 87842, 34994, 91989, 89594, 84940, 9359, 79841, 83228, 22432, 70011, 95569,
                                   32088, 21418, 60590, 49736]
 
-        self.nr_of_steps = 0
+        self.total_timesteps = 0
         self.cur_episode = 0
         self.cur_mean = 0
         self.total_score = []
@@ -87,14 +87,14 @@ class QTM:
             target_q_val += (self.config["gamma"] ** j) * self.replay_buffer.sampled_rewards[i][j]
             if self.replay_buffer.sampled_terminated[i][j] or self.replay_buffer.sampled_trunc[i][j]:
                 break
-            target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.config["gamma"] ** j) * \
+        target_q_val += (1 - self.replay_buffer.sampled_terminated[i][j]) * (self.config["gamma"] ** j) * \
                             next_q_vals[0]
         target_q_vals.append(target_q_val)
         return target_q_vals
 
     def update_epsilon_greedy(self):
         self.epsilon = self.config["epsilon_min"] + (self.config["epsilon_init"] - self.config["epsilon_min"]) * np.exp(
-            -self.nr_of_steps * self.config["epsilon_decay"])
+            -self.total_timesteps * self.config["epsilon_decay"])
 
     def get_q_val_and_obs_for_tm(self, action, target_q_vals, cur_obs):
         tm_inputs = [{'observations': [], 'target_q_vals': []} for _ in range(self.action_space_size)]
@@ -116,9 +116,9 @@ class QTM:
             next_obs, reward, terminated, truncated, _ = self.env.step(action)
             self.replay_buffer.save_experience(action, cur_obs, next_obs, reward, int(terminated), truncated)
             cur_obs = next_obs
-            self.nr_of_steps += 1
+            self.total_timesteps += 1
 
-            if self.nr_of_steps >= self.config["sample_size"] + self.config["n_steps"] and self.nr_of_steps % self.config["train_freq"] == 0:
+            if self.total_timesteps >= self.config["sample_size"] + self.config["n_steps"] and self.total_timesteps % self.config["train_freq"] == 0:
                 if self.config['n_steps'] > 1:
                     self.train_n_step()
                 else:
@@ -132,7 +132,7 @@ class QTM:
         for episode in tqdm(range(nr_of_episodes)):
             self.cur_episode = episode + 1
             if episode % self.config["test_freq"] == 0:
-                self.test(self.nr_of_steps)
+                self.test(self.total_timesteps)
             # if self.best_score < self.config["threshold"] and self.cur_episode == 100:
             #    break
             self.rollout()
